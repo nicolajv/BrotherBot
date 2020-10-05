@@ -1,2 +1,2 @@
 # BrotherBotV2
-Oh boy here we go again
+A new attempt at a beautiful BrotherBot
