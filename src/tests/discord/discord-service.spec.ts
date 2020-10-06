@@ -1,10 +1,11 @@
 import { Client, ClientUser } from 'discord.js';
 
-import { DiscordService } from '../../discord/discord-service';
+import { DiscordService } from '../../services/discord-service';
+import { LoggingService } from '../../services/logging-service';
 import { NoDiscordTokenSetException } from '../../errors/no-discord-token-set-exception';
 import { NoDiscordUserFoundException } from '../../errors/no-discord-user-found-exception';
 
-const discord = new DiscordService();
+const discord = new DiscordService(new LoggingService());
 const oneTime = 1;
 
 describe('Discord Service', () => {
@@ -24,10 +25,10 @@ describe('Discord Service', () => {
 
   it('Writes to console if logged in successfully', async () => {
     jest.spyOn(Client.prototype, 'login').mockReturnValueOnce(Promise.resolve('test'));
-    jest.spyOn(console, 'log');
+    jest.spyOn(LoggingService.prototype, 'log');
     discord.client.user = ClientUser.prototype;
     await discord.client.emit('ready');
-    expect(console.log).toHaveBeenCalledTimes(oneTime);
+    expect(LoggingService.prototype.log).toHaveBeenCalledTimes(oneTime);
   });
 
   it('Throws error if token is unset', async () => {

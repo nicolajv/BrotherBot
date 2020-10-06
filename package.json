@@ -6,7 +6,7 @@
   "scripts": {
     "start": "npm run compile && node dist/server.js",
     "test": "npm run lint && npm run compile && jest",
-    "compile": "tsc",
+    "compile": "tsc --build --clean",
     "lint": "eslint ./src"
   },
   "husky": {

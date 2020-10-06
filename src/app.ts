@@ -1,4 +1,4 @@
-import { DiscordService } from './discord/discord-service';
+import { DiscordService } from './services/discord-service';
 import { Express } from 'express-serve-static-core';
 import { Server } from 'http';
 
