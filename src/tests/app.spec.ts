@@ -1,9 +1,9 @@
 import { App } from '../app';
 import { DiscordService } from '../services/discord-service';
+import { port } from '../data/constants';
 jest.mock('../services/discord-service');
 import express = require('express');
 
-const port = 4200;
 const oneTime = 1;
 
 describe('App', () => {
