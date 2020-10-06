@@ -5,7 +5,7 @@ import { LoggingService } from '../../services/logging-service';
 import { NoDiscordTokenSetException } from '../../errors/no-discord-token-set-exception';
 import { NoDiscordUserFoundException } from '../../errors/no-discord-user-found-exception';
 
-const discord = new DiscordService(new LoggingService());
+const discord = new DiscordService();
 const oneTime = 1;
 
 describe('Discord Service', () => {

@@ -7,9 +7,9 @@ export class DiscordService {
   private loggingService: LoggingService;
   public client: Client;
 
-  constructor(loggingService: LoggingService) {
+  constructor() {
     this.client = new Client();
-    this.loggingService = loggingService;
+    this.loggingService = new LoggingService();
     this.client.on('ready', () => {
       if (!this.client.user) {
         throw new NoDiscordUserFoundException();
