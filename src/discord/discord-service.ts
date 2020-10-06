@@ -3,9 +3,11 @@ import { NoDiscordTokenSetException } from '../errors/no-discord-token-set-excep
 import { NoDiscordUserFoundException } from '../errors/no-discord-user-found-exception';
 
 export class DiscordService {
-  public client: Client = new Client();
+  public client: Client;
 
   constructor() {
+    console.log('here');
+    this.client = new Client();
     this.client.on('ready', () => {
       if (!this.client.user) {
         throw new NoDiscordUserFoundException();

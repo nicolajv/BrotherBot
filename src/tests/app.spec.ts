@@ -1,15 +1,17 @@
+import { App } from '../app';
 import { DiscordService } from '../discord/discord-service';
-import { server } from '../app';
+jest.mock('../discord/discord-service');
+import express = require('express');
+
+const port = 4200;
 const oneTime = 1;
 
 describe('App', () => {
-  it('can start application', async () => {
-    jest.spyOn(DiscordService.prototype, 'login').mockReturnValue(Promise.resolve('test'));
-    await expect(server)
-      .resolves.not.toThrow()
-      .then(() => {
-        expect(DiscordService.prototype.login).toHaveBeenCalledTimes(oneTime);
-      });
+  it('can start application', () => {
+    const app = new App(express(), new DiscordService(), port);
+    jest.spyOn(app, 'close');
+    app.close();
+    expect(app.close).toHaveBeenCalledTimes(oneTime);
   });
 });
 

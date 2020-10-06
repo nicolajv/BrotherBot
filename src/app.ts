@@ -1,15 +1,29 @@
-import express = require('express');
-
 import { DiscordService } from './discord/discord-service';
+import { Express } from 'express-serve-static-core';
+import { Server } from 'http';
 
-const app = express();
-const discord = new DiscordService();
-const port = 4200;
+export class App {
+  private app: Express;
+  private discord: DiscordService;
+  private port: number;
+  private server: Server | undefined;
 
-export const server = new Promise<void>(resolve => {
-  app.listen(port, () => {
-    discord.login().then(() => {
-      resolve();
+  constructor(app: Express, discord: DiscordService, port: number) {
+    this.app = app;
+    this.discord = discord;
+    this.port = port;
+    this.start();
+  }
+
+  private start(): void {
+    this.server = this.app.listen(this.port, () => {
+      this.discord.login();
     });
-  });
-});
+  }
+
+  public close(): void {
+    if (this.server) {
+      this.server.close();
+    }
+  }
+}

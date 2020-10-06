@@ -4,7 +4,7 @@
   "description": "Oh boy here we go again",
   "main": "dist/app.js",
   "scripts": {
-    "start": "npm run compile && node dist/app.js",
+    "start": "npm run compile && node dist/server.js",
     "test": "npm run lint && npm run compile && jest",
     "compile": "tsc",
     "lint": "eslint ./src"

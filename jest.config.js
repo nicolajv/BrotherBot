@@ -7,5 +7,6 @@ module.exports = {
   testEnvironment: "node",
   collectCoverage: true,
   collectCoverageFrom: ['dist/**'],
-  coverageDirectory: 'coverage'
+  coverageDirectory: 'coverage',
+  clearMocks: true
 };

@@ -1,29 +1,39 @@
+import { Client, ClientUser } from 'discord.js';
+
 import { DiscordService } from '../../discord/discord-service';
 import { NoDiscordTokenSetException } from '../../errors/no-discord-token-set-exception';
 import { NoDiscordUserFoundException } from '../../errors/no-discord-user-found-exception';
 
 const discord = new DiscordService();
+const oneTime = 1;
 
-test('Can login to discord', async () => {
-  await expect(discord.login()).resolves.not.toThrow();
-});
+describe('Discord Service', () => {
+  it('Can login to discord', async () => {
+    jest.spyOn(Client.prototype, 'login').mockReturnValueOnce(Promise.resolve('test'));
+    await expect(discord.login()).resolves.not.toThrow();
+  });
 
-test('Throws error if token is invalid', async () => {
-  await expect(discord.login('qwerty')).rejects.toThrowError();
-});
+  it('Throws error if client user is null', async () => {
+    discord.client.user = null;
+    try {
+      await discord.client.emit('ready');
+    } catch (error) {
+      expect(error).toMatchObject(new NoDiscordUserFoundException());
+    }
+  });
 
-test('Throws error if client user is null', async () => {
-  discord.client.user = null;
-  try {
+  it('Writes to console if logged in successfully', async () => {
+    jest.spyOn(Client.prototype, 'login').mockReturnValueOnce(Promise.resolve('test'));
+    jest.spyOn(console, 'log');
+    discord.client.user = ClientUser.prototype;
     await discord.client.emit('ready');
-  } catch (error) {
-    expect(error).toMatchObject(new NoDiscordUserFoundException());
-  }
-});
+    expect(console.log).toHaveBeenCalledTimes(oneTime);
+  });
 
-test('Throws error if token is unset', async () => {
-  process.env.DISCORD_TOKEN = undefined;
-  await expect(discord.login()).rejects.toThrowError(new NoDiscordTokenSetException());
+  it('Throws error if token is unset', async () => {
+    process.env.DISCORD_TOKEN = undefined;
+    await expect(discord.login()).rejects.toThrowError(new NoDiscordTokenSetException());
+  });
 });
 
 afterAll(async done => {
