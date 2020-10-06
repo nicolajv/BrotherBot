@@ -3,9 +3,13 @@ import express = require('express');
 import { DiscordService } from './discord/discord-service';
 
 const app = express();
-const port = 4200;
 const discord = new DiscordService();
+const port = 4200;
 
-app.listen(port, () => {
-  discord.login();
+export const server = new Promise<void>(resolve => {
+  app.listen(port, () => {
+    discord.login().then(() => {
+      resolve();
+    });
+  });
 });

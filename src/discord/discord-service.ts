@@ -1,20 +1,27 @@
 import { Client } from 'discord.js';
-
-const discord = require('discord.js');
+import { NoDiscordTokenSetException } from '../errors/no-discord-token-set-exception';
+import { NoDiscordUserFoundException } from '../errors/no-discord-user-found-exception';
 
 export class DiscordService {
-  private client: Client = new discord.Client();
+  public client: Client = new Client();
 
   constructor() {
     this.client.on('ready', () => {
-      console.log(`Logged in as ${this.client.user!.tag}!`);
+      if (!this.client.user) {
+        throw new NoDiscordUserFoundException();
+      }
+      console.log(`Logged in as ${this.client.user.tag}!`);
     });
   }
 
-  login = (token = process.env.DISCORD_TOKEN) => {
-    if (!token) {
-      throw new Error('No Discord token set');
+  async login(token = process.env.DISCORD_TOKEN): Promise<string> {
+    if (token === 'undefined') {
+      throw new NoDiscordTokenSetException();
     }
-    this.client.login(token);
-  };
+    return this.client.login(token);
+  }
+
+  async logout(): Promise<void> {
+    return this.client.destroy();
+  }
 }
