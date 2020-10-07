@@ -12,18 +12,22 @@ export class App {
     this.app = app;
     this.discord = discord;
     this.port = port;
-    this.start();
   }
 
-  private start(): void {
-    this.server = this.app.listen(this.port, () => {
-      this.discord.login();
+  public start(): Promise<void> {
+    return new Promise<void>(resolves => {
+      this.server = this.app.listen(this.port, async () => {
+        await this.discord.login();
+        resolves();
+      });
     });
   }
 
   public close(): void {
     if (this.server) {
       this.server.close();
+    } else {
+      throw new Error();
     }
   }
 }

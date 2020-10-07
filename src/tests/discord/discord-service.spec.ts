@@ -11,7 +11,9 @@ const oneTime = 1;
 describe('Discord Service', () => {
   it('Can login to discord', async () => {
     jest.spyOn(Client.prototype, 'login').mockReturnValueOnce(Promise.resolve('test'));
-    await expect(discord.login()).resolves.not.toThrow();
+    const promise = discord.login();
+    await expect(promise).resolves.not.toThrow();
+    expect(promise).resolves.toBeTruthy();
   });
 
   it('Throws error if client user is null', async () => {
