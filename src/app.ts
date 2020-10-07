@@ -23,7 +23,7 @@ export class App {
     });
   }
 
-  public close(): void {
+  public stop(): void {
     if (this.server) {
       this.server.close();
     } else {

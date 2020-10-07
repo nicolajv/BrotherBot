@@ -13,18 +13,18 @@ describe('App', () => {
     const app = new App(express(), discordService, port);
     await app.start();
     expect(discordService.login).toHaveBeenCalledTimes(oneTime);
-    jest.spyOn(app, 'close');
-    app.close();
-    expect(app.close).toHaveBeenCalledTimes(oneTime);
+    jest.spyOn(app, 'stop');
+    app.stop();
+    expect(app.stop).toHaveBeenCalledTimes(oneTime);
   });
 
   it('can not close the application before starting', async () => {
     const app = new App(express(), new DiscordService(), port);
-    jest.spyOn(app, 'close');
+    jest.spyOn(app, 'stop');
     try {
-      app.close();
+      app.stop();
     } catch (error) {
-      expect(app.close).toThrowError();
+      expect(app.stop).toThrowError();
     }
   });
 });

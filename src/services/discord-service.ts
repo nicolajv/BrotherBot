@@ -4,6 +4,8 @@ import { LoggingService } from './logging-service';
 import { NoDiscordTokenSetException } from '../errors/no-discord-token-set-exception';
 import { NoDiscordUserFoundException } from '../errors/no-discord-user-found-exception';
 
+const defaultActivity = '!k for kommandoer';
+
 export class DiscordService {
   private loggingService: LoggingService;
   public client: Client;
@@ -29,7 +31,7 @@ export class DiscordService {
     if (!this.client.user) {
       throw new NoDiscordUserFoundException();
     }
-    return this.client.user.setActivity({ name: '!k for kommandoer' });
+    return this.client.user.setActivity({ name: defaultActivity });
   }
 
   private initEvents(): void {
