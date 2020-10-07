@@ -10,12 +10,7 @@ export class DiscordService {
   constructor() {
     this.client = new Client();
     this.loggingService = new LoggingService();
-    this.client.on('ready', () => {
-      if (!this.client.user) {
-        throw new NoDiscordUserFoundException();
-      }
-      this.loggingService.log(`Logged in as ${this.client.user.tag}!`);
-    });
+    this.initEvents();
   }
 
   async login(token = process.env.DISCORD_TOKEN): Promise<string> {
@@ -27,5 +22,18 @@ export class DiscordService {
 
   async logout(): Promise<void> {
     return this.client.destroy();
+  }
+
+  private initEvents(): void {
+    this.initReadyEvent();
+  }
+
+  private initReadyEvent(): void {
+    this.client.on('ready', () => {
+      if (!this.client.user) {
+        throw new NoDiscordUserFoundException();
+      }
+      this.loggingService.log(`Logged in as ${this.client.user.tag}!`);
+    });
   }
 }
