@@ -14,6 +14,22 @@
       "pre-commit": "pretty-quick --staged"
     }
   },
+  "jest": {
+    "projects": [
+      "dist/tests"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/src/"
+    ],
+    "testEnvironment": "node",
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "dist/**"
+    ],
+    "coverageDirectory": "coverage",
+    "clearMocks": true
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nicolajv/BrotherBotV2.git"
