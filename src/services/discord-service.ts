@@ -62,7 +62,7 @@ export class DiscordService {
       this.commands.forEach(async command => {
         if (content.startsWith(`!${command.name}`)) {
           const parameter = content.substr(content.indexOf(' ') + 1);
-          channel.send(await command.execute(parameter));
+          await channel.send(await command.execute(parameter));
         }
       });
     });
