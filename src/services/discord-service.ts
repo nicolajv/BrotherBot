@@ -1,6 +1,5 @@
 import { Client, Presence } from 'discord.js';
 
-import { Command } from '../commands/abstract-command';
 import { LoggingService } from './logging-service';
 import buildCommands from '../helpers/commands-builder';
 

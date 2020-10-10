@@ -1,10 +1,10 @@
-import { Command } from './abstract-command';
+import { AbstractCommand } from './abstract-command';
 import { TcgService } from '../services/tcg-service';
 import { errors } from '../data/constants';
 
 const tcgService = new TcgService();
 
-export class CardImageCommand extends Command {
+export class CardImageCommand extends AbstractCommand {
   constructor() {
     super('k', async (parameter?: string) => {
       let result: string;
