@@ -1,5 +1,6 @@
 import { Command } from './abstract-command';
 import { TcgService } from '../services/tcg-service';
+import { errors } from '../data/constants';
 
 const tcgService = new TcgService();
 
@@ -14,7 +15,7 @@ export class CardImageCommand extends Command {
           throw new Error('No search string provided');
         }
       } catch (err) {
-        result = 'No card result found';
+        result = errors.noCardFound;
       }
       return result;
     });
