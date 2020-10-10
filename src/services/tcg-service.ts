@@ -1,4 +1,4 @@
-import { Card } from './models/card';
+import { Card } from '../models/card';
 import { RequestService } from './request-service';
 
 export class TcgService {
