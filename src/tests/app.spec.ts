@@ -5,17 +5,15 @@ import express = require('express');
 
 jest.mock('../services/discord-service');
 
-const oneTime = 1;
-
 describe('App', () => {
   it('can start the application', async () => {
     const discordService = new DiscordService();
     const app = new App(express(), discordService, port);
     await app.start();
-    expect(discordService.login).toHaveBeenCalledTimes(oneTime);
+    expect(discordService.login).toHaveBeenCalledTimes(1);
     jest.spyOn(app, 'stop');
     app.stop();
-    expect(app.stop).toHaveBeenCalledTimes(oneTime);
+    expect(app.stop).toHaveBeenCalledTimes(1);
   });
 
   it('can not close the application before starting', async () => {

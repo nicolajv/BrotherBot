@@ -1,8 +1,6 @@
 import { Client, Presence } from 'discord.js';
 
 import { LoggingService } from './logging-service';
-import { NoDiscordTokenSetException } from '../errors/no-discord-token-set-exception';
-import { NoDiscordUserFoundException } from '../errors/no-discord-user-found-exception';
 
 const defaultActivity = '!k for kommandoer';
 
@@ -18,7 +16,7 @@ export class DiscordService {
 
   async login(token = process.env.DISCORD_TOKEN): Promise<string> {
     if (token === 'undefined') {
-      throw new NoDiscordTokenSetException();
+      throw new Error('No Discord token set');
     }
     return this.client.login(token);
   }
@@ -29,7 +27,7 @@ export class DiscordService {
 
   async setActivity(): Promise<Presence> {
     if (!this.client.user) {
-      throw new NoDiscordUserFoundException();
+      throw new Error('No Discord user found');
     }
     return this.client.user.setActivity({ name: defaultActivity });
   }
@@ -41,7 +39,7 @@ export class DiscordService {
   private initReadyEvent(): void {
     this.client.on('ready', () => {
       if (!this.client.user) {
-        throw new NoDiscordUserFoundException();
+        throw new Error('No Discord user found');
       }
       this.loggingService.log(`Logged in as ${this.client.user.tag}!`);
       this.setActivity();

@@ -15,7 +15,6 @@
     "@typescript-eslint/explicit-function-return-type": 2,
     "@typescript-eslint/no-explicit-any": 2,
     "@typescript-eslint/typedef": 2,
-    "@typescript-eslint/no-duplicate-imports": 2,
-    "@typescript-eslint/no-magic-numbers": 2
+    "@typescript-eslint/no-duplicate-imports": 2
   }
 }
