@@ -1,7 +1,7 @@
 import { Client, Presence } from 'discord.js';
 
 import { LoggingService } from './logging-service';
-import buildCommands from '../helpers/commands-builder';
+import buildCommands from '../helpers/build-commands';
 
 const defaultActivity = '!k for kommandoer';
 
