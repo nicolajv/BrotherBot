@@ -1,6 +1,6 @@
 import { CardImageCommand } from '../../commands/card-image-command';
-import { TcgService } from '../../services/tcg-service';
 import { errors } from '../../data/constants';
+import { TcgService } from '../../services/tcg-service';
 
 const testString = 'test';
 
@@ -22,7 +22,7 @@ describe('Card Image command', () => {
   it('Returns an error message if no parameter is provided', async () => {
     jest.spyOn(TcgService.prototype, 'getCardImage').mockImplementationOnce(() => {
       return new Promise<string>(resolve => {
-        resolve('test');
+        resolve(testString);
       });
     });
     const cardImageCommand = new CardImageCommand();
