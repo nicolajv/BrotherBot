@@ -1,6 +1,5 @@
 import { AbstractCommand } from './abstract-command';
-import { commandPrefix, errors } from '../data/constants';
-import { TcgService } from '../services/tcg-service';
+import { commandPrefix } from '../data/constants';
 
 export class HelpCommand extends AbstractCommand {
   private commandList: Array<Command>;
@@ -8,7 +7,7 @@ export class HelpCommand extends AbstractCommand {
   constructor(commandList: Array<Command>) {
     super('h', async () => {
       return new Promise<string>(resolve => {
-        let result: string = '';
+        let result = '';
         this.commandList.forEach(command => {
           if (command.helperText) {
             result = result + `${commandPrefix}${command.name} - ${command.helperText}\n`;
