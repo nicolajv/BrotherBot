@@ -1,7 +1,7 @@
-import { Client, Presence } from 'discord.js';
-
-import { LoggingService } from './logging-service';
 import buildCommands from '../helpers/build-commands';
+import { Client, Presence } from 'discord.js';
+import { commandPrefix } from '../data/constants';
+import { LoggingService } from './logging-service';
 
 const defaultActivity = '!k for kommandoer';
 
@@ -59,7 +59,7 @@ export class DiscordService {
       const channel = message.channel;
       const content = message.toString();
       this.commands.forEach(async command => {
-        if (content.startsWith(`!${command.name}`)) {
+        if (content.startsWith(`${commandPrefix}${command.name}`)) {
           const parameter = content.substr(content.indexOf(' ') + 1);
           await channel.send(await command.execute(parameter));
         }
