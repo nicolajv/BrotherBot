@@ -1,27 +1,27 @@
 import { AbstractCommand } from './abstract-command';
-import { TcgService } from '../services/tcg-service';
+import { VideoService } from '../services/video-service';
 import { errors } from '../data/constants';
 
-const tcgService = new TcgService();
+const videoService = new VideoService();
 
-export class CardImageCommand extends AbstractCommand {
+export class VideoSearchCommand extends AbstractCommand {
   constructor() {
     super(
-      'k',
+      'y',
       async (parameter?: string) => {
         let result: string;
         try {
           if (parameter) {
-            result = await tcgService.getCardImage(parameter);
+            result = await videoService.getVideo(parameter);
           } else {
             throw new Error(errors.noSearchString);
           }
         } catch (err) {
-          result = errors.noCardFound;
+          result = errors.noVideoFound;
         }
         return result;
       },
-      'Searches for trading cards',
+      'Searches for videos',
     );
   }
 }

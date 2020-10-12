@@ -1,4 +1,4 @@
-export interface Card {
+export interface ScryfallCard {
   object: string;
   id?: string;
   oracle_id?: string;

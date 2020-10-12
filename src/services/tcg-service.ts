@@ -1,5 +1,5 @@
-import { Card } from '../models/card';
 import { RequestService } from './request-service';
+import { ScryfallCard } from '../models/scryfall-card';
 
 export class TcgService {
   private requestService: RequestService;
@@ -12,7 +12,7 @@ export class TcgService {
   public async getCardImage(search: string): Promise<string> {
     const searchResult = JSON.parse(
       await this.requestService.get(`${this.imageApi}${search}`),
-    ) as Card;
+    ) as ScryfallCard;
     if (
       searchResult.object !== 'card' ||
       !searchResult.image_uris ||

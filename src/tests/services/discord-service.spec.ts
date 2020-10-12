@@ -42,18 +42,17 @@ describe('Discord Service ready event', () => {
       discordService.client.emit('ready');
     } catch (error) {
       expect(error).toBeInstanceOf(Error);
+      return;
     }
+    fail('An error should have happened');
   });
 });
 
 describe('Discord Service set activity', () => {
   it('Throws error if client user is null', async () => {
     discordService.client.user = null;
-    try {
-      discordService.setActivity();
-    } catch (error) {
-      expect(error).toBeInstanceOf(Error);
-    }
+    jest.spyOn(discordService, 'setActivity');
+    expect(discordService.setActivity()).rejects.toThrowError();
   });
 });
 

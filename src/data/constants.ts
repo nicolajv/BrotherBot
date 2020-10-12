@@ -5,4 +5,5 @@ export const port = 4200;
 export const errors = {
   noCardFound: 'No card result found',
   noSearchString: 'No search string provided',
+  noVideoFound: 'No video result found',
 };

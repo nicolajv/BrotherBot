@@ -1,9 +1,10 @@
-import buildCommands from '../helpers/build-commands';
 import { Client, Presence } from 'discord.js';
-import { commandPrefix } from '../data/constants';
-import { LoggingService } from './logging-service';
 
-const defaultActivity = '!k for kommandoer';
+import { LoggingService } from './logging-service';
+import buildCommands from '../helpers/build-commands';
+import { commandPrefix } from '../data/constants';
+
+const defaultActivity = '!h for help';
 
 export class DiscordService {
   private loggingService: LoggingService;
