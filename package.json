@@ -28,7 +28,10 @@
       "dist/**"
     ],
     "coverageDirectory": "coverage",
-    "clearMocks": true
+    "clearMocks": true,
+    "setupFiles": [
+      "./dist/tests/setup.js"
+    ]
   },
   "repository": {
     "type": "git",
