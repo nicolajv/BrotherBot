@@ -2,7 +2,8 @@ import { RequestService } from '../../services/request-service';
 import { VideoService } from '../../services/video-service';
 import { YoutubeVideo } from '../../models/youtube-video';
 
-const videoService = new VideoService();
+const videoService = new VideoService('test');
+
 const testString = 'test';
 const testVideo = 'catalyst';
 
