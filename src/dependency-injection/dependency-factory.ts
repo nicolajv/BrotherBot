@@ -5,7 +5,7 @@ import { CardImageCommand } from '../commands/card-image-command';
 import { ConsoleLoggingService } from '../services/console-logging-service';
 import { DiscordService } from '../services/discord-service';
 import { HelpCommand } from '../commands/help-command';
-import { HttpRequestService } from '../services/request-service';
+import { HttpRequestService } from '../services/http-request-service';
 import { ScryfallService } from '../services/scryfall-service';
 import { VideoSearchCommand } from '../commands/video-search-command';
 import { YoutubeVideoService } from '../services/youtube-video-service';
