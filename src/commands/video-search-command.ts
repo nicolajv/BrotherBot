@@ -1,8 +1,8 @@
 import { AbstractCommand } from './abstract-command';
-import { VideoService } from '../services/video-service';
+import { YoutubeVideoService } from '../services/youtube-video-service';
 import { errors } from '../data/constants';
 
-const videoService = new VideoService();
+const videoService = new YoutubeVideoService();
 
 export class VideoSearchCommand extends AbstractCommand {
   constructor() {

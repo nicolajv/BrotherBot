@@ -1,7 +1,7 @@
 import { RequestService } from './request-service';
 import { YoutubeVideo } from '../models/youtube-video';
 
-export class VideoService implements VideoService {
+export class YoutubeVideoService implements VideoService {
   private requestService: RequestService;
 
   private apiKey: string;

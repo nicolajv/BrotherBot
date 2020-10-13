@@ -1,8 +1,8 @@
 import { RequestService } from '../../services/request-service';
-import { VideoService } from '../../services/video-service';
 import { YoutubeVideo } from '../../models/youtube-video';
+import { YoutubeVideoService } from '../../services/youtube-video-service';
 
-const videoService = new VideoService();
+const youtubeVideoService = new YoutubeVideoService();
 
 const testString = 'test';
 const testVideo = 'catalyst';
@@ -15,7 +15,7 @@ describe('Video Service videos', () => {
         resolve(JSON.stringify(video));
       }),
     );
-    const video = videoService.getVideo(testVideo);
+    const video = youtubeVideoService.getVideo(testVideo);
     await expect(video).resolves.not.toThrowError();
     expect(RequestService.prototype.get).toHaveBeenCalledTimes(1);
     expect(await video).toContain(testString);
@@ -28,20 +28,20 @@ describe('Video Service videos', () => {
         resolve(JSON.stringify(video));
       }),
     );
-    const video = videoService.getVideo(testVideo);
+    const video = youtubeVideoService.getVideo(testVideo);
     await expect(video).rejects.toThrowError();
     expect(RequestService.prototype.get).toHaveBeenCalledTimes(1);
   });
 
   it('Can be created with custom api key', async () => {
-    const videoService = new VideoService(testString);
-    expect(videoService).toMatchObject(VideoService.prototype);
+    const videoService = new YoutubeVideoService(testString);
+    expect(videoService).toMatchObject(YoutubeVideoService.prototype);
   });
 
   it('Throws error if missing the api key', async () => {
     try {
       process.env.YOUTUBE_TOKEN = undefined;
-      new VideoService();
+      new YoutubeVideoService();
     } catch (error) {
       expect(error).toBeInstanceOf(Error);
       return;
@@ -51,7 +51,7 @@ describe('Video Service videos', () => {
 
   it('Throws error if the api key is "undefined"', async () => {
     try {
-      new VideoService('undefined');
+      new YoutubeVideoService('undefined');
     } catch (error) {
       expect(error).toBeInstanceOf(Error);
       return;
