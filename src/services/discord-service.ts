@@ -1,19 +1,17 @@
-import { Client, Presence } from 'discord.js';
-
-import { LoggingService } from './logging-service';
+import { Client } from 'discord.js';
 import buildCommands from '../helpers/build-commands';
 import { commandPrefix } from '../data/constants';
 
 const defaultActivity = '!h for help';
 
-export class DiscordService {
+export class DiscordService implements ChatService {
   private loggingService: LoggingService;
   public client: Client;
   private commands: Array<Command> = Array<Command>();
 
-  constructor() {
+  constructor(loggingService: LoggingService) {
     this.client = new Client();
-    this.loggingService = new LoggingService();
+    this.loggingService = loggingService;
     this.initCommands();
     this.initEvents();
     this.handleCommands();
@@ -30,11 +28,11 @@ export class DiscordService {
     return this.client.destroy();
   }
 
-  async setActivity(): Promise<Presence> {
+  async setActivity(): Promise<void> {
     if (!this.client.user) {
       throw new Error('No Discord user found');
     }
-    return this.client.user.setActivity({ name: defaultActivity });
+    this.client.user.setActivity({ name: defaultActivity });
   }
 
   private initCommands(): void {

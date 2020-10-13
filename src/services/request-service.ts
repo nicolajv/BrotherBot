@@ -1,6 +1,6 @@
 import request = require('request');
 
-export class RequestService {
+export class HttpRequestService implements RequestService {
   public async get(requestUri: string): Promise<string> {
     return new Promise<string>(resolve => {
       request(requestUri, (error, _response, body) => {

@@ -1,4 +1,4 @@
-import { RequestService } from '../../services/request-service';
+import { HttpRequestService } from '../../services/request-service';
 
 //Passing '' url will make the request succeed, anything else and it will fail
 jest.mock('request', () => {
@@ -10,16 +10,16 @@ jest.mock('request', () => {
   };
 });
 
-describe('Request Service get requests', () => {
+describe('Http Request Service get requests', () => {
   it('Can make successful requests', async () => {
-    const requestService = new RequestService();
+    const requestService = new HttpRequestService();
     await expect(requestService.get('')).resolves.not.toThrowError();
   });
 });
 
-describe('Request Service get requests', () => {
+describe('Http Request Service get requests', () => {
   it('Can throw an error on a failed request', async () => {
-    const requestService = new RequestService();
+    const requestService = new HttpRequestService();
     await expect(requestService.get('test')).rejects.toThrowError();
   });
 });

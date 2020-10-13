@@ -1,23 +1,22 @@
-import { DiscordService } from './services/discord-service';
 import { Express } from 'express-serve-static-core';
 import { Server } from 'http';
 
 export class App {
   private app: Express;
-  private discord: DiscordService;
+  private client: ChatService;
   private port: number;
   private server: Server | undefined;
 
-  constructor(app: Express, discord: DiscordService, port: number) {
+  constructor(app: Express, client: ChatService, port: number) {
     this.app = app;
-    this.discord = discord;
+    this.client = client;
     this.port = port;
   }
 
   public start(): Promise<void> {
     return new Promise<void>(resolves => {
       this.server = this.app.listen(this.port, async () => {
-        await this.discord.login();
+        await this.client.login();
         resolves();
       });
     });

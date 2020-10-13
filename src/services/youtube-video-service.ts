@@ -1,4 +1,3 @@
-import { RequestService } from './request-service';
 import { YoutubeVideo } from '../models/youtube-video';
 
 export class YoutubeVideoService implements VideoService {
@@ -8,13 +7,13 @@ export class YoutubeVideoService implements VideoService {
   private youtubeApi: string;
   private youtubeVideoUrl = 'https://www.youtube.com/watch?v=';
 
-  constructor(apiKey = process.env.YOUTUBE_TOKEN) {
+  constructor(requestService: RequestService, apiKey = process.env.YOUTUBE_TOKEN) {
     if (!apiKey || apiKey === 'undefined') {
       throw new Error('No Youtube api key set');
     }
     this.apiKey = apiKey;
     this.youtubeApi = `https://www.googleapis.com/youtube/v3/search?key=${this.apiKey}&type=video&part=snippet&maxResults=1&q=`;
-    this.requestService = new RequestService();
+    this.requestService = requestService;
   }
 
   public async getVideo(search: string): Promise<string> {

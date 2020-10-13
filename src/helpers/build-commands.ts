@@ -1,11 +1,13 @@
-import { CardImageCommand } from '../commands/card-image-command';
-import { HelpCommand } from '../commands/help-command';
-import { VideoSearchCommand } from '../commands/video-search-command';
+import {
+  makeCardImageCommand,
+  makeHelpCommand,
+  makeVideoSearchCommand,
+} from '../dependency-injection/dependency-factory';
 
 export default function buildCommands(): Array<Command> {
   const commands: Array<Command> = new Array<Command>();
-  commands.push(new CardImageCommand());
-  commands.push(new VideoSearchCommand());
-  commands.push(new HelpCommand(commands));
+  commands.push(makeCardImageCommand());
+  commands.push(makeVideoSearchCommand());
+  commands.push(makeHelpCommand(commands));
   return commands;
 }
