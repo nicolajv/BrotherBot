@@ -1,12 +1,12 @@
 import { VideoSearchCommand } from '../../commands/video-search-command';
-import { VideoService } from '../../services/video-service';
+import { YoutubeVideoService } from '../../services/youtube-video-service';
 import { errors } from '../../data/constants';
 
 const testString = 'test';
 
 describe('Video Search command', () => {
   it('Can return a card from the api', async () => {
-    jest.spyOn(VideoService.prototype, 'getVideo').mockImplementationOnce(() => {
+    jest.spyOn(YoutubeVideoService.prototype, 'getVideo').mockImplementationOnce(() => {
       return new Promise<string>(resolve => {
         resolve(testString);
       });
@@ -20,7 +20,7 @@ describe('Video Search command', () => {
   });
 
   it('Returns an error message if no parameter is provided', async () => {
-    jest.spyOn(VideoService.prototype, 'getVideo').mockImplementationOnce(() => {
+    jest.spyOn(YoutubeVideoService.prototype, 'getVideo').mockImplementationOnce(() => {
       return new Promise<string>(resolve => {
         resolve(testString);
       });
