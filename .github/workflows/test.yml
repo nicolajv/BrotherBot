@@ -1,13 +1,15 @@
 name: Test
-on:
-  push:
-    branches:
-      - master
+on: push
+
 jobs:
   run-tests:
     name: Run tests
     runs-on: ubuntu-latest
     steps:
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
       - name: Checkout
         uses: actions/checkout@v2
       - name: Install dependencies
@@ -15,6 +17,7 @@ jobs:
       - name: Run tests
         run: npm test
       - name: Publish code coverage
+        if: ${{ steps.extract_branch.outputs.branch == 'master' }}
         uses: paambaati/codeclimate-action@v2.7.4
         env:
           CC_TEST_REPORTER_ID: '${{ secrets.CC_TEST_REPORTER_ID }}'
