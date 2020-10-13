@@ -1,55 +1,56 @@
-import { RequestService } from '../../services/request-service';
 import { ScryfallCard } from '../../models/scryfall-card';
-import { TcgService } from '../../services/tcg-service';
+import { ScryfallService } from '../../services/scryfall-service';
+import { makeRequestService } from '../../dependency-injection/dependency-factory';
 
-const tcgService = new TcgService();
+const requestService: RequestService = makeRequestService();
+const scryfallService = new ScryfallService(requestService);
 const testString = 'test';
 const testCard = 'fastbond';
 
-describe('Tcg Service card images', () => {
+describe('Scryfall Service card images', () => {
   it('Can return a card from the api', async () => {
-    jest.spyOn(RequestService.prototype, 'get').mockReturnValueOnce(
+    jest.spyOn(requestService, 'get').mockReturnValueOnce(
       new Promise<string>(resolve => {
         const card: ScryfallCard = { object: 'card', image_uris: { normal: testString } };
         resolve(JSON.stringify(card));
       }),
     );
-    const cardImage = tcgService.getCardImage(testCard);
+    const cardImage = scryfallService.getCardImage(testCard);
     await expect(cardImage).resolves.not.toThrowError();
-    expect(RequestService.prototype.get).toHaveBeenCalledTimes(1);
+    expect(requestService.get).toHaveBeenCalledTimes(1);
     expect(await cardImage).toEqual(testString);
   });
 
   it('Throws error when finding non-card object', async () => {
-    jest.spyOn(RequestService.prototype, 'get').mockReturnValueOnce(
+    jest.spyOn(requestService, 'get').mockReturnValueOnce(
       new Promise<string>(resolve => {
         const card: ScryfallCard = { object: 'error' };
         resolve(JSON.stringify(card));
       }),
     );
-    await expect(tcgService.getCardImage(testCard)).rejects.toThrowError();
-    expect(RequestService.prototype.get).toHaveBeenCalledTimes(1);
+    await expect(scryfallService.getCardImage(testCard)).rejects.toThrowError();
+    expect(requestService.get).toHaveBeenCalledTimes(1);
   });
 
   it('Throws error when finding no image uris', async () => {
-    jest.spyOn(RequestService.prototype, 'get').mockReturnValueOnce(
+    jest.spyOn(requestService, 'get').mockReturnValueOnce(
       new Promise<string>(resolve => {
         const card: ScryfallCard = { object: 'card', image_uris: {} };
         resolve(JSON.stringify(card));
       }),
     );
-    await expect(tcgService.getCardImage(testCard)).rejects.toThrowError();
-    expect(RequestService.prototype.get).toHaveBeenCalledTimes(1);
+    await expect(scryfallService.getCardImage(testCard)).rejects.toThrowError();
+    expect(requestService.get).toHaveBeenCalledTimes(1);
   });
 
   it('Throws error when finding no normal card image', async () => {
-    jest.spyOn(RequestService.prototype, 'get').mockReturnValueOnce(
+    jest.spyOn(requestService, 'get').mockReturnValueOnce(
       new Promise<string>(resolve => {
         const card: ScryfallCard = { object: 'card', image_uris: { normal: '' } };
         resolve(JSON.stringify(card));
       }),
     );
-    await expect(tcgService.getCardImage(testCard)).rejects.toThrowError();
-    expect(RequestService.prototype.get).toHaveBeenCalledTimes(1);
+    await expect(scryfallService.getCardImage(testCard)).rejects.toThrowError();
+    expect(requestService.get).toHaveBeenCalledTimes(1);
   });
 });

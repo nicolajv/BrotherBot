@@ -1,16 +1,15 @@
-import { App } from '../app';
-import { app } from '../server';
+import { app } from '../infrastructure/server';
 
-jest.mock('../app');
+jest.mock('../infrastructure/app');
 jest.mock('../services/discord-service');
-jest.spyOn(App.prototype, 'start');
-jest.spyOn(App.prototype, 'stop');
+jest.spyOn(app, 'start');
+jest.spyOn(app, 'stop');
 
 describe('Server', () => {
   it('can start server', async () => {
     app.start();
-    expect(App.prototype.start).toHaveBeenCalledTimes(1);
+    expect(app.start).toHaveBeenCalledTimes(1);
     app.stop();
-    expect(App.prototype.stop).toHaveBeenCalledTimes(1);
+    expect(app.stop).toHaveBeenCalledTimes(1);
   });
 });

@@ -1,6 +1,7 @@
 import { VideoSearchCommand } from '../../commands/video-search-command';
 import { YoutubeVideoService } from '../../services/youtube-video-service';
 import { errors } from '../../data/constants';
+import { makeVideoService } from '../../dependency-injection/dependency-factory';
 
 const testString = 'test';
 
@@ -11,7 +12,7 @@ describe('Video Search command', () => {
         resolve(testString);
       });
     });
-    const videoSearchCommand = new VideoSearchCommand();
+    const videoSearchCommand = new VideoSearchCommand(makeVideoService());
     expect(videoSearchCommand.name.length).toBeGreaterThan(0);
     const result = videoSearchCommand.execute(testString);
     await expect(result).resolves.not.toThrowError();
@@ -25,7 +26,7 @@ describe('Video Search command', () => {
         resolve(testString);
       });
     });
-    const videoSearchCommand = new VideoSearchCommand();
+    const videoSearchCommand = new VideoSearchCommand(makeVideoService());
     expect(videoSearchCommand.name.length).toBeGreaterThan(0);
     const result = videoSearchCommand.execute();
     await expect(result).resolves.not.toThrowError();

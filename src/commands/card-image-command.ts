@@ -1,18 +1,17 @@
 import { AbstractCommand } from './abstract-command';
-import { TcgService } from '../services/tcg-service';
 import { errors } from '../data/constants';
 
-const tcgService = new TcgService();
-
 export class CardImageCommand extends AbstractCommand {
-  constructor() {
+  private tcgService: TcgService;
+
+  constructor(tcgService: TcgService) {
     super(
       'k',
       async (parameter?: string) => {
         let result: string;
         try {
           if (parameter) {
-            result = await tcgService.getCardImage(parameter);
+            result = await this.tcgService.getCardImage(parameter);
           } else {
             throw new Error(errors.noSearchString);
           }
@@ -23,5 +22,6 @@ export class CardImageCommand extends AbstractCommand {
       },
       'Searches for trading cards',
     );
+    this.tcgService = tcgService;
   }
 }

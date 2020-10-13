@@ -1,12 +1,11 @@
-import { RequestService } from './request-service';
 import { ScryfallCard } from '../models/scryfall-card';
 
-export class TcgService {
+export class ScryfallService implements TcgService {
   private requestService: RequestService;
   private imageApi = 'https://api.scryfall.com/cards/named?fuzzy=';
 
-  constructor() {
-    this.requestService = new RequestService();
+  constructor(requestService: RequestService) {
+    this.requestService = requestService;
   }
 
   public async getCardImage(search: string): Promise<string> {
