@@ -1,5 +1,5 @@
 import { Client } from 'discord.js';
-import buildCommands from '../helpers/build-commands';
+import { buildCommands } from '../helpers/build-commands';
 import { commandPrefix } from '../data/constants';
 
 const defaultActivity = '!h for help';
