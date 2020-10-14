@@ -1,27 +1,9 @@
-import { AbstractCommand } from './abstract-command';
+import { AbstractWebServiceCommand } from './abstracts/abstract-web-service-command';
 import { errors } from '../data/constants';
 
-export class VideoSearchCommand extends AbstractCommand {
-  private videoService: VideoService;
-
+export class VideoSearchCommand extends AbstractWebServiceCommand {
   constructor(videoService: VideoService) {
-    super(
-      'y',
-      async (parameter?: string) => {
-        let result: string;
-        try {
-          if (parameter) {
-            result = await this.videoService.getVideo(parameter);
-          } else {
-            throw new Error(errors.noSearchString);
-          }
-        } catch (err) {
-          result = errors.noVideoFound;
-        }
-        return result;
-      },
-      'Searches for videos',
-    );
-    this.videoService = videoService;
+    /* istanbul ignore next */
+    super('y', videoService, errors.noVideoFound, 'Searches for videos');
   }
 }

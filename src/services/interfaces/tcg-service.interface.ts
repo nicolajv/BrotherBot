@@ -1,3 +1,1 @@
-interface TcgService {
-  getCardImage(search: string): Promise<string>;
-}
+interface TcgService extends WebBasedService {}

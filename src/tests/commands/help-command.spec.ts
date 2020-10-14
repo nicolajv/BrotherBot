@@ -1,4 +1,4 @@
-import { AbstractCommand } from '../../commands/abstract-command';
+import { AbstractCommand } from '../../commands/abstracts/abstract-command';
 import { HelpCommand } from '../../commands/help-command';
 
 class mockCommand extends AbstractCommand {

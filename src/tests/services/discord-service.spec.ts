@@ -1,4 +1,4 @@
-import { Client, ClientUser } from 'discord.js';
+import { ClientUser, Presence } from 'discord.js';
 
 import { DiscordService } from '../../services/discord-service';
 import { makeLoggingService } from '../../dependency-injection/dependency-factory';
@@ -8,7 +8,7 @@ const discordService = new DiscordService(loggingService);
 
 describe('Discord Service login', () => {
   it('Can login to discord', async () => {
-    jest.spyOn(Client.prototype, 'login').mockReturnValueOnce(Promise.resolve('test'));
+    jest.spyOn(discordService.client, 'login').mockReturnValueOnce(Promise.resolve('test'));
     const promise = discordService.login();
     await expect(promise).resolves.not.toThrowError();
     expect(promise).resolves.toBeTruthy();
@@ -21,7 +21,7 @@ describe('Discord Service login', () => {
 
   it('Uses token if passed', async () => {
     process.env.DISCORD_TOKEN = undefined;
-    jest.spyOn(Client.prototype, 'login').mockReturnValueOnce(Promise.resolve('test'));
+    jest.spyOn(discordService.client, 'login').mockReturnValueOnce(Promise.resolve('test'));
     const promise = discordService.login('test');
     await expect(promise).resolves.not.toThrowError();
     expect(promise).resolves.toBeTruthy();
@@ -30,9 +30,15 @@ describe('Discord Service login', () => {
 
 describe('Discord Service ready event', () => {
   it('Writes to console if logged in successfully', async () => {
-    jest.spyOn(Client.prototype, 'login').mockReturnValueOnce(Promise.resolve('test'));
     jest.spyOn(loggingService, 'log');
-    discordService.client.user = ClientUser.prototype;
+    discordService.client.user = {
+      setActivity(): Promise<Presence> {
+        return new Promise<Presence>(resolve => {
+          resolve({} as Presence);
+        });
+      },
+    } as ClientUser;
+    jest.spyOn(discordService.client, 'login').mockReturnValueOnce(Promise.resolve('test'));
     discordService.client.emit('ready');
     expect(loggingService.log).toHaveBeenCalledTimes(1);
   });
