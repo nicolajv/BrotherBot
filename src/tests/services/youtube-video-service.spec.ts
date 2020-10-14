@@ -10,28 +10,26 @@ const testVideo = 'catalyst';
 
 describe('Youtube video search', () => {
   it('Can return a video from the api', async () => {
-    jest.spyOn(requestService, 'get').mockReturnValueOnce(
-      new Promise<string>(resolve => {
-        const video: YoutubeVideo = { items: [{ id: { videoId: testString } }] };
-        resolve(JSON.stringify(video));
+    jest.spyOn(requestService, 'getAsObject').mockReturnValueOnce(
+      new Promise<YoutubeVideo>(resolve => {
+        resolve({ items: [{ id: { videoId: testString } }] });
       }),
     );
-    const video = youtubeVideoService.getVideo(testVideo);
+    const video = youtubeVideoService.get(testVideo);
     await expect(video).resolves.not.toThrowError();
-    expect(requestService.get).toHaveBeenCalledTimes(1);
+    expect(requestService.getAsObject).toHaveBeenCalledTimes(1);
     expect(await video).toContain(testString);
   });
 
   it('Throws error if retrieving a video fails', async () => {
-    jest.spyOn(requestService, 'get').mockReturnValueOnce(
-      new Promise<string>(resolve => {
-        const video: YoutubeVideo = { items: undefined };
-        resolve(JSON.stringify(video));
+    jest.spyOn(requestService, 'getAsObject').mockReturnValueOnce(
+      new Promise<YoutubeVideo>(resolve => {
+        resolve({ items: undefined });
       }),
     );
-    const video = youtubeVideoService.getVideo(testVideo);
+    const video = youtubeVideoService.get(testVideo);
     await expect(video).rejects.toThrowError();
-    expect(requestService.get).toHaveBeenCalledTimes(1);
+    expect(requestService.getAsObject).toHaveBeenCalledTimes(1);
   });
 
   it('Can be created with custom api key', async () => {

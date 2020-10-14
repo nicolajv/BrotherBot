@@ -1,4 +1,4 @@
-import { AbstractCommand } from './abstract-command';
+import { AbstractCommand } from './abstracts/abstract-command';
 import { commandPrefix } from '../data/constants';
 
 export class HelpCommand extends AbstractCommand {

@@ -16,10 +16,11 @@ export class YoutubeVideoService implements VideoService {
     this.requestService = requestService;
   }
 
-  public async getVideo(search: string): Promise<string> {
-    const searchResult = JSON.parse(
-      await this.requestService.get(`${this.youtubeApi}${search}`),
-    ) as YoutubeVideo;
+  public async get(search: string): Promise<string> {
+    const searchResult = await this.requestService.getAsObject(
+      {} as YoutubeVideo,
+      `${this.youtubeApi}${search}`,
+    );
     if (
       !searchResult.items ||
       !searchResult.items[0] ||

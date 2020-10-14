@@ -1,5 +1,4 @@
 import { ScryfallCard } from '../models/scryfall-card';
-
 export class ScryfallService implements TcgService {
   private requestService: RequestService;
   private imageApi = 'https://api.scryfall.com/cards/named?fuzzy=';
@@ -8,11 +7,13 @@ export class ScryfallService implements TcgService {
     this.requestService = requestService;
   }
 
-  public async getCardImage(search: string): Promise<string> {
-    const searchResult = JSON.parse(
-      await this.requestService.get(`${this.imageApi}${search}`),
-    ) as ScryfallCard;
+  public async get(search: string): Promise<string> {
+    const searchResult = await this.requestService.getAsObject(
+      {} as ScryfallCard,
+      `${this.imageApi}${search}`,
+    );
     if (
+      !searchResult.object ||
       searchResult.object !== 'card' ||
       !searchResult.image_uris ||
       !searchResult.image_uris.normal

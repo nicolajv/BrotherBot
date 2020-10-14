@@ -6,20 +6,18 @@ jest.mock('request', () => {
     uri: string,
     callback: (error: string | undefined, response: string, body: string) => void,
   ): void {
-    callback(uri, 'test', 'test');
+    callback(uri, 'test', '{}');
   };
 });
 
 describe('Http Request Service get requests', () => {
   it('Can make successful requests', async () => {
     const requestService = new HttpRequestService();
-    await expect(requestService.get('')).resolves.not.toThrowError();
+    await expect(requestService.getAsObject({}, '')).resolves.not.toThrowError();
   });
-});
 
-describe('Http Request Service get requests', () => {
   it('Can throw an error on a failed request', async () => {
     const requestService = new HttpRequestService();
-    await expect(requestService.get('test')).rejects.toThrowError();
+    await expect(requestService.getAsObject('test', 'test')).rejects.toThrowError();
   });
 });

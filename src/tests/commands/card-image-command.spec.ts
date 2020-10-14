@@ -1,18 +1,19 @@
 import { CardImageCommand } from '../../commands/card-image-command';
-import { ScryfallService } from '../../services/scryfall-service';
 import { errors } from '../../data/constants';
 import { makeTcgService } from '../../dependency-injection/dependency-factory';
+
+const tcgService = makeTcgService();
 
 const testString = 'test';
 
 describe('Card Image command', () => {
   it('Can return a card from the api', async () => {
-    jest.spyOn(ScryfallService.prototype, 'getCardImage').mockImplementationOnce(() => {
+    jest.spyOn(tcgService, 'get').mockImplementationOnce(() => {
       return new Promise<string>(resolve => {
         resolve(testString);
       });
     });
-    const cardImageCommand = new CardImageCommand(makeTcgService());
+    const cardImageCommand = new CardImageCommand(tcgService);
     expect(cardImageCommand.name.length).toBeGreaterThan(0);
     const result = cardImageCommand.execute(testString);
     await expect(result).resolves.not.toThrowError();
@@ -21,12 +22,12 @@ describe('Card Image command', () => {
   });
 
   it('Returns an error message if no parameter is provided', async () => {
-    jest.spyOn(ScryfallService.prototype, 'getCardImage').mockImplementationOnce(() => {
+    jest.spyOn(tcgService, 'get').mockImplementationOnce(() => {
       return new Promise<string>(resolve => {
         resolve(testString);
       });
     });
-    const cardImageCommand = new CardImageCommand(makeTcgService());
+    const cardImageCommand = new CardImageCommand(tcgService);
     expect(cardImageCommand.name.length).toBeGreaterThan(0);
     const result = cardImageCommand.execute();
     await expect(result).resolves.not.toThrowError();

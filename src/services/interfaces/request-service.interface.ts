@@ -1,3 +1,3 @@
 interface RequestService {
-  get(requestUri: string): Promise<string>;
+  getAsObject<T>(type: T, requestUri: string): Promise<T>;
 }
