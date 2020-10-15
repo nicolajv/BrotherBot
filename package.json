@@ -28,6 +28,9 @@
       "dist/**"
     ],
     "coverageDirectory": "coverage",
+    "coveragePathIgnorePatterns": [
+      "tests/mocks"
+    ],
     "clearMocks": true,
     "setupFiles": [
       "./dist/tests/setup.js"
