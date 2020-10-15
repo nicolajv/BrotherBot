@@ -203,9 +203,12 @@ describe('Discord Service send message in main channel', () => {
     /* eslint-disable */
     const addUserToCallSpy = jest.spyOn(CallState.prototype as any, 'addUserToCall');
     discordService['mainChannel'] = undefined;
+    const channelCache = Array<{}>();
+    channelCache.push({ type: 'voice' });
+    channelCache.push({ type: 'text' });
     discordService.client.guilds.cache = {
       first() {
-        return { channels: { cache: Array<{}>().push({ type: 'text' }) } };
+        return { channels: { cache: channelCache } };
       },
     } as any;
     discordService.client.emit(
