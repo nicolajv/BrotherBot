@@ -120,7 +120,7 @@ export class DiscordService implements ChatService {
     });
   }
 
-  private async sendMessageInMainChannel(message: string) {
+  private async sendMessageInMainChannel(message: string): Promise<void> {
     if (!this.mainChannel) {
       await this.setMainChannel();
     }
@@ -131,7 +131,7 @@ export class DiscordService implements ChatService {
   }
 
   private setMainChannel(): Promise<void> {
-    return new Promise<void>(async resolve => {
+    return new Promise<void>(resolve => {
       const guild = this.client.guilds.cache.first();
       if (!guild) {
         throw new Error('This bot is not connected to any servers');

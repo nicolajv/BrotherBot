@@ -8,7 +8,7 @@ export class Call {
     this.id = id;
   }
 
-  addUser(user: User) {
+  addUser(user: User): void {
     if (
       this.users.find(callUser => {
         return callUser.userId === user.userId;
