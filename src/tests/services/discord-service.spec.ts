@@ -28,9 +28,18 @@ jest.mock('../../helpers/build-commands', () => {
 describe('Discord Service login', () => {
   it('Can login to discord', async () => {
     jest.spyOn(discordService.client, 'login').mockReturnValueOnce(Promise.resolve(testString));
+    const initUsersSpy = jest
+      /* eslint-disable */
+      .spyOn(DiscordService.prototype as any, 'initUsers')
+      .mockImplementationOnce(() => {
+        return new Promise<void>(resolve => {
+          resolve();
+        });
+      });
     const promise = discordService.login();
     await expect(promise).resolves.not.toThrowError();
     expect(promise).resolves.toBeTruthy();
+    expect(initUsersSpy).toHaveBeenCalledTimes(1);
   });
 
   it('Throws error if token is unset', async () => {
@@ -41,9 +50,18 @@ describe('Discord Service login', () => {
   it('Uses token if passed', async () => {
     process.env.DISCORD_TOKEN = undefined;
     jest.spyOn(discordService.client, 'login').mockReturnValueOnce(Promise.resolve(testString));
+    const initUsersSpy = jest
+      /* eslint-disable */
+      .spyOn(DiscordService.prototype as any, 'initUsers')
+      .mockImplementationOnce(() => {
+        return new Promise<void>(resolve => {
+          resolve();
+        });
+      });
     const promise = discordService.login(testString);
     await expect(promise).resolves.not.toThrowError();
     expect(promise).resolves.toBeTruthy();
+    expect(initUsersSpy).toHaveBeenCalledTimes(1);
   });
 });
 
