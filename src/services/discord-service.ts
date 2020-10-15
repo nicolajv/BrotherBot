@@ -1,9 +1,9 @@
-import { Channel, Client, TextChannel } from 'discord.js';
+import { Client, TextChannel } from 'discord.js';
 
-import { UserState } from '../models/user-state';
+import { CallState } from '../helpers/calls-state';
+import { User } from '../models/user';
 import { buildCommands } from '../helpers/build-commands';
 import { commandPrefix } from '../data/constants';
-import { text } from 'express';
 
 const defaultActivity = '!h for help';
 
@@ -13,7 +13,9 @@ export class DiscordService implements ChatService {
   private commands: Array<Command> = Array<Command>();
 
   private mainChannel: TextChannel | undefined;
-  private userStates = Array<UserState>();
+  private users = Array<User>();
+
+  private callState = new CallState();
 
   constructor(loggingService: LoggingService) {
     this.client = new Client();
@@ -28,7 +30,7 @@ export class DiscordService implements ChatService {
       throw new Error('No Discord token set');
     }
     const loginResult = await this.client.login();
-    await this.initUserStates();
+    await this.initUsers();
     return loginResult;
   }
 
@@ -43,13 +45,13 @@ export class DiscordService implements ChatService {
     this.client.user.setActivity({ name: defaultActivity });
   }
 
-  private findOrAddUserState(userId: string, userName: string): UserState {
-    let user = this.userStates.find(state => {
-      return state.userId === userId;
+  private findOrAddUser(userId: string, userName: string): User {
+    let user = this.users.find(user => {
+      return user.userId === userId;
     });
     if (!user) {
-      user = new UserState(userId, userName);
-      this.userStates.push(user);
+      user = new User(userId, userName);
+      this.users.push(user);
     }
     return user;
   }
@@ -63,14 +65,14 @@ export class DiscordService implements ChatService {
     this.handleVoiceEvent();
   }
 
-  private initUserStates(): Promise<void> {
+  private initUsers(): Promise<void> {
     return new Promise<void>(resolve => {
       const guild = this.client.guilds.cache.first();
       if (!guild) {
         throw new Error('This bot is not connected to any servers');
       }
       guild.members.cache.forEach(member => {
-        this.userStates.push(new UserState(member.user.id, member.user.username));
+        this.users.push(new User(member.user.id, member.user.username));
       });
       resolve();
     });
@@ -104,23 +106,14 @@ export class DiscordService implements ChatService {
       if (!newstate.member?.displayName) {
         throw new Error('User does not have a username');
       }
-      let user = this.findOrAddUserState(newstate.id, newstate.member.displayName);
-      user.activeVoiceChannel = newstate.channelID;
-      if (oldstate.channelID) {
-        if (
-          !this.userStates.find(state => {
-            return state.activeVoiceChannel === oldstate.channelID;
-          })
-        ) {
+      const user = this.findOrAddUser(newstate.id, newstate.member.displayName);
+      if (oldstate.channelID && oldstate.channelID !== newstate.channelID) {
+        if (this.callState.removeUserFromCall(oldstate.channelID, user) === 0) {
           this.sendMessageInMainChannel(`Call ended in ${oldstate.channel?.name}!`);
         }
       }
-      if (newstate.channelID) {
-        if (
-          !this.userStates.find(state => {
-            return state.activeVoiceChannel === newstate.channelID && state.userId !== newstate.id;
-          })
-        ) {
+      if (newstate.channelID && oldstate.channelID !== newstate.channelID) {
+        if (this.callState.addUserToCall(newstate.channelID, user) === 1) {
           this.sendMessageInMainChannel(`Call started in ${newstate.channel?.name}!`);
         }
       }
