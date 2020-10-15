@@ -1,5 +1,14 @@
-import { ClientUser, Guild, Message, Presence, TextChannel } from 'discord.js';
+import {
+  ClientUser,
+  Collection,
+  Guild,
+  Message,
+  Presence,
+  TextChannel,
+  VoiceState,
+} from 'discord.js';
 
+import { CallState } from '../../helpers/calls-state';
 import { DiscordService } from '../../services/discord-service';
 import { makeLoggingService } from '../../dependency-injection/dependency-factory';
 
@@ -42,6 +51,33 @@ describe('Discord Service login', () => {
     expect(initUsersSpy).toHaveBeenCalledTimes(1);
   });
 
+  it('Can init users', async () => {
+    jest.spyOn(discordService.client, 'login').mockReturnValueOnce(Promise.resolve(testString));
+    const initUsersSpy = jest
+      /* eslint-disable */
+      .spyOn(DiscordService.prototype as any, 'initUsers');
+    discordService.client.guilds.cache = {
+      first() {
+        return { members: { cache: [{ user: { id: 1, username: 'test' } }] } };
+      },
+    } as any;
+    const promise = discordService.login();
+    await expect(promise).resolves.not.toThrowError();
+    expect(promise).resolves.toBeTruthy();
+    expect(initUsersSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('Throws error if init users finds no servers', async () => {
+    jest.spyOn(discordService.client, 'login').mockReturnValueOnce(Promise.resolve(testString));
+    const initUsersSpy = jest
+      /* eslint-disable */
+      .spyOn(DiscordService.prototype as any, 'initUsers');
+    discordService.client.guilds.cache = new Collection<string, Guild>();
+    const promise = discordService.login();
+    await expect(promise).rejects.toThrowError();
+    expect(initUsersSpy).toHaveBeenCalledTimes(1);
+  });
+
   it('Throws error if token is unset', async () => {
     process.env.DISCORD_TOKEN = undefined;
     await expect(discordService.login()).rejects.toThrowError();
@@ -50,8 +86,8 @@ describe('Discord Service login', () => {
   it('Uses token if passed', async () => {
     process.env.DISCORD_TOKEN = undefined;
     jest.spyOn(discordService.client, 'login').mockReturnValueOnce(Promise.resolve(testString));
+    /* eslint-disable */
     const initUsersSpy = jest
-      /* eslint-disable */
       .spyOn(DiscordService.prototype as any, 'initUsers')
       .mockImplementationOnce(() => {
         return new Promise<void>(resolve => {
@@ -125,6 +161,79 @@ describe('Discord Service commands', () => {
     });
     discordService.client.emit('message', mockMessage);
     expect(await mockMessage.channel.send).toHaveBeenCalledTimes(0);
+  });
+});
+
+describe('Discord Service voice event', () => {
+  it('Can start and end calls', async () => {
+    /* eslint-disable */
+    const addUserToCallSpy = jest.spyOn(CallState.prototype as any, 'addUserToCall');
+    discordService.client.emit(
+      'voiceStateUpdate',
+      {} as VoiceState,
+      { member: { displayName: 'lol' }, channelID: '123' } as VoiceState,
+    );
+    expect(addUserToCallSpy).toHaveBeenCalledTimes(1);
+    /* eslint-disable */
+    const removeUserFromCallSpy = jest.spyOn(CallState.prototype as any, 'removeUserFromCall');
+    discordService.client.emit(
+      'voiceStateUpdate',
+      { member: { displayName: 'lol' }, channelID: '123' } as VoiceState,
+      { member: { displayName: 'lol' }, channelID: '321' } as VoiceState,
+    );
+    expect(removeUserFromCallSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('Throws error if user has no username', async () => {
+    /* eslint-disable */
+    const handleVoiceEventSpy = jest.spyOn(DiscordService.prototype as any, 'handleVoiceEvent');
+    try {
+      discordService.client.emit('voiceStateUpdate', {} as VoiceState, {} as VoiceState);
+    } catch (err) {
+      expect(handleVoiceEventSpy).toThrowError();
+      expect(handleVoiceEventSpy).toHaveBeenCalledTimes(1);
+      return;
+    }
+    fail('An error should have happened');
+  });
+});
+
+describe('Discord Service send message in main channel', () => {
+  it('Can send message to main channel', async () => {
+    /* eslint-disable */
+    const addUserToCallSpy = jest.spyOn(CallState.prototype as any, 'addUserToCall');
+    discordService['mainChannel'] = undefined;
+    discordService.client.guilds.cache = {
+      first() {
+        return { channels: { cache: Array<{}>().push({ type: 'text' }) } };
+      },
+    } as any;
+    discordService.client.emit(
+      'voiceStateUpdate',
+      {} as VoiceState,
+      { member: { displayName: 'lol' }, channelID: '123' } as VoiceState,
+    );
+    expect(addUserToCallSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('Throws error if no main channel exists', async () => {
+    /* eslint-disable */
+    const handleVoiceEventSpy = jest.spyOn(DiscordService.prototype as any, 'handleVoiceEvent');
+    discordService['mainChannel'] = undefined;
+    /* eslint-disable */
+    const setMainChannelSpy = jest
+      .spyOn(DiscordService.prototype as any, 'setMainChannel')
+      .mockImplementationOnce(() => {
+        return;
+      });
+    discordService.client.emit(
+      'voiceStateUpdate',
+      {} as VoiceState,
+      { member: { displayName: 'lol' }, channelID: '123' } as VoiceState,
+    );
+    expect(setMainChannelSpy).toHaveBeenCalledTimes(1);
+    expect(handleVoiceEventSpy).toThrowError();
+    expect(handleVoiceEventSpy).toHaveBeenCalledTimes(1);
   });
 });
 

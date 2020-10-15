@@ -3,6 +3,7 @@ import { Client, TextChannel } from 'discord.js';
 import { CallState } from '../helpers/calls-state';
 import { User } from '../models/user';
 import { buildCommands } from '../helpers/build-commands';
+import { collapseTextChangeRangesAcrossMultipleVersions } from 'typescript';
 import { commandPrefix } from '../data/constants';
 
 const defaultActivity = '!h for help';
