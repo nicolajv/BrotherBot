@@ -25,13 +25,12 @@ export class DiscordService implements ChatService {
     this.handleCommands();
   }
 
-  async login(token = process.env.DISCORD_TOKEN): Promise<string> {
+  async login(token = process.env.DISCORD_TOKEN): Promise<void> {
     if (token === 'undefined') {
       throw new Error('No Discord token set');
     }
-    const loginResult = await this.client.login();
+    await this.client.login();
     await this.initUsers();
-    return loginResult;
   }
 
   logout(): void {
@@ -74,6 +73,7 @@ export class DiscordService implements ChatService {
       guild.members.cache.forEach(member => {
         this.users.push(new User(member.user.id, member.user.username));
       });
+      console.log(this.users);
       resolve();
     });
   }

@@ -1,5 +1,5 @@
 interface ChatService {
-  login(token?: string): Promise<string>;
+  login(token?: string): void;
   logout(): void;
   setActivity(): Promise<void>;
 }
