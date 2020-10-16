@@ -3,7 +3,7 @@ export class JestHelper {
   public mockPrivateFunction(
     classPrototype: any,
     method: string,
-    mockImplementation?: () => any,
+    mockImplementation?: (...args: any) => any,
   ): jest.SpyInstance {
     if (mockImplementation) {
       return jest.spyOn(classPrototype as any, method).mockImplementationOnce(mockImplementation);

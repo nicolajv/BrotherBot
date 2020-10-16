@@ -108,15 +108,22 @@ export class DiscordService implements ChatService {
       }
       const user = this.findOrAddUser(newstate.id, newstate.member.displayName);
       if (oldstate.channelID && oldstate.channelID !== newstate.channelID) {
-        const userCountAfterRemoval = this.callState.removeUserFromCall(oldstate.channelID, user);
-        if (userCountAfterRemoval === 0) {
-          this.sendMessageInMainChannel(`Call ended in ${oldstate.channel?.name}!`);
+        const removalResult = this.callState.removeUserFromCall(oldstate.channelID, user);
+        if (removalResult.userCount === 0) {
+          this.sendMessageInMainChannel(
+            `Call ended in ${oldstate.channel?.name}. Duration: ${removalResult.duration}`,
+          );
         }
       }
       if (newstate.channelID && oldstate.channelID !== newstate.channelID) {
         const userCountAfterAddition = this.callState.addUserToCall(newstate.channelID, user);
         if (userCountAfterAddition === 1) {
-          this.sendMessageInMainChannel(`Call started in ${newstate.channel?.name}!`);
+          const starterUserName = newstate.member.nickname
+            ? newstate.member.nickname
+            : newstate.member.displayName;
+          this.sendMessageInMainChannel(
+            `${starterUserName} started a call in ${newstate.channel?.name}!`,
+          );
         }
       }
     });

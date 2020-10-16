@@ -209,6 +209,20 @@ describe('Discord Service voice event', () => {
     expect(sendMessageInMainChannelSpy).toHaveBeenCalledTimes(2);
   });
 
+  it('Uses user nickname when available', async () => {
+    const sendMessageInMainChannelSpy = jestHelper.mockPrivateFunction(
+      DiscordService.prototype,
+      'sendMessageInMainChannel',
+      (message: string) => {
+        return message;
+      },
+    );
+    const userNickname = 'usernickname';
+    startCall(discordService, undefined, undefined, undefined, userNickname);
+    expect(sendMessageInMainChannelSpy).toHaveBeenCalledTimes(1);
+    expect(sendMessageInMainChannelSpy.mock.results[0].value).toContain(userNickname);
+  });
+
   it('Sends messages even if no channel name is available', async () => {
     const sendMessageInMainChannelSpy = jestHelper.mockPrivateFunction(
       DiscordService.prototype,
@@ -368,18 +382,25 @@ function startCall(
   userId = 'userId',
   channelName: string | null = 'channelName',
   userName: string | null = 'userName',
+  userNickname?: string,
 ): void {
   const channel = channelName ? { name: channelName } : undefined;
-  const name = userName ? { displayName: userName } : undefined;
+  const memberData =
+    userName || userNickname
+      ? {
+          displayName: userName ? userName : undefined,
+          nickname: userNickname ? userNickname : undefined,
+        }
+      : undefined;
   discordService.client.emit(
     'voiceStateUpdate',
     {
       id: userId,
-      member: name,
+      member: memberData,
     } as VoiceState,
     {
       id: userId,
-      member: name,
+      member: memberData,
       channelID: 'channelID',
       channel: channel,
     } as VoiceState,

@@ -11,24 +11,26 @@ export class CallState {
     return usersInCall;
   }
 
-  removeUserFromCall(callId: string, user: User): number {
+  removeUserFromCall(callId: string, user: User): { userCount: number; duration?: string } {
     const call = this.findCallById(callId);
     if (call) {
       const usersInCall = call.removeUser(user);
       if (!usersInCall) {
-        this.endCall(callId);
-        return 0;
+        const callLength = this.endCall(callId);
+        return { userCount: usersInCall, duration: callLength };
       }
-      return usersInCall;
+      return { userCount: usersInCall };
     } else {
       throw new Error(errors.noCallFound);
     }
   }
 
-  private endCall(callId: string): void {
+  private endCall(callId: string): string {
+    const duration = this.findCallById(callId)!.getDuration();
     this.activeCalls = this.activeCalls.filter(call => {
       return call.id !== callId;
     });
+    return duration;
   }
 
   private startCall(callId: string): Call {
