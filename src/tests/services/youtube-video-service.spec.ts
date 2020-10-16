@@ -11,7 +11,7 @@ const testVideo = 'catalyst';
 describe('Youtube video search', () => {
   it('Can return a video from the api', async () => {
     jest.spyOn(requestService, 'getAsObject').mockReturnValueOnce(
-      new Promise<YoutubeVideo>(resolve => {
+      new Promise<Record<string, unknown>>(resolve => {
         resolve({ items: [{ id: { videoId: testString } }] });
       }),
     );
@@ -23,7 +23,7 @@ describe('Youtube video search', () => {
 
   it('Throws error if retrieving a video fails', async () => {
     jest.spyOn(requestService, 'getAsObject').mockReturnValueOnce(
-      new Promise<YoutubeVideo>(resolve => {
+      new Promise<Record<string, unknown>>(resolve => {
         resolve({ items: undefined });
       }),
     );

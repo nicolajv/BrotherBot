@@ -1,3 +1,4 @@
+import { JestHelper } from '../mocks/jest-helper';
 import { ScryfallCard } from '../../models/scryfall-card';
 import { ScryfallService } from '../../services/scryfall-service';
 import { makeRequestService } from '../../dependency-injection/dependency-factory';
@@ -5,13 +6,15 @@ import { makeRequestService } from '../../dependency-injection/dependency-factor
 const requestService: RequestService = makeRequestService();
 const scryfallService = new ScryfallService(requestService);
 
+const jestHelper = new JestHelper();
+
 const testString = 'test';
 const testCard = 'fastbond';
 
 describe('Scryfall Service card images', () => {
   it('Can return a card from the api', async () => {
     jest.spyOn(requestService, 'getAsObject').mockReturnValueOnce(
-      new Promise<ScryfallCard>(resolve => {
+      new Promise<Record<string, unknown>>(resolve => {
         resolve({ object: 'card', image_uris: { normal: testString } });
       }),
     );
@@ -23,7 +26,7 @@ describe('Scryfall Service card images', () => {
 
   it('Throws error when finding non-card object', async () => {
     jest.spyOn(requestService, 'getAsObject').mockReturnValueOnce(
-      new Promise<ScryfallCard>(resolve => {
+      new Promise<Record<string, unknown>>(resolve => {
         resolve({ object: 'error' });
       }),
     );
@@ -33,7 +36,7 @@ describe('Scryfall Service card images', () => {
 
   it('Throws error when finding no image uris', async () => {
     jest.spyOn(requestService, 'getAsObject').mockReturnValueOnce(
-      new Promise<ScryfallCard>(resolve => {
+      new Promise<Record<string, unknown>>(resolve => {
         resolve({ object: 'card', image_uris: {} });
       }),
     );
@@ -43,7 +46,7 @@ describe('Scryfall Service card images', () => {
 
   it('Throws error when finding no normal card image', async () => {
     jest.spyOn(requestService, 'getAsObject').mockReturnValueOnce(
-      new Promise<ScryfallCard>(resolve => {
+      new Promise<Record<string, unknown>>(resolve => {
         resolve({ object: 'card', image_uris: { normal: '' } });
       }),
     );

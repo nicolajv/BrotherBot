@@ -8,10 +8,8 @@ export class ScryfallService implements TcgService {
   }
 
   public async get(search: string): Promise<string> {
-    const searchResult = await this.requestService.getAsObject(
-      {} as ScryfallCard,
-      `${this.imageApi}${search}`,
-    );
+    const searchResult = {} as ScryfallCard;
+    Object.assign(searchResult, await this.requestService.getAsObject(`${this.imageApi}${search}`));
     if (
       !searchResult.object ||
       searchResult.object !== 'card' ||

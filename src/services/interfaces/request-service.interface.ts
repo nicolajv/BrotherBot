@@ -1,3 +1,3 @@
 interface RequestService {
-  getAsObject<T>(type: T, requestUri: string): Promise<T>;
+  getAsObject(requestUri: string): Promise<Record<string, unknown>>;
 }

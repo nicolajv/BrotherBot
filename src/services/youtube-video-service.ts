@@ -17,9 +17,10 @@ export class YoutubeVideoService implements VideoService {
   }
 
   public async get(search: string): Promise<string> {
-    const searchResult = await this.requestService.getAsObject(
-      {} as YoutubeVideo,
-      `${this.youtubeApi}${search}`,
+    const searchResult = {} as YoutubeVideo;
+    Object.assign(
+      searchResult,
+      await this.requestService.getAsObject(`${this.youtubeApi}${search}`),
     );
     if (
       !searchResult.items ||
