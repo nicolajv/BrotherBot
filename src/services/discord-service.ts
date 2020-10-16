@@ -30,7 +30,6 @@ export class DiscordService implements ChatService {
       throw new Error('No Discord token set');
     }
     await this.client.login();
-    await this.initUsers();
   }
 
   logout(): void {
@@ -71,9 +70,12 @@ export class DiscordService implements ChatService {
         throw new Error(errors.noServerConnected);
       }
       guild.members.cache.forEach(member => {
-        this.users.push(new User(member.user.id, member.user.username));
+        const user = new User(member.user.id, member.user.username);
+        this.users.push(user);
+        if (member.voice && member.voice.channel) {
+          this.callState.addUserToCall(member.voice.channel.id, user);
+        }
       });
-      console.log(this.users);
       resolve();
     });
   }
@@ -97,6 +99,7 @@ export class DiscordService implements ChatService {
         throw new Error('No Discord user found');
       }
       this.loggingService.log(`Logged in as ${this.client.user.tag}!`);
+      this.initUsers();
       this.setActivity();
     });
   }

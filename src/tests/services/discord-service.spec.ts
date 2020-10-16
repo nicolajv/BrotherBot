@@ -46,42 +46,9 @@ describe('Discord Service login', () => {
 
   it('Can login to discord', async () => {
     jest.spyOn(discordService.client, 'login').mockReturnValueOnce(Promise.resolve(testString));
-    const initUsersSpy = jestHelper.mockPrivateFunction(
-      DiscordService.prototype,
-      'initUsers',
-      () => {
-        return new Promise<void>(resolve => {
-          resolve();
-        });
-      },
-    );
     const promise = discordService.login();
     await expect(promise).resolves.not.toThrowError();
     expect(promise).resolves.toBeTruthy();
-    expect(initUsersSpy).toHaveBeenCalledTimes(1);
-  });
-
-  it('Can init users', async () => {
-    jest.spyOn(discordService.client, 'login').mockReturnValueOnce(Promise.resolve(testString));
-    const initUsersSpy = jestHelper.mockPrivateFunction(DiscordService.prototype, 'initUsers');
-    discordService.client.guilds.cache = jestHelper.setPropertyToAnything({
-      first() {
-        return { members: { cache: [{ user: { id: 1, username: 'test' } }] } };
-      },
-    });
-    const promise = discordService.login();
-    await expect(promise).resolves.not.toThrowError();
-    expect(promise).resolves.toBeTruthy();
-    expect(initUsersSpy).toHaveBeenCalledTimes(1);
-  });
-
-  it('Throws error if init users finds no servers', async () => {
-    jest.spyOn(discordService.client, 'login').mockReturnValueOnce(Promise.resolve(testString));
-    const initUsersSpy = jestHelper.mockPrivateFunction(DiscordService.prototype, 'initUsers');
-    discordService.client.guilds.cache = new Collection<string, Guild>();
-    const promise = discordService.login();
-    await expect(promise).rejects.toThrowError();
-    expect(initUsersSpy).toHaveBeenCalledTimes(1);
   });
 
   it('Throws error if token is unset', async () => {
@@ -92,19 +59,9 @@ describe('Discord Service login', () => {
   it('Uses token if passed', async () => {
     process.env.DISCORD_TOKEN = undefined;
     jest.spyOn(discordService.client, 'login').mockReturnValueOnce(Promise.resolve(testString));
-    const initUsersSpy = jestHelper.mockPrivateFunction(
-      DiscordService.prototype,
-      'initUsers',
-      () => {
-        return new Promise<void>(resolve => {
-          resolve();
-        });
-      },
-    );
     const promise = discordService.login(testString);
     await expect(promise).resolves.not.toThrowError();
     expect(promise).resolves.toBeTruthy();
-    expect(initUsersSpy).toHaveBeenCalledTimes(1);
   });
 });
 
@@ -125,9 +82,58 @@ describe('Discord Service ready event', () => {
         });
       },
     } as ClientUser;
-    jest.spyOn(discordService.client, 'login').mockReturnValueOnce(Promise.resolve(testString));
     discordService.client.emit('ready');
     expect(loggingService.log).toHaveBeenCalledTimes(1);
+  });
+
+  it('Can init users', async () => {
+    const initUsersSpy = jestHelper.mockPrivateFunction(DiscordService.prototype, 'initUsers');
+    discordService.client.guilds.cache = jestHelper.setPropertyToAnything({
+      first() {
+        return {
+          members: {
+            cache: [
+              { user: { id: 1, username: 'user1' } },
+              { user: { id: 2, username: 'user2' }, voice: { channel: { id: testString } } },
+            ],
+          },
+        };
+      },
+    });
+    jest.spyOn(loggingService, 'log');
+    discordService.client.user = {
+      setActivity(): Promise<Presence> {
+        return new Promise<Presence>(resolve => {
+          resolve({} as Presence);
+        });
+      },
+    } as ClientUser;
+    discordService.client.emit('ready');
+    expect(initUsersSpy).toHaveBeenCalledTimes(1);
+    expect(initUsersSpy.mock.results[0].value).resolves.not.toThrowError();
+    expect(discordService['users'].length).toEqual(2);
+  });
+
+  it('Throws error if init users finds no servers', async () => {
+    const initUsersSpy = jestHelper.mockPrivateFunction(DiscordService.prototype, 'initUsers');
+    discordService.client.guilds.cache = jestHelper.setPropertyToAnything({
+      first() {
+        return { members: { cache: [{ user: { id: 1, username: 'test' } }] } };
+      },
+    });
+    jest.spyOn(loggingService, 'log');
+    discordService.client.user = {
+      setActivity(): Promise<Presence> {
+        return new Promise<Presence>(resolve => {
+          resolve({} as Presence);
+        });
+      },
+    } as ClientUser;
+    jest.spyOn(discordService.client, 'login').mockReturnValueOnce(Promise.resolve(testString));
+    discordService.client.guilds.cache = new Collection<string, Guild>();
+    discordService.client.emit('ready');
+    expect(initUsersSpy).toHaveBeenCalledTimes(1);
+    expect(initUsersSpy.mock.results[0].value).resolves.toThrowError();
   });
 
   it('Throws error if client user is null', async () => {
