@@ -1,12 +1,8 @@
-import { JestHelper } from '../mocks/jest-helper';
-import { ScryfallCard } from '../../models/scryfall-card';
 import { ScryfallService } from '../../services/scryfall-service';
 import { makeRequestService } from '../../dependency-injection/dependency-factory';
 
 const requestService: RequestService = makeRequestService();
 const scryfallService = new ScryfallService(requestService);
-
-const jestHelper = new JestHelper();
 
 const testString = 'test';
 const testCard = 'fastbond';

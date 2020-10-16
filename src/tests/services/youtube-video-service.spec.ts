@@ -1,4 +1,3 @@
-import { YoutubeVideo } from '../../models/youtube-video';
 import { YoutubeVideoService } from '../../services/youtube-video-service';
 import { makeRequestService } from '../../dependency-injection/dependency-factory';
 
