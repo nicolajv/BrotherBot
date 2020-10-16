@@ -1,28 +1,27 @@
 import { Call } from '../models/call';
 import { User } from '../models/user';
+import { errors } from '../data/constants';
 
 export class CallState {
   private activeCalls = Array<Call>();
 
   addUserToCall(callId: string, user: User): number {
     const call = this.startCall(callId);
-    call.addUser(user);
-    return call.users.length;
+    const usersInCall = call.addUser(user);
+    return usersInCall;
   }
 
   removeUserFromCall(callId: string, user: User): number {
     const call = this.findCallById(callId);
     if (call) {
-      call.users = call.users.filter(callUser => {
-        return callUser.userId !== user.userId;
-      });
-      if (!call.users.length) {
+      const usersInCall = call.removeUser(user);
+      if (!usersInCall) {
         this.endCall(callId);
         return 0;
       }
-      return call.users.length;
+      return usersInCall;
     } else {
-      throw new Error('No call found matching description');
+      throw new Error(errors.noCallFound);
     }
   }
 
@@ -38,7 +37,7 @@ export class CallState {
       return call;
     }
     call = new Call(callId);
-    this.activeCalls.push(new Call(callId));
+    this.activeCalls.push(call);
     return call;
   }
 
