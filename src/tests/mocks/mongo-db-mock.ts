@@ -1,7 +1,7 @@
 export class MongoDBMock {
   public connect(
     uri: string,
-    callback: (error: undefined | string, result: any) => Record<string, unknown>,
+    callback: (error: undefined | string, result: MongoDBMock) => Record<string, unknown>,
   ): void {
     let error = undefined;
     if (uri === 'error') {

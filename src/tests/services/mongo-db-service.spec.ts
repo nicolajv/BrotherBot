@@ -1,4 +1,3 @@
-import { MongoClient } from 'mongodb';
 import { errors } from '../../data/constants';
 import { MongoDBService } from '../../services/mongo-db-service';
 import { JestHelper } from '../mocks/jest-helper';
