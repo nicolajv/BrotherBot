@@ -5,7 +5,7 @@
   "main": "dist/app.js",
   "scripts": {
     "start": "tsc-watch --onSuccess 'node dist/infrastructure/server.js'",
-    "test": "npm run lint && npm run compile && jest ",
+    "test": "npm run lint && npm run compile && jest --forceExit",
     "compile": "rm dist -rf && tsc",
     "lint": "eslint ./src"
   },
