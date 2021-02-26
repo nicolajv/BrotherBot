@@ -10,6 +10,8 @@ import { ScryfallService } from '../services/scryfall-service';
 import { VideoSearchCommand } from '../commands/video-search-command';
 import { YoutubeVideoService } from '../services/youtube-video-service';
 import { port } from '../data/constants';
+import { MongoDBService } from '../services/mongo-db-service';
+import { TopEmotesCommand } from '../commands/top-emotes-command';
 
 export const makeApp = (discord?: DiscordService): App => {
   return new App(express(), discord ? discord : makeChatService(), port);
@@ -20,7 +22,11 @@ export const makeCardImageCommand = (): CardImageCommand => {
 };
 
 export const makeChatService = (): DiscordService => {
-  return new DiscordService(makeLoggingService());
+  return new DiscordService(makeLoggingService(), makeDatabaseService());
+};
+
+export const makeDatabaseService = (): DatabaseService => {
+  return new MongoDBService();
 };
 
 export const makeHelpCommand = (commandList: Array<Command>): HelpCommand => {
@@ -37,6 +43,10 @@ export const makeTcgService = (): TcgService => {
 
 export const makeRequestService = (): RequestService => {
   return new HttpRequestService();
+};
+
+export const makeTopEmotesCommand = (): TopEmotesCommand => {
+  return new TopEmotesCommand(makeDatabaseService());
 };
 
 export const makeVideoSearchCommand = (): VideoSearchCommand => {

@@ -1,5 +1,5 @@
 import { Client, Message, TextChannel } from 'discord.js';
-import { commandPrefix, errors } from '../data/constants';
+import { commandPrefix, emotesTable, errors } from '../data/constants';
 
 import { CallState } from '../helpers/calls-state';
 import { User } from '../models/user';
@@ -9,6 +9,7 @@ const defaultActivity = '!h for help';
 
 export class DiscordService implements ChatService {
   private loggingService: LoggingService;
+  private databaseService: DatabaseService;
   public client: Client;
   private commands: Array<Command> = Array<Command>();
 
@@ -17,9 +18,10 @@ export class DiscordService implements ChatService {
 
   private callState = new CallState();
 
-  constructor(loggingService: LoggingService) {
+  constructor(loggingService: LoggingService, databaseService: DatabaseService) {
     this.client = new Client();
     this.loggingService = loggingService;
+    this.databaseService = databaseService;
     this.initCommands();
     this.initEvents();
     this.handleCommands();
@@ -82,14 +84,24 @@ export class DiscordService implements ChatService {
 
   private handleCommands(): void {
     this.client.on('message', message => {
-      const channel = message.channel;
-      const content = message.toString();
-      this.commands.forEach(async command => {
-        if (content.startsWith(`${commandPrefix}${command.name}`)) {
-          const parameter = content.substr(content.indexOf(' ') + 1);
-          await channel.send(await command.execute(parameter));
+      if (!message.author.bot) {
+        const channel = message.channel;
+        const content = message.toString();
+        this.commands.forEach(async command => {
+          if (content.startsWith(`${commandPrefix}${command.name}`)) {
+            const parameter = content.substr(content.indexOf(' ') + 1);
+            await channel.send(await command.execute(parameter));
+          }
+        });
+        const emotes = content.match(/<:[a-zA-Z]+:[0-9]+>/g);
+        if (emotes) {
+          emotes.forEach(async (match: string) => {
+            if (this.client.emojis.cache.find(emoji => match.includes(emoji.identifier))) {
+              this.databaseService.incrementFieldFindByFilter(emotesTable, 'name', match, 'amount');
+            }
+          });
         }
-      });
+      }
     });
   }
 

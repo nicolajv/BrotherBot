@@ -26,7 +26,8 @@ export class CallState {
   }
 
   private endCall(callId: string): string {
-    const duration = this.findCallById(callId)!.getDuration();
+    const call = this.findCallById(callId);
+    const duration = call!.getDuration();
     this.activeCalls = this.activeCalls.filter(call => {
       return call.id !== callId;
     });
