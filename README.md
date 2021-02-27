@@ -3,4 +3,4 @@
 Version 2 of the bot for Big Brother
 
 ## Usage
-The repo is designed to be used with Docker. Copy `.env.example` and rename it `.env`. In it you need to put your Discord and Youtube token. Afterwards simple `docker-compose up` and you will be all set.
+The repo is designed to be used with Docker. Copy `.env.example` and rename it `.env`. In it you need to put your Discord and Youtube token. Afterwards simple `npm start` and you will be all set.

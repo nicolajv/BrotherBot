@@ -1,7 +1,7 @@
-name: Test
+name: Deploy
 on:
   push:
-    branches-ignore: [master]
+    branches: [master]
 
 jobs:
   run-tests:
@@ -26,3 +26,19 @@ jobs:
         with:
           coverageLocations: |
             ${{github.workspace}}/coverage.lcov:lcov
+  deploy:
+    name: Deploy
+    needs: run-tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: AWS SSM Send-Command
+        uses: peterkimzz/aws-ssm-send-command@master
+        id: ssm
+        with:
+          aws-region: ${{ secrets.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          instance-ids: ${{ secrets.INSTANCE_ID }}
+
+          working-directory: /home/ubuntu/BrotherBotV2
+          command: git pull
