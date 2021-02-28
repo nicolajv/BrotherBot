@@ -6,4 +6,5 @@ interface DatabaseService {
     filterValue: string,
     incrementField: string,
   ): void;
+  initialSetup(): Promise<void>;
 }

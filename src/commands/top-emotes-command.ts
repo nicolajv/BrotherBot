@@ -12,9 +12,11 @@ export class TopEmotesCommand extends AbstractCommand {
           Emote
         >;
         if (topEmotes.length > 0) {
-          topEmotes = topEmotes.sort((a: Emote, b: Emote) => {
-            return b['amount'] - a['amount'];
-          });
+          topEmotes = topEmotes
+            .sort((a: Emote, b: Emote) => {
+              return b['amount'] - a['amount'];
+            })
+            .slice(0, 10);
           let i: number;
           let finalString = '';
           for (i = 0; i < topEmotes.length; i++) {
