@@ -26,7 +26,6 @@ export class DiscordService implements ChatService {
     this.initCommands();
     this.initEvents();
     this.handleCommands();
-    this.databaseService.initialSetup();
   }
 
   async login(token = process.env.DISCORD_TOKEN): Promise<void> {
