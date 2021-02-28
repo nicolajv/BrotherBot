@@ -41,4 +41,4 @@ jobs:
           instance-ids: ${{ secrets.INSTANCE_ID }}
 
           working-directory: /home/ubuntu/BrotherBotV2
-          command: git pull
+          command: docker-compose down; git pull; docker-compose up
