@@ -1,4 +1,3 @@
-import { errors } from '../../data/constants';
 import { MongoDBService } from '../../services/mongo-db-service';
 import { JestHelper } from '../mocks/jest-helper';
 import { MongoDBMock } from '../mocks/mongo-db-mock';
@@ -21,7 +20,9 @@ describe('Mongo DB Service', () => {
     const mongoDBService = new MongoDBService();
     mongoDBService['MongoClient'] = jestHelper.setPropertyToAnything(new MongoDBMock());
     mongoDBService['dbAddress'] = 'error';
-    await expect(mongoDBService.getAllFromTable(testString)).rejects.toEqual(errors.databaseError);
+    await expect(mongoDBService.getAllFromTable(testString)).rejects.toEqual(
+      'A database error occured',
+    );
   });
 
   it('Can increment data in a table', async () => {
@@ -38,6 +39,6 @@ describe('Mongo DB Service', () => {
     mongoDBService['dbAddress'] = 'error';
     await expect(
       mongoDBService.incrementFieldFindByFilter(testString, testString, testString, testString),
-    ).rejects.toEqual(errors.databaseError);
+    ).rejects.toEqual('A database error occured');
   });
 });

@@ -1,5 +1,5 @@
 import { VideoSearchCommand } from '../../commands/video-search-command';
-import { errors } from '../../data/constants';
+import { translations } from '../../data/translator';
 import { makeVideoService } from '../../dependency-injection/dependency-factory';
 
 const videoService: VideoService = makeVideoService();
@@ -18,7 +18,7 @@ describe('Video Search command', () => {
     const result = videoSearchCommand.execute(testString);
     await expect(result).resolves.not.toThrowError();
     await expect(result).resolves.toMatch(testString);
-    await expect(result).resolves.not.toMatch(errors.noVideoFound);
+    await expect(result).resolves.not.toMatch(translations.noVideoFound);
   });
 
   it('Returns an error message if no parameter is provided', async () => {
@@ -31,6 +31,6 @@ describe('Video Search command', () => {
     expect(videoSearchCommand.name.length).toBeGreaterThan(0);
     const result = videoSearchCommand.execute();
     await expect(result).resolves.not.toThrowError();
-    await expect(result).resolves.toMatch(errors.noVideoFound);
+    await expect(result).resolves.toMatch(translations.noVideoFound);
   });
 });

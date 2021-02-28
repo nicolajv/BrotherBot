@@ -1,5 +1,6 @@
 import { AbstractCommand } from './abstracts/abstract-command';
 import { commandPrefix } from '../data/constants';
+import { translations } from '../data/translator';
 
 export class HelpCommand extends AbstractCommand {
   private commandList: Array<Command>;
@@ -13,7 +14,7 @@ export class HelpCommand extends AbstractCommand {
             result = result + `${commandPrefix}${command.name} - ${command.helperText}\n`;
           }
         });
-        resolve(`The following commands are available:\n${result}`);
+        resolve(`${translations.helpCommandText}\n${result}`);
       });
     });
     this.commandList = commandList;

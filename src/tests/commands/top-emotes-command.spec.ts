@@ -1,5 +1,5 @@
 import { TopEmotesCommand } from '../../commands/top-emotes-command';
-import { errors } from '../../data/constants';
+import { translations } from '../../data/translator';
 import { makeDatabaseService } from '../../dependency-injection/dependency-factory';
 import { Emote } from '../../models/emote';
 
@@ -22,7 +22,7 @@ describe('Top emotes command', () => {
     const result = topEmotesCommand.execute();
     await expect(result).resolves.not.toThrowError();
     await expect(result).resolves.toMatch(testString);
-    await expect(result).resolves.not.toMatch(errors.noEmotesFound);
+    await expect(result).resolves.not.toMatch(translations.noEmotesFound);
   });
 
   it('Returns an error message if no top emotes are returned', async () => {
@@ -35,6 +35,6 @@ describe('Top emotes command', () => {
     expect(topEmotesCommand.name.length).toBeGreaterThan(0);
     const result = topEmotesCommand.execute();
     await expect(result).resolves.not.toThrowError();
-    await expect(result).resolves.toMatch(errors.noEmotesFound);
+    await expect(result).resolves.toMatch(translations.noEmotesFound);
   });
 });

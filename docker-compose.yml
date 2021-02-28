@@ -13,6 +13,7 @@ services:
     environment:
       DISCORD_TOKEN: ${DISCORD_TOKEN}
       YOUTUBE_TOKEN: ${YOUTUBE_TOKEN}
+      LANGUAGE: ${LANGUAGE}
   database:
     container_name: database
     image: mongo

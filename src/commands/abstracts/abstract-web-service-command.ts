@@ -1,5 +1,4 @@
 import { AbstractCommand } from './abstract-command';
-import { errors } from '../../data/constants';
 
 export abstract class AbstractWebServiceCommand extends AbstractCommand implements Command {
   constructor(
@@ -16,7 +15,7 @@ export abstract class AbstractWebServiceCommand extends AbstractCommand implemen
           if (parameter) {
             result = await webService.get(parameter);
           } else {
-            throw new Error(errors.noSearchString);
+            throw new Error('A database error occured');
           }
         } catch (err) {
           result = errorMessage;

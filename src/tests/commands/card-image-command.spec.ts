@@ -1,5 +1,5 @@
 import { CardImageCommand } from '../../commands/card-image-command';
-import { errors } from '../../data/constants';
+import { translations } from '../../data/translator';
 import { makeTcgService } from '../../dependency-injection/dependency-factory';
 
 const tcgService = makeTcgService();
@@ -18,7 +18,7 @@ describe('Card Image command', () => {
     const result = cardImageCommand.execute(testString);
     await expect(result).resolves.not.toThrowError();
     await expect(result).resolves.toMatch(testString);
-    await expect(result).resolves.not.toMatch(errors.noCardFound);
+    await expect(result).resolves.not.toMatch(translations.noCardFound);
   });
 
   it('Returns an error message if no parameter is provided', async () => {
@@ -31,6 +31,6 @@ describe('Card Image command', () => {
     expect(cardImageCommand.name.length).toBeGreaterThan(0);
     const result = cardImageCommand.execute();
     await expect(result).resolves.not.toThrowError();
-    await expect(result).resolves.toMatch(errors.noCardFound);
+    await expect(result).resolves.toMatch(translations.noCardFound);
   });
 });

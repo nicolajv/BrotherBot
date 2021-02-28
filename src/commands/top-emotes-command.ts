@@ -1,4 +1,5 @@
-import { emotesTable, errors } from '../data/constants';
+import { emotesTable } from '../data/constants';
+import { translations } from '../data/translator';
 import { Emote } from '../models/emote';
 import { AbstractCommand } from './abstracts/abstract-command';
 
@@ -21,9 +22,9 @@ export class TopEmotesCommand extends AbstractCommand {
           }
           return finalString;
         }
-        return errors.noEmotesFound;
+        return translations.noEmotesFound;
       },
-      'Gets the top emotes for the channel',
+      translations.topEmotesCommandHelp,
     );
   }
 }

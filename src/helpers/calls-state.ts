@@ -1,6 +1,5 @@
 import { Call } from '../models/call';
 import { User } from '../models/user';
-import { errors } from '../data/constants';
 
 export class CallState {
   private activeCalls = Array<Call>();
@@ -21,7 +20,7 @@ export class CallState {
       }
       return { userCount: usersInCall };
     } else {
-      throw new Error(errors.noCallFound);
+      throw new Error('No call found matching id');
     }
   }
 

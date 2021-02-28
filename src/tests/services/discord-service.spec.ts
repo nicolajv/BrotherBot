@@ -10,7 +10,6 @@ import {
 
 import { DiscordService } from '../../services/discord-service';
 import { JestHelper } from '../mocks/jest-helper';
-import { errors } from '../../data/constants';
 import {
   makeDatabaseService,
   makeLoggingService,
@@ -342,7 +341,7 @@ describe('Discord Service voice event', () => {
     try {
       startCall(discordService, undefined, undefined, null);
     } catch (err) {
-      expect(err.message).toMatch(errors.noUsername);
+      expect(err.message).toMatch('User does not have a username');
       return;
     }
     fail('An error should have happened');

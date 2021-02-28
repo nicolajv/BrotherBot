@@ -1,9 +1,10 @@
 import { Client, Message, TextChannel } from 'discord.js';
-import { commandPrefix, emotesTable, errors } from '../data/constants';
+import { commandPrefix, emotesTable } from '../data/constants';
 
 import { CallState } from '../helpers/calls-state';
 import { User } from '../models/user';
 import { buildCommands } from '../helpers/build-commands';
+import { translations } from '../data/translator';
 
 const defaultActivity = '!h for help';
 
@@ -69,7 +70,7 @@ export class DiscordService implements ChatService {
     return new Promise<void>(resolve => {
       const guild = this.client.guilds.cache.first();
       if (!guild) {
-        throw new Error(errors.noServerConnected);
+        throw new Error(translations.noServerConnected);
       }
       guild.members.cache.forEach(member => {
         const user = new User(member.user.id, member.user.username);
@@ -86,7 +87,7 @@ export class DiscordService implements ChatService {
     this.client.on('message', message => {
       if (!message.author.bot) {
         const channel = message.channel;
-        const content = message.toString();
+        const content = message.toString().toLowerCase();
         this.commands.forEach(async command => {
           if (content.startsWith(`${commandPrefix}${command.name}`)) {
             const parameter = content.substr(content.indexOf(' ') + 1);
@@ -119,14 +120,14 @@ export class DiscordService implements ChatService {
   private handleVoiceEvent(): void {
     this.client.on('voiceStateUpdate', (oldstate, newstate) => {
       if (!newstate.member?.displayName) {
-        throw new Error(errors.noUsername);
+        throw new Error('User does not have a username');
       }
       const user = this.findOrAddUser(newstate.id, newstate.member.displayName);
       if (oldstate.channelID && oldstate.channelID !== newstate.channelID) {
         const removalResult = this.callState.removeUserFromCall(oldstate.channelID, user);
         if (removalResult.userCount === 0) {
           this.sendMessageInMainChannel(
-            `Call ended in ${oldstate.channel?.name}. Duration: ${removalResult.duration}`,
+            `${translations.callEnded} ${oldstate.channel?.name}. ${translations.callEndedDuration} ${removalResult.duration}`,
           );
         }
       }
@@ -137,7 +138,7 @@ export class DiscordService implements ChatService {
             ? newstate.member.nickname
             : newstate.member.displayName;
           this.sendMessageInMainChannel(
-            `${starterUserName} started a call in ${newstate.channel?.name}!`,
+            `${starterUserName} ${translations.callStarted} ${newstate.channel?.name}!`,
           );
         }
       }
@@ -150,7 +151,7 @@ export class DiscordService implements ChatService {
         this.setMainChannel();
       }
       if (!this.mainChannel) {
-        throw new Error(errors.noMainChannelFound);
+        throw new Error('Unable to find main channel');
       }
       resolve(this.mainChannel.send(message));
     });
@@ -160,7 +161,7 @@ export class DiscordService implements ChatService {
     return new Promise<void>(resolve => {
       const guild = this.client.guilds.cache.first();
       if (!guild) {
-        throw new Error(errors.noMainChannelFound);
+        throw new Error('Unable to find main channel');
       }
       const channel = guild.channels.cache.find(channel => {
         return channel.type === 'text';

@@ -1,7 +1,6 @@
 import { CallState } from '../../helpers/calls-state';
 import { JestHelper } from '../mocks/jest-helper';
 import { User } from '../../models/user';
-import { errors } from '../../data/constants';
 
 const jestHelper = new JestHelper();
 
@@ -41,7 +40,7 @@ describe('Call state', () => {
     try {
       callState.removeUserFromCall(call1, testUser1);
     } catch (err) {
-      expect(err.message).toEqual(errors.noCallFound);
+      expect(err.message).toEqual('No call found matching id');
     }
   });
 

@@ -1,5 +1,4 @@
 import { MongoClient } from 'mongodb';
-import { errors } from '../data/constants';
 
 export class MongoDBService implements DatabaseService {
   private dbAddress = 'mongodb://database:27017/brotherbot';
@@ -10,7 +9,7 @@ export class MongoDBService implements DatabaseService {
     return new Promise<Array<Record<string, unknown>>>((resolve, reject) => {
       this.MongoClient.connect(this.dbAddress, async (error: Error, client: MongoClient) => {
         if (error) {
-          reject(errors.databaseError);
+          reject('A database error occured');
         }
 
         const db = client.db(this.dbName);
@@ -29,7 +28,7 @@ export class MongoDBService implements DatabaseService {
     return new Promise<void>((resolve, reject) => {
       this.MongoClient.connect(this.dbAddress, async (error: Error, client: MongoClient) => {
         if (error) {
-          reject(errors.databaseError);
+          reject('A database error occured');
         }
 
         const db = client.db(this.dbName);
