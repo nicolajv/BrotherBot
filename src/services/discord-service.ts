@@ -70,7 +70,7 @@ export class DiscordService implements ChatService {
     return new Promise<void>(resolve => {
       const guild = this.client.guilds.cache.first();
       if (!guild) {
-        throw new Error(translations.noServerConnected);
+        throw new Error('No server connected');
       }
       guild.members.cache.forEach(member => {
         const user = new User(member.user.id, member.user.username);

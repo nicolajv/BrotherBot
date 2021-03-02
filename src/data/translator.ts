@@ -10,14 +10,8 @@ export const translations = {
   topEmotesCommandHelp: getTranslation('topEmotesCommandHelp'),
   videoSearchCommandHelp: getTranslation('videoSearchCommandHelp'),
   //Errors
-  databaseError: getTranslation('databaseError'),
-  noCallFound: getTranslation('noCallFound'),
   noCardFound: getTranslation('noCardFound'),
   noEmotesFound: getTranslation('noEmotesFound'),
-  noMainChannelFound: getTranslation('noMainChannelFound'),
-  noSearchString: getTranslation('noSearchString'),
-  noServerConnected: getTranslation('noServerConnected'),
-  noUsername: getTranslation('noUsername'),
   noVideoFound: getTranslation('noVideoFound'),
 };
 

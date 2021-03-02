@@ -1,4 +1,11 @@
-export interface ScryfallCard {
+export interface ScryfallCardList {
+  object: string;
+  total_cards: number;
+  has_more: boolean;
+  data: [ScryfallCard];
+}
+
+interface ScryfallCard {
   object: string;
   id?: string;
   oracle_id?: string;

@@ -11,7 +11,11 @@ describe('Scryfall Service card images', () => {
   it('Can return a card from the api', async () => {
     jest.spyOn(requestService, 'getAsObject').mockReturnValueOnce(
       new Promise<Record<string, unknown>>(resolve => {
-        resolve({ object: 'card', image_uris: { normal: testString } });
+        resolve({
+          object: 'list',
+          total_cards: 1,
+          data: [{ object: 'card', image_uris: { normal: testString } }],
+        });
       }),
     );
     const cardImage = scryfallService.get(testCard);
@@ -33,7 +37,11 @@ describe('Scryfall Service card images', () => {
   it('Throws error when finding no image uris', async () => {
     jest.spyOn(requestService, 'getAsObject').mockReturnValueOnce(
       new Promise<Record<string, unknown>>(resolve => {
-        resolve({ object: 'card', image_uris: {} });
+        resolve({
+          object: 'list',
+          total_cards: 1,
+          data: [{ object: 'card', image_uris: {} }],
+        });
       }),
     );
     await expect(scryfallService.get(testCard)).rejects.toThrowError();
@@ -43,7 +51,11 @@ describe('Scryfall Service card images', () => {
   it('Throws error when finding no normal card image', async () => {
     jest.spyOn(requestService, 'getAsObject').mockReturnValueOnce(
       new Promise<Record<string, unknown>>(resolve => {
-        resolve({ object: 'card', image_uris: { normal: '' } });
+        resolve({
+          object: 'list',
+          total_cards: 1,
+          data: [{ object: 'card', image_uris: { normal: '' } }],
+        });
       }),
     );
     await expect(scryfallService.get(testCard)).rejects.toThrowError();
