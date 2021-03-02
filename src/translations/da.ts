@@ -3,6 +3,7 @@ export const danishDictionary: Dictionary = {
   callEndedDuration: 'Varighed:',
   callStarted: 'startede et stemmeopkald i',
   cardImageCommandHelp: 'Søger efter spillekort',
+  defaultActivity: '!h for hjælp',
   helpCommandText: 'De følgende kommandoer er tilgængelige:',
   topEmotesCommandHelp: 'Giver de top 10 mest brugte emotes',
   videoSearchCommandHelp: 'Søger efter videoer',

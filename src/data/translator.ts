@@ -6,6 +6,7 @@ export const translations = {
   callEndedDuration: getTranslation('callEndedDuration'),
   callStarted: getTranslation('callStarted'),
   cardImageCommandHelp: getTranslation('cardImageCommandHelp'),
+  defaultActivity: getTranslation('defaultActivity'),
   helpCommandText: getTranslation('helpCommandText'),
   topEmotesCommandHelp: getTranslation('topEmotesCommandHelp'),
   videoSearchCommandHelp: getTranslation('videoSearchCommandHelp'),

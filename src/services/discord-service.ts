@@ -6,8 +6,6 @@ import { User } from '../models/user';
 import { buildCommands } from '../helpers/build-commands';
 import { translations } from '../data/translator';
 
-const defaultActivity = '!h for help';
-
 export class DiscordService implements ChatService {
   private loggingService: LoggingService;
   private databaseService: DatabaseService;
@@ -43,7 +41,7 @@ export class DiscordService implements ChatService {
     if (!this.client.user) {
       throw new Error('No Discord user found');
     }
-    this.client.user.setActivity({ name: defaultActivity });
+    this.client.user.setActivity({ name: translations.defaultActivity });
   }
 
   private findOrAddUser(userId: string, userName: string): User {
