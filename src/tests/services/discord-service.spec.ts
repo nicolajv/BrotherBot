@@ -285,27 +285,6 @@ describe('Discord Service voice event', () => {
     expect(sendMessageInMainChannelSpy.mock.results[0].value).toContain(userNickname);
   });
 
-  it('Sends messages even if no channel name is available', async () => {
-    let sendMessageInMainChannelSpy = jestHelper.mockPrivateFunction(
-      DiscordService.prototype,
-      'sendMessageInMainChannel',
-      (message: string) => {
-        return message;
-      },
-    );
-    startCall(discordService, undefined, null);
-    expect(sendMessageInMainChannelSpy).toHaveBeenCalledTimes(1);
-    sendMessageInMainChannelSpy = jestHelper.mockPrivateFunction(
-      DiscordService.prototype,
-      'sendMessageInMainChannel',
-      (message: string) => {
-        return message;
-      },
-    );
-    endCall(discordService, undefined, null);
-    expect(sendMessageInMainChannelSpy).toHaveBeenCalledTimes(2);
-  });
-
   it('Does not send a message if the call is already started when a user joins', async () => {
     const sendMessageInMainChannelSpy = jestHelper.mockPrivateFunction(
       DiscordService.prototype,
@@ -371,6 +350,7 @@ describe('Discord Service send message in main channel', () => {
       {
         member: { displayName: testString },
         channelID: '123',
+        channel: { joinable: true },
       } as VoiceState,
     );
     expect(sendMessageInMainChannelSpy).toHaveBeenCalledTimes(1);
@@ -392,7 +372,7 @@ describe('Discord Service set main channel', () => {
     );
     discordService['mainChannel'] = null;
     const channelCache = Array<Record<string, unknown>>();
-    const voiceChannel = { type: 'voice' };
+    const voiceChannel = { type: 'voice', joinable: true };
     const textChannel = {
       type: 'text',
       send: (): void => {
@@ -409,7 +389,11 @@ describe('Discord Service set main channel', () => {
     discordService.client.emit(
       'voiceStateUpdate',
       {} as VoiceState,
-      { member: { displayName: testString }, channelID: '123' } as VoiceState,
+      {
+        member: { displayName: testString },
+        channelID: '123',
+        channel: { joinable: true },
+      } as VoiceState,
     );
     expect(discordService['mainChannel']).toEqual(textChannel);
     expect(setMainChannelSpy).toHaveBeenCalledTimes(1);
@@ -445,7 +429,7 @@ function startCall(
   userName: string | null = 'userName',
   userNickname?: string,
 ): void {
-  const channel = channelName ? { name: channelName } : undefined;
+  const channel = channelName ? { name: channelName, joinable: true } : undefined;
   const memberData =
     userName || userNickname
       ? {
@@ -474,7 +458,7 @@ function endCall(
   channelName: string | null = 'channelName',
   userName: string | null = 'userName',
 ): void {
-  const channel = channelName ? { name: channelName } : undefined;
+  const channel = channelName ? { name: channelName, joinable: true } : undefined;
   const name = userName ? { displayName: userName } : undefined;
   discordService.client.emit(
     'voiceStateUpdate',

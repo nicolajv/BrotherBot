@@ -123,7 +123,12 @@ export class DiscordService implements ChatService {
         throw new Error('User does not have a username');
       }
       const user = this.findOrAddUser(newstate.id, newstate.member.displayName);
-      if (oldstate.channelID && oldstate.channelID !== newstate.channelID) {
+      if (
+        oldstate.channelID &&
+        oldstate.channel &&
+        oldstate.channel.joinable &&
+        oldstate.channelID !== newstate.channelID
+      ) {
         const removalResult = this.callState.removeUserFromCall(oldstate.channelID, user);
         if (removalResult.userCount === 0) {
           this.sendMessageInMainChannel(
@@ -131,7 +136,12 @@ export class DiscordService implements ChatService {
           );
         }
       }
-      if (newstate.channelID && oldstate.channelID !== newstate.channelID) {
+      if (
+        newstate.channelID &&
+        newstate.channel &&
+        newstate.channel.joinable &&
+        oldstate.channelID !== newstate.channelID
+      ) {
         const userCountAfterAddition = this.callState.addUserToCall(newstate.channelID, user);
         if (userCountAfterAddition === 1) {
           const starterUserName = newstate.member.nickname
