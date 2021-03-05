@@ -33,29 +33,26 @@ describe('Mongo DB Service', () => {
     expect(incrementSpy).toHaveBeenCalledTimes(1);
   });
 
+  it('Can decrease data in a table', async () => {
+    const mongoDBService = new MongoDBService();
+    mongoDBService['MongoClient'] = jestHelper.setPropertyToAnything(new MongoDBMock());
+    const incrementSpy = jest.spyOn(mongoDBService, 'incrementFieldFindByFilter');
+    mongoDBService.incrementFieldFindByFilter(
+      testString,
+      testString,
+      testString,
+      testString,
+      false,
+    );
+    expect(incrementSpy).toHaveBeenCalledTimes(1);
+  });
+
   it('Can throw error if connection is broken (increment)', async () => {
     const mongoDBService = new MongoDBService();
     mongoDBService['MongoClient'] = jestHelper.setPropertyToAnything(new MongoDBMock());
     mongoDBService['dbAddress'] = 'error';
     await expect(
       mongoDBService.incrementFieldFindByFilter(testString, testString, testString, testString),
-    ).rejects.toEqual('A database error occured');
-  });
-
-  it('Can decrease data in a table', async () => {
-    const mongoDBService = new MongoDBService();
-    mongoDBService['MongoClient'] = jestHelper.setPropertyToAnything(new MongoDBMock());
-    const decreaseSpy = jest.spyOn(mongoDBService, 'decreaseFieldFindByFilter');
-    mongoDBService.decreaseFieldFindByFilter(testString, testString, testString, testString);
-    expect(decreaseSpy).toHaveBeenCalledTimes(1);
-  });
-
-  it('Can throw error if connection is broken (decrease)', async () => {
-    const mongoDBService = new MongoDBService();
-    mongoDBService['MongoClient'] = jestHelper.setPropertyToAnything(new MongoDBMock());
-    mongoDBService['dbAddress'] = 'error';
-    await expect(
-      mongoDBService.decreaseFieldFindByFilter(testString, testString, testString, testString),
     ).rejects.toEqual('A database error occured');
   });
 });

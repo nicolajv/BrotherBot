@@ -24,6 +24,7 @@ export class MongoDBService implements DatabaseService {
     filterField: string,
     filterValue: string,
     incrementField: string,
+    increase = true,
   ): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       this.MongoClient.connect(this.dbAddress, async (error: Error, client: MongoClient) => {
@@ -37,33 +38,7 @@ export class MongoDBService implements DatabaseService {
           .collection(table)
           .updateOne(
             { [filterField]: filterValue },
-            { $inc: { [incrementField]: 1 } },
-            { upsert: true },
-          );
-        resolve();
-      });
-    });
-  }
-
-  public decreaseFieldFindByFilter(
-    table: string,
-    filterField: string,
-    filterValue: string,
-    decreaseField: string,
-  ): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      this.MongoClient.connect(this.dbAddress, async (error: Error, client: MongoClient) => {
-        if (error) {
-          reject('A database error occured');
-        }
-
-        const db = client.db(this.dbName);
-
-        await db
-          .collection(table)
-          .updateOne(
-            { [filterField]: filterValue },
-            { $inc: { [decreaseField]: -1 } },
+            { $inc: { [incrementField]: increase ? 1 : -1 } },
             { upsert: true },
           );
         resolve();
