@@ -24,6 +24,7 @@ export class DiscordService implements ChatService {
     this.initCommands();
     this.initEvents();
     this.handleCommands();
+    this.handleReactions();
   }
 
   async login(token = process.env.DISCORD_TOKEN): Promise<void> {
@@ -100,6 +101,21 @@ export class DiscordService implements ChatService {
             }
           });
         }
+      }
+    });
+  }
+
+  private handleReactions(): void {
+    this.client.on('messageReactionAdd', reaction => {
+      const emote = `<:${reaction.emoji.identifier}>`;
+      if (this.client.emojis.cache.find(emoji => emote.includes(emoji.identifier))) {
+        this.databaseService.incrementFieldFindByFilter(emotesTable, 'name', emote, 'amount');
+      }
+    });
+    this.client.on('messageReactionRemove', reaction => {
+      const emote = `<:${reaction.emoji.identifier}>`;
+      if (this.client.emojis.cache.find(emoji => emote.includes(emoji.identifier))) {
+        this.databaseService.decreaseFieldFindByFilter(emotesTable, 'name', emote, 'amount');
       }
     });
   }

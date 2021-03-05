@@ -6,4 +6,10 @@ interface DatabaseService {
     filterValue: string,
     incrementField: string,
   ): void;
+  decreaseFieldFindByFilter(
+    table: string,
+    filterField: string,
+    filterValue: string,
+    decreaseField: string,
+  ): void;
 }

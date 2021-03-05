@@ -44,4 +44,30 @@ export class MongoDBService implements DatabaseService {
       });
     });
   }
+
+  public decreaseFieldFindByFilter(
+    table: string,
+    filterField: string,
+    filterValue: string,
+    decreaseField: string,
+  ): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      this.MongoClient.connect(this.dbAddress, async (error: Error, client: MongoClient) => {
+        if (error) {
+          reject('A database error occured');
+        }
+
+        const db = client.db(this.dbName);
+
+        await db
+          .collection(table)
+          .updateOne(
+            { [filterField]: filterValue },
+            { $inc: { [decreaseField]: -1 } },
+            { upsert: true },
+          );
+        resolve();
+      });
+    });
+  }
 }
