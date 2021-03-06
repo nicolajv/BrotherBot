@@ -143,7 +143,7 @@ export class DiscordService implements ChatService {
     });
   }
 
-  private handleUsersStartingCalls(oldstate: VoiceState, newstate: VoiceState, user: User) {
+  private handleUsersStartingCalls(oldstate: VoiceState, newstate: VoiceState, user: User): void {
     if (!newstate.member?.displayName) {
       throw new Error('User does not have a username');
     }
@@ -165,7 +165,7 @@ export class DiscordService implements ChatService {
     }
   }
 
-  private handleUsersEndingCalls(oldstate: VoiceState, newstate: VoiceState, user: User) {
+  private handleUsersEndingCalls(oldstate: VoiceState, newstate: VoiceState, user: User): void {
     if (
       oldstate.channelID &&
       oldstate.channel &&
