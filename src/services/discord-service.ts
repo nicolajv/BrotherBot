@@ -1,4 +1,4 @@
-import { Client, Message, MessageReaction, TextChannel } from 'discord.js';
+import { Client, Message, MessageReaction, TextChannel, VoiceState } from 'discord.js';
 import { commandPrefix, emotesTable } from '../data/constants';
 
 import { CallState } from '../helpers/calls-state';
@@ -138,36 +138,47 @@ export class DiscordService implements ChatService {
         throw new Error('User does not have a username');
       }
       const user = this.findOrAddUser(newstate.id, newstate.member.displayName);
-      if (
-        oldstate.channelID &&
-        oldstate.channel &&
-        oldstate.channel.joinable &&
-        oldstate.channelID !== newstate.channelID
-      ) {
-        const removalResult = this.callState.removeUserFromCall(oldstate.channelID, user);
-        if (removalResult.userCount === 0) {
-          this.sendMessageInMainChannel(
-            `${translations.callEnded} ${oldstate.channel?.name}. ${translations.callEndedDuration} ${removalResult.duration}`,
-          );
-        }
-      }
-      if (
-        newstate.channelID &&
-        newstate.channel &&
-        newstate.channel.joinable &&
-        oldstate.channelID !== newstate.channelID
-      ) {
-        const userCountAfterAddition = this.callState.addUserToCall(newstate.channelID, user);
-        if (userCountAfterAddition === 1) {
-          const starterUserName = newstate.member.nickname
-            ? newstate.member.nickname
-            : newstate.member.displayName;
-          this.sendMessageInMainChannel(
-            `${starterUserName} ${translations.callStarted} ${newstate.channel?.name}!`,
-          );
-        }
-      }
+      this.handleUsersEndingCalls(oldstate, newstate, user);
+      this.handleUsersStartingCalls(oldstate, newstate, user);
     });
+  }
+
+  private handleUsersStartingCalls(oldstate: VoiceState, newstate: VoiceState, user: User) {
+    if (!newstate.member?.displayName) {
+      throw new Error('User does not have a username');
+    }
+    if (
+      newstate.channelID &&
+      newstate.channel &&
+      newstate.channel.joinable &&
+      oldstate.channelID !== newstate.channelID
+    ) {
+      const userCountAfterAddition = this.callState.addUserToCall(newstate.channelID, user);
+      if (userCountAfterAddition === 1) {
+        const starterUserName = newstate.member.nickname
+          ? newstate.member.nickname
+          : newstate.member.displayName;
+        this.sendMessageInMainChannel(
+          `${starterUserName} ${translations.callStarted} ${newstate.channel?.name}!`,
+        );
+      }
+    }
+  }
+
+  private handleUsersEndingCalls(oldstate: VoiceState, newstate: VoiceState, user: User) {
+    if (
+      oldstate.channelID &&
+      oldstate.channel &&
+      oldstate.channel.joinable &&
+      oldstate.channelID !== newstate.channelID
+    ) {
+      const removalResult = this.callState.removeUserFromCall(oldstate.channelID, user);
+      if (removalResult.userCount === 0) {
+        this.sendMessageInMainChannel(
+          `${translations.callEnded} ${oldstate.channel?.name}. ${translations.callEndedDuration} ${removalResult.duration}`,
+        );
+      }
+    }
   }
 
   private async sendMessageInMainChannel(message: string): Promise<Message> {
