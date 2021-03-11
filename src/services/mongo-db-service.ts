@@ -14,21 +14,6 @@ export class MongoDBService implements DatabaseService {
 
         const db = client.db(this.dbName);
 
-        const values = await db.collection(table).find().toArray();
-
-        console.log('values');
-
-        values.forEach(async value => {
-          await db.collection(table).updateOne(
-            { name: value['name'] },
-            {
-              $set: {
-                amount: parseInt(value['amount']),
-              },
-            },
-          );
-        });
-
         resolve(await db.collection(table).find().toArray());
       });
     });
