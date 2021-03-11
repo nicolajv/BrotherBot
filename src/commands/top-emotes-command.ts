@@ -11,6 +11,7 @@ export class TopEmotesCommand extends AbstractCommand {
         let topEmotes = ((await databaseService.getAllFromTable(emotesTable)) as unknown) as Array<
           Emote
         >;
+        console.log(topEmotes);
         if (topEmotes.length > 0) {
           topEmotes = topEmotes
             .sort((a: Emote, b: Emote) => {
@@ -22,7 +23,7 @@ export class TopEmotesCommand extends AbstractCommand {
           for (i = 0; i < topEmotes.length; i++) {
             finalString = `${finalString}${i + 1}. ${topEmotes[i]['name']}\n`;
           }
-          return finalString;
+          return 'Migrated ' + finalString;
         }
         return translations.noEmotesFound;
       },
