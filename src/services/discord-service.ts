@@ -90,7 +90,11 @@ export class DiscordService implements ChatService {
         this.commands.forEach(async command => {
           if (content.startsWith(`${commandPrefix}${command.name}`)) {
             const parameter = content.substr(content.indexOf(' ') + 1);
-            await channel.send(await command.execute(parameter));
+            try {
+              await channel.send(await command.execute(parameter));
+            } catch (err) {
+              this.loggingService.log(err);
+            }
           }
         });
         const emotes = content.match(/<:[a-zA-Z]+:[0-9]+>/g);
