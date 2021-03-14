@@ -93,6 +93,7 @@ export class DiscordService implements ChatService {
             try {
               await channel.send(await command.execute(parameter));
             } catch (err) {
+              await channel.send(translations.genericError);
               this.loggingService.log(err);
             }
           }

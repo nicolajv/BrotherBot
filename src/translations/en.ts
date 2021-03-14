@@ -4,6 +4,7 @@ export const englishDictionary: Dictionary = {
   callStarted: 'started a call in',
   cardImageCommandHelp: 'Searches for trading cards',
   defaultActivity: '!h for help',
+  genericError: 'An error occured',
   helpCommandText: 'The following commands are available:',
   topEmotesCommandHelp: 'Gets the top emotes for the channel',
   videoSearchCommandHelp: 'Searches for videos',
