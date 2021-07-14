@@ -1,4 +1,5 @@
 interface DatabaseService {
+  delete(table: string, filterField: string, filterValue: string): Promise<void>;
   getAllFromTable(table: string): Promise<Array<Record<string, unknown>>>;
   incrementFieldFindByFilter(
     table: string,
@@ -6,5 +7,6 @@ interface DatabaseService {
     filterValue: string,
     incrementField: string,
     increase?: boolean,
-  ): void;
+  ): Promise<void>;
+  save(table: string, object: Record<string, unknown>): Promise<void>;
 }

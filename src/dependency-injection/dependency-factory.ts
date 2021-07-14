@@ -12,6 +12,14 @@ import { YoutubeVideoService } from '../services/youtube-video-service';
 import { port } from '../data/constants';
 import { MongoDBService } from '../services/mongo-db-service';
 import { TopEmotesCommand } from '../commands/top-emotes-command';
+import { CustomCommandHandler } from '../helpers/custom-command-handler';
+import { AddCustomCommand } from '../commands/add-custom-command';
+import { RemoveCustomCommand } from '../commands/remove-custom-command';
+import { Command } from '../commands/interfaces/command.interface';
+
+export const makeAddCustomCommand = (): AddCustomCommand => {
+  return new AddCustomCommand(makeDatabaseService());
+};
 
 export const makeApp = (discord?: DiscordService): App => {
   return new App(express(), discord ? discord : makeChatService(), port);
@@ -19,6 +27,10 @@ export const makeApp = (discord?: DiscordService): App => {
 
 export const makeCardImageCommand = (): CardImageCommand => {
   return new CardImageCommand(makeTcgService());
+};
+
+export const makeCustomCommandHandler = (): CustomCommandHandler => {
+  return new CustomCommandHandler(makeDatabaseService());
 };
 
 export const makeChatService = (): DiscordService => {
@@ -39,6 +51,10 @@ export const makeLoggingService = (): LoggingService => {
 
 export const makeTcgService = (): TcgService => {
   return new ScryfallService(makeRequestService());
+};
+
+export const makeRemoveCustomCommand = (): RemoveCustomCommand => {
+  return new RemoveCustomCommand(makeDatabaseService());
 };
 
 export const makeRequestService = (): RequestService => {

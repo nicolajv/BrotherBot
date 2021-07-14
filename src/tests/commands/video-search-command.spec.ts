@@ -17,8 +17,9 @@ describe('Video Search command', () => {
     expect(videoSearchCommand.name.length).toBeGreaterThan(0);
     const result = videoSearchCommand.execute(testString);
     await expect(result).resolves.not.toThrowError();
-    await expect(result).resolves.toMatch(testString);
-    await expect(result).resolves.not.toMatch(translations.noVideoFound);
+
+    await expect((await result).response).toMatch(testString);
+    await expect((await result).response).not.toMatch(translations.noVideoFound);
   });
 
   it('Returns an error message if no parameter is provided', async () => {
@@ -31,6 +32,6 @@ describe('Video Search command', () => {
     expect(videoSearchCommand.name.length).toBeGreaterThan(0);
     const result = videoSearchCommand.execute();
     await expect(result).resolves.not.toThrowError();
-    await expect(result).resolves.toMatch(translations.noVideoFound);
+    await expect(result.response).toMatch(translations.noVideoFound);
   });
 });

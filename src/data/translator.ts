@@ -6,6 +6,8 @@ export const translations = {
   callEndedDuration: getTranslation('callEndedDuration'),
   callStarted: getTranslation('callStarted'),
   cardImageCommandHelp: getTranslation('cardImageCommandHelp'),
+  commandAdded: getTranslation('commandAdded'),
+  commandRemoved: getTranslation('commandRemoved'),
   defaultActivity: getTranslation('defaultActivity'),
   genericError: getTranslation('genericError'),
   helpCommandText: getTranslation('helpCommandText'),
@@ -14,6 +16,7 @@ export const translations = {
   //Errors
   noCardFound: getTranslation('noCardFound'),
   noEmotesFound: getTranslation('noEmotesFound'),
+  notEnoughParamters: getTranslation('notEnoughParamters'),
   noVideoFound: getTranslation('noVideoFound'),
 };
 

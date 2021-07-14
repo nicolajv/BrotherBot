@@ -1,4 +1,5 @@
 import { HelpCommand } from '../../commands/help-command';
+import { Command } from '../../commands/interfaces/command.interface';
 import { MockCommand } from '../mocks/mock-command';
 
 describe('Help command', () => {

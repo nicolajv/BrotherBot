@@ -14,6 +14,8 @@ import {
   makeDatabaseService,
   makeLoggingService,
 } from '../../dependency-injection/dependency-factory';
+import { Command } from '../../commands/interfaces/command.interface';
+import { CommandResponse } from '../../models/command-response';
 
 const loggingService: LoggingService = makeLoggingService();
 const databaseService: DatabaseService = makeDatabaseService();
@@ -29,8 +31,8 @@ jest.mock('../../helpers/build-commands', () => {
       commands.push({
         name: 'h',
         execute: () => {
-          return new Promise<string>(resolve => {
-            resolve('test');
+          return new Promise<CommandResponse>(resolve => {
+            resolve(new CommandResponse('test'));
           });
         },
       } as Command);
