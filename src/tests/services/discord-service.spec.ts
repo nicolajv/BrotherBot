@@ -16,6 +16,7 @@ import {
 } from '../../dependency-injection/dependency-factory';
 import { Command } from '../../commands/interfaces/command.interface';
 import { MockCommand } from '../mocks/mock-command';
+import { translations } from '../../data/translator';
 
 const loggingService: LoggingService = makeLoggingService();
 const databaseService: DatabaseService = makeDatabaseService();
@@ -29,6 +30,7 @@ jest.mock('../../helpers/build-commands', () => {
     buildCommands(): Array<Command> {
       const commands = Array<Command>();
       commands.push(new MockCommand('h'));
+      commands.push(new MockCommand('a', true, true));
       return commands;
     },
   };
@@ -212,6 +214,92 @@ describe('Discord Service commands', () => {
     expect(await mockMessage.channel.send).toHaveBeenCalledTimes(0);
   });
 
+  it('Handles admin only commands for non-admins', async () => {
+    jestHelper.mockPrivateFunction(TextChannel.prototype, 'send', (message: string) => {
+      return message;
+    });
+    const mockChannel = new TextChannel(new Guild(discordService.client, {}), {});
+    const mockMessage = {
+      channel: mockChannel,
+      toString: () => {
+        return '!a';
+      },
+      author: {
+        bot: false,
+      },
+      member: {
+        id: 'abc',
+      },
+      guild: {
+        ownerID: 'cba',
+      },
+    } as Message;
+    jest.spyOn(mockMessage.channel, 'send').mockImplementation(() => {
+      return new Promise<Message[]>(resolve => {
+        resolve(new Array<Message>());
+      });
+    });
+    discordService.client.emit('message', mockMessage);
+    expect(await mockMessage.channel.send).toHaveBeenCalledTimes(0);
+  });
+
+  it('Handles admin only commands for admins', async () => {
+    jestHelper.mockPrivateFunction(TextChannel.prototype, 'send', (message: string) => {
+      return message;
+    });
+    const mockChannel = new TextChannel(new Guild(discordService.client, {}), {});
+    const mockMessage = {
+      channel: mockChannel,
+      toString: () => {
+        return '!a';
+      },
+      author: {
+        bot: false,
+      },
+      member: {
+        id: 'abc',
+      },
+      guild: {
+        ownerID: 'abc',
+      },
+    } as Message;
+    jest.spyOn(mockMessage.channel, 'send').mockImplementation(() => {
+      return new Promise<Message[]>(resolve => {
+        resolve(new Array<Message>());
+      });
+    });
+    discordService.client.emit('message', mockMessage);
+    expect(await mockMessage.channel.send).toHaveBeenCalledTimes(1);
+  });
+
+  it('Sends a generic error message if something goes wrong', async () => {
+    jestHelper.mockPrivateFunction(TextChannel.prototype, 'send', (message: string) => {
+      return message;
+    });
+    const mockChannel = new TextChannel(new Guild(discordService.client, {}), {});
+    const mockMessage = {
+      channel: mockChannel,
+      toString: () => {
+        return '!a';
+      },
+      author: {
+        bot: false,
+      },
+      member: null,
+      guild: {
+        ownerID: 'abc',
+      },
+    } as Message;
+    jest.spyOn(mockMessage.channel, 'send').mockImplementation(() => {
+      return new Promise<Message[]>(resolve => {
+        resolve(new Array<Message>());
+      });
+    });
+    discordService.client.emit('message', mockMessage);
+    expect(await mockMessage.channel.send).toHaveBeenCalledTimes(1);
+    expect(await mockMessage.channel.send).toHaveBeenLastCalledWith(translations.genericError);
+  });
+
   it('Does not react to bots', async () => {
     const mockChannel = new TextChannel(new Guild(discordService.client, {}), {});
     const mockMessage = {
@@ -229,7 +317,7 @@ describe('Discord Service commands', () => {
       });
     });
     discordService.client.emit('message', mockMessage);
-    expect(await mockMessage.channel.send).toHaveBeenCalledTimes(0);
+    expect(mockMessage.channel.send).toHaveBeenCalledTimes(0);
   });
 });
 

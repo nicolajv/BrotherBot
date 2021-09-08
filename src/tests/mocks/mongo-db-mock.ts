@@ -23,8 +23,16 @@ class MongoCollectionsMock {
     return this;
   }
 
+  public deleteOne(_filter: { filterField: string }, _options?: { upsert: boolean }): void {
+    return;
+  }
+
   public find(): MongoDocumentMock {
     return new MongoDocumentMock(this.table);
+  }
+
+  public insertOne(): void {
+    return;
   }
 
   public updateOne(

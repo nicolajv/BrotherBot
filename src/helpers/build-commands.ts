@@ -16,7 +16,7 @@ export async function buildCommands(): Promise<Array<Command>> {
   commands.push(makeTopEmotesCommand());
   commands.push(makeAddCustomCommand());
   commands.push(makeRemoveCustomCommand());
-  const customCommands = await makeCustomCommandHandler().getCustomCommand();
+  const customCommands = await makeCustomCommandHandler().getCustomCommands();
   customCommands.forEach(customCommand => {
     commands.push(customCommand);
   });

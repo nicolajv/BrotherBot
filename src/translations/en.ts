@@ -14,4 +14,5 @@ export const englishDictionary: Dictionary = {
   notEnoughParamters: 'Too few parameters specified',
   noEmotesFound: 'It seems like no emotes have been used in this channel yet!',
   noVideoFound: 'No video result found',
+  testString: 'No one should ever see this',
 };

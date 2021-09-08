@@ -18,6 +18,8 @@ export const translations = {
   noEmotesFound: getTranslation('noEmotesFound'),
   notEnoughParamters: getTranslation('notEnoughParamters'),
   noVideoFound: getTranslation('noVideoFound'),
+  //For unit tests
+  testString: getTranslation('testString'),
 };
 
 function getTranslation(key: string): string {

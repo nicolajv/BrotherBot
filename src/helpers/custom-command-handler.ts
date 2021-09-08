@@ -8,7 +8,7 @@ export class CustomCommandHandler {
     this.databaseService = databaseService;
   }
 
-  public async getCustomCommand(): Promise<Array<CustomCommand>> {
+  public async getCustomCommands(): Promise<Array<CustomCommand>> {
     const databaseCommands = ((await this.databaseService.getAllFromTable(
       'commands',
     )) as unknown) as Array<CommandPrototype>;
