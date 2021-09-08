@@ -32,6 +32,6 @@ describe('Video Search command', () => {
     expect(videoSearchCommand.name.length).toBeGreaterThan(0);
     const result = videoSearchCommand.execute();
     await expect(result).resolves.not.toThrowError();
-    await expect(result.response).toMatch(translations.noVideoFound);
+    await expect((await result).response).toMatch(translations.noVideoFound);
   });
 });

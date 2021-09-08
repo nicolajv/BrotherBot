@@ -19,10 +19,11 @@ describe('Top emotes command', () => {
     });
     const topEmotesCommand = new TopEmotesCommand(databaseService);
     expect(topEmotesCommand.name.length).toBeGreaterThan(0);
-    const result = await topEmotesCommand.execute();
-    await expect(result.response).resolves.not.toThrowError();
-    await expect(result.response).resolves.toMatch(testString);
-    await expect(result.response).resolves.not.toMatch(translations.noEmotesFound);
+    const result = topEmotesCommand.execute();
+    await expect(result).resolves.not.toThrowError();
+    const finalResult = await result;
+    expect(finalResult.response).toMatch(testString);
+    expect(finalResult.response).not.toMatch(translations.noEmotesFound);
   });
 
   it('Returns an error message if no top emotes are returned', async () => {
@@ -33,8 +34,9 @@ describe('Top emotes command', () => {
     });
     const topEmotesCommand = new TopEmotesCommand(databaseService);
     expect(topEmotesCommand.name.length).toBeGreaterThan(0);
-    const result = await topEmotesCommand.execute();
-    await expect(result.response).resolves.not.toThrowError();
-    await expect(result.response).resolves.toMatch(translations.noEmotesFound);
+    const result = topEmotesCommand.execute();
+    await expect(result).resolves.not.toThrowError();
+    const finalResult = await result;
+    expect(finalResult.response).toMatch(translations.noEmotesFound);
   });
 });

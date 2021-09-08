@@ -15,7 +15,7 @@ import {
   makeLoggingService,
 } from '../../dependency-injection/dependency-factory';
 import { Command } from '../../commands/interfaces/command.interface';
-import { CommandResponse } from '../../models/command-response';
+import { MockCommand } from '../mocks/mock-command';
 
 const loggingService: LoggingService = makeLoggingService();
 const databaseService: DatabaseService = makeDatabaseService();
@@ -28,14 +28,7 @@ jest.mock('../../helpers/build-commands', () => {
   return {
     buildCommands(): Array<Command> {
       const commands = Array<Command>();
-      commands.push({
-        name: 'h',
-        execute: () => {
-          return new Promise<CommandResponse>(resolve => {
-            resolve(new CommandResponse('test'));
-          });
-        },
-      } as Command);
+      commands.push(new MockCommand('h'));
       return commands;
     },
   };
@@ -69,15 +62,15 @@ describe('Discord Service login', () => {
 });
 
 describe('Discord Service ready event', () => {
-  let discordService: DiscordService;
+  let discordService = new DiscordService(loggingService, databaseService);
 
   afterAll(async resolve => {
     discordService.logout();
     resolve();
   });
 
+  //TODO bad guy
   it('Writes to console if logged in successfully', async () => {
-    discordService = new DiscordService(loggingService, databaseService);
     discordService.client.guilds.cache = jestHelper.setPropertyToAnything({
       first() {
         return {
@@ -102,7 +95,9 @@ describe('Discord Service ready event', () => {
     expect(loggingService.log).toHaveBeenCalledTimes(1);
   });
 
+  //TODO bad guy
   it('Can init users', async () => {
+    discordService.logout();
     discordService = new DiscordService(loggingService, databaseService);
     const initUsersSpy = jestHelper.mockPrivateFunction(DiscordService.prototype, 'initUsers');
     discordService.client.guilds.cache = jestHelper.setPropertyToAnything({
@@ -131,8 +126,8 @@ describe('Discord Service ready event', () => {
     expect(discordService['users'].length).toEqual(2);
   });
 
+  //TODO bad guy
   it('Throws error if init users finds no servers', async () => {
-    discordService = new DiscordService(loggingService, databaseService);
     const initUsersSpy = jestHelper.mockPrivateFunction(DiscordService.prototype, 'initUsers');
     discordService.client.guilds.cache = jestHelper.setPropertyToAnything({
       first() {
@@ -155,7 +150,6 @@ describe('Discord Service ready event', () => {
   });
 
   it('Throws error if client user is null', async () => {
-    discordService = new DiscordService(loggingService, databaseService);
     discordService.client.user = null;
     try {
       discordService.client.emit('ready');
