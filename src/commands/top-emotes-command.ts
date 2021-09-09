@@ -1,5 +1,6 @@
 import { emotesTable } from '../data/constants';
 import { translations } from '../data/translator';
+import { CommandResponse } from '../models/command-response';
 import { Emote } from '../models/emote';
 import { AbstractCommand } from './abstracts/abstract-command';
 
@@ -22,9 +23,9 @@ export class TopEmotesCommand extends AbstractCommand {
           for (i = 0; i < topEmotes.length; i++) {
             finalString = `${finalString}${i + 1}. ${topEmotes[i]['name']}\n`;
           }
-          return finalString;
+          return new CommandResponse(finalString);
         }
-        return translations.noEmotesFound;
+        return new CommandResponse(translations.noEmotesFound);
       },
       translations.topEmotesCommandHelp,
     );

@@ -1,10 +1,11 @@
-import { Client, Message, MessageReaction, TextChannel, VoiceState } from 'discord.js';
+import { Client, GuildEmoji, Message, MessageReaction, TextChannel, VoiceState } from 'discord.js';
 import { commandPrefix, emotesTable } from '../data/constants';
 
 import { CallState } from '../helpers/calls-state';
 import { User } from '../models/user';
 import { buildCommands } from '../helpers/build-commands';
 import { translations } from '../data/translator';
+import { Command } from '../commands/interfaces/command.interface';
 
 export class DiscordService implements ChatService {
   private loggingService: LoggingService;
@@ -54,8 +55,8 @@ export class DiscordService implements ChatService {
     return user;
   }
 
-  private initCommands(): void {
-    this.commands = buildCommands();
+  private async initCommands(): Promise<void> {
+    this.commands = await buildCommands();
   }
 
   private initEvents(): void {
@@ -86,12 +87,22 @@ export class DiscordService implements ChatService {
     this.client.on('message', message => {
       if (!message.author.bot) {
         const channel = message.channel;
-        const content = message.toString().toLowerCase();
+        const content = message.toString();
         this.commands.forEach(async command => {
-          if (content.startsWith(`${commandPrefix}${command.name}`)) {
+          if (content.toLowerCase().startsWith(`${commandPrefix}${command.name}`)) {
             const parameter = content.substr(content.indexOf(' ') + 1);
             try {
-              await channel.send(await command.execute(parameter));
+              let permitted = true;
+              if (command.adminOnly && !(message.member!.id === message.guild!.ownerID)) {
+                permitted = false;
+              }
+              if (permitted) {
+                const commandResponse = await command.execute(parameter);
+                await channel.send(commandResponse.response);
+                if (commandResponse.refreshCommands) {
+                  await this.initCommands();
+                }
+              }
             } catch (err) {
               await channel.send(translations.genericError);
               this.loggingService.log(err);
@@ -101,7 +112,7 @@ export class DiscordService implements ChatService {
         const emotes = content.match(/<:[a-zA-Z]+:[0-9]+>/g);
         if (emotes) {
           emotes.forEach(async (match: string) => {
-            if (this.client.emojis.cache.find(emoji => match.includes(emoji.identifier))) {
+            if (this.checkIfEmojiExists(match)) {
               this.databaseService.incrementFieldFindByFilter(emotesTable, 'name', match, 'amount');
             }
           });
@@ -121,9 +132,13 @@ export class DiscordService implements ChatService {
 
   private updateEmoteInDatabase(reaction: MessageReaction, added: boolean): void {
     const emote = `<:${reaction.emoji.identifier}>`;
-    if (this.client.emojis.cache.find(emoji => emote.includes(emoji.identifier))) {
+    if (this.checkIfEmojiExists(emote)) {
       this.databaseService.incrementFieldFindByFilter(emotesTable, 'name', emote, 'amount', added);
     }
+  }
+
+  private checkIfEmojiExists(emoji: string): GuildEmoji | undefined {
+    return this.client.emojis.cache.find(emote => emoji.includes(emote.identifier));
   }
 
   private handleReadyEvent(): void {

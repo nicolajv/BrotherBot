@@ -3,8 +3,10 @@ import {
   Collection,
   Guild,
   Message,
+  MessageReaction,
   Presence,
   TextChannel,
+  User,
   VoiceState,
 } from 'discord.js';
 
@@ -14,6 +16,9 @@ import {
   makeDatabaseService,
   makeLoggingService,
 } from '../../dependency-injection/dependency-factory';
+import { Command } from '../../commands/interfaces/command.interface';
+import { MockCommand } from '../mocks/mock-command';
+import { MongoDBService } from '../../services/mongo-db-service';
 
 const loggingService: LoggingService = makeLoggingService();
 const databaseService: DatabaseService = makeDatabaseService();
@@ -26,14 +31,8 @@ jest.mock('../../helpers/build-commands', () => {
   return {
     buildCommands(): Array<Command> {
       const commands = Array<Command>();
-      commands.push({
-        name: 'h',
-        execute: () => {
-          return new Promise<string>(resolve => {
-            resolve('test');
-          });
-        },
-      } as Command);
+      commands.push(new MockCommand('h'));
+      commands.push(new MockCommand('a', true, true));
       return commands;
     },
   };
@@ -67,7 +66,7 @@ describe('Discord Service login', () => {
 });
 
 describe('Discord Service ready event', () => {
-  let discordService: DiscordService;
+  let discordService = new DiscordService(loggingService, databaseService);
 
   afterAll(async resolve => {
     discordService.logout();
@@ -75,7 +74,6 @@ describe('Discord Service ready event', () => {
   });
 
   it('Writes to console if logged in successfully', async () => {
-    discordService = new DiscordService(loggingService, databaseService);
     discordService.client.guilds.cache = jestHelper.setPropertyToAnything({
       first() {
         return {
@@ -101,6 +99,7 @@ describe('Discord Service ready event', () => {
   });
 
   it('Can init users', async () => {
+    discordService.logout();
     discordService = new DiscordService(loggingService, databaseService);
     const initUsersSpy = jestHelper.mockPrivateFunction(DiscordService.prototype, 'initUsers');
     discordService.client.guilds.cache = jestHelper.setPropertyToAnything({
@@ -130,7 +129,6 @@ describe('Discord Service ready event', () => {
   });
 
   it('Throws error if init users finds no servers', async () => {
-    discordService = new DiscordService(loggingService, databaseService);
     const initUsersSpy = jestHelper.mockPrivateFunction(DiscordService.prototype, 'initUsers');
     discordService.client.guilds.cache = jestHelper.setPropertyToAnything({
       first() {
@@ -153,7 +151,6 @@ describe('Discord Service ready event', () => {
   });
 
   it('Throws error if client user is null', async () => {
-    discordService = new DiscordService(loggingService, databaseService);
     discordService.client.user = null;
     try {
       discordService.client.emit('ready');
@@ -216,6 +213,195 @@ describe('Discord Service commands', () => {
     expect(await mockMessage.channel.send).toHaveBeenCalledTimes(0);
   });
 
+  it('Handles admin only commands for non-admins', async () => {
+    jestHelper.mockPrivateFunction(TextChannel.prototype, 'send', (message: string) => {
+      return message;
+    });
+    const mockChannel = new TextChannel(new Guild(discordService.client, {}), {});
+    const mockMessage = {
+      channel: mockChannel,
+      toString: () => {
+        return '!a';
+      },
+      author: {
+        bot: false,
+      },
+      member: {
+        id: 'abc',
+      },
+      guild: {
+        ownerID: 'cba',
+      },
+    } as Message;
+    jest.spyOn(mockMessage.channel, 'send').mockImplementation(() => {
+      return new Promise<Message[]>(resolve => {
+        resolve(new Array<Message>());
+      });
+    });
+    discordService.client.emit('message', mockMessage);
+    expect(await mockMessage.channel.send).toHaveBeenCalledTimes(0);
+  });
+
+  it('Handles admin only commands for admins', async () => {
+    jestHelper.mockPrivateFunction(TextChannel.prototype, 'send', (message: string) => {
+      return message;
+    });
+    const mockChannel = new TextChannel(new Guild(discordService.client, {}), {});
+    const mockMessage = {
+      channel: mockChannel,
+      toString: () => {
+        return '!a';
+      },
+      author: {
+        bot: false,
+      },
+      member: {
+        id: 'abc',
+      },
+      guild: {
+        ownerID: 'abc',
+      },
+    } as Message;
+    jest.spyOn(mockMessage.channel, 'send').mockImplementation(() => {
+      return new Promise<Message[]>(resolve => {
+        resolve(new Array<Message>());
+      });
+    });
+    discordService.client.emit('message', mockMessage);
+    expect(await mockMessage.channel.send).toHaveBeenCalledTimes(1);
+  });
+
+  it('Handles emotes in messages', async () => {
+    jestHelper.mockPrivateFunction(TextChannel.prototype, 'send', (message: string) => {
+      return message;
+    });
+    const mockChannel = new TextChannel(new Guild(discordService.client, {}), {});
+    const mockMessage = {
+      channel: mockChannel,
+      toString: () => {
+        return '!a';
+      },
+      author: {
+        bot: false,
+      },
+    } as Message;
+    jest.spyOn(mockMessage.channel, 'send').mockImplementation(() => {
+      return new Promise<Message[]>(resolve => {
+        resolve(new Array<Message>());
+      });
+    });
+    discordService.client.emit('message', mockMessage);
+    expect(await mockMessage.channel.send).toHaveBeenCalledTimes(1);
+  });
+
+  it('Sends a generic error message if something goes wrong', async () => {
+    jestHelper.mockPrivateFunction(TextChannel.prototype, 'send', (message: string) => {
+      return message;
+    });
+    const incrementFieldFindByFilterSpy = jestHelper.mockPrivateFunction(
+      MongoDBService.prototype,
+      'incrementFieldFindByFilter',
+      () => {
+        return;
+      },
+    );
+    const mockChannel = new TextChannel(new Guild(discordService.client, {}), {});
+    const mockMessage = {
+      channel: mockChannel,
+      toString: () => {
+        return '<:abc:123>';
+      },
+      author: {
+        bot: false,
+      },
+      member: null,
+      guild: {
+        ownerID: 'abc',
+      },
+    } as Message;
+    jest.spyOn(mockMessage.channel, 'send').mockImplementation(() => {
+      return new Promise<Message[]>(resolve => {
+        resolve(new Array<Message>());
+      });
+    });
+    jestHelper.mockPrivateFunction(DiscordService.prototype, 'checkIfEmojiExists', () => {
+      return true;
+    });
+    discordService.client.emit('message', mockMessage);
+    expect(await mockMessage.channel.send).toHaveBeenCalledTimes(0);
+    expect(incrementFieldFindByFilterSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('Handles added emotes in reactions', async () => {
+    const updateEmoteInDatabaseSpy = jestHelper.mockPrivateFunction(
+      DiscordService.prototype,
+      'updateEmoteInDatabase',
+    );
+    const incrementFieldFindByFilterSpy = jestHelper.mockPrivateFunction(
+      MongoDBService.prototype,
+      'incrementFieldFindByFilter',
+      () => {
+        return;
+      },
+    );
+    const mockReaction = {
+      emoji: { identifier: '<:abc:123>' },
+    } as MessageReaction;
+    jestHelper.mockPrivateFunction(DiscordService.prototype, 'checkIfEmojiExists', () => {
+      return true;
+    });
+
+    discordService.client.emit('messageReactionAdd', mockReaction, {} as User);
+    expect(await updateEmoteInDatabaseSpy).toHaveBeenCalledWith(mockReaction, true);
+    expect(await updateEmoteInDatabaseSpy).toHaveBeenCalledTimes(1);
+    expect(await incrementFieldFindByFilterSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('Handles removed emotes in reactions', async () => {
+    const updateEmoteInDatabaseSpy = jestHelper.mockPrivateFunction(
+      DiscordService.prototype,
+      'updateEmoteInDatabase',
+    );
+    const incrementFieldFindByFilterSpy = jestHelper.mockPrivateFunction(
+      MongoDBService.prototype,
+      'incrementFieldFindByFilter',
+      () => {
+        return;
+      },
+    );
+    const mockReaction = {
+      emoji: { identifier: '<:abc:123>' },
+    } as MessageReaction;
+    jestHelper.mockPrivateFunction(DiscordService.prototype, 'checkIfEmojiExists', () => {
+      return true;
+    });
+
+    discordService.client.emit('messageReactionRemove', mockReaction, {} as User);
+    expect(await updateEmoteInDatabaseSpy).toHaveBeenCalledWith(mockReaction, false);
+    expect(await updateEmoteInDatabaseSpy).toHaveBeenCalledTimes(1);
+    expect(await incrementFieldFindByFilterSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('Handles non existant emotes', async () => {
+    const updateEmoteInDatabaseSpy = jestHelper.mockPrivateFunction(
+      DiscordService.prototype,
+      'updateEmoteInDatabase',
+    );
+    const mockReaction = {
+      emoji: { identifier: '<:abc:123>' },
+    } as MessageReaction;
+    const checkIfEmojiExistsSpy = jestHelper.mockPrivateFunction(
+      DiscordService.prototype,
+      'checkIfEmojiExists',
+    );
+
+    discordService.client.emit('messageReactionAdd', mockReaction, {} as User);
+    expect(await updateEmoteInDatabaseSpy).toHaveBeenCalledWith(mockReaction, true);
+    expect(await updateEmoteInDatabaseSpy).toHaveBeenCalledTimes(1);
+    expect(await checkIfEmojiExistsSpy).toHaveBeenCalledTimes(1);
+    expect(await checkIfEmojiExistsSpy).toHaveLastReturnedWith(undefined);
+  });
+
   it('Does not react to bots', async () => {
     const mockChannel = new TextChannel(new Guild(discordService.client, {}), {});
     const mockMessage = {
@@ -233,7 +419,7 @@ describe('Discord Service commands', () => {
       });
     });
     discordService.client.emit('message', mockMessage);
-    expect(await mockMessage.channel.send).toHaveBeenCalledTimes(0);
+    expect(mockMessage.channel.send).toHaveBeenCalledTimes(0);
   });
 });
 
@@ -320,7 +506,7 @@ describe('Discord Service voice event', () => {
     try {
       startCall(discordService, undefined, undefined, null);
     } catch (err) {
-      expect(err.message).toMatch('User does not have a username');
+      expect((err as Error).message).toMatch('User does not have a username');
       return;
     }
     fail('An error should have happened');

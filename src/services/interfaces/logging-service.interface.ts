@@ -1,3 +1,3 @@
 interface LoggingService {
-  log(message: string): void;
+  log(message: unknown): void;
 }

@@ -17,8 +17,9 @@ describe('Card Image command', () => {
     expect(cardImageCommand.name.length).toBeGreaterThan(0);
     const result = cardImageCommand.execute(testString);
     await expect(result).resolves.not.toThrowError();
-    await expect(result).resolves.toMatch(testString);
-    await expect(result).resolves.not.toMatch(translations.noCardFound);
+    const finalResult = await result;
+    expect(finalResult.response).toMatch(testString);
+    expect(finalResult.response).not.toMatch(translations.noCardFound);
   });
 
   it('Returns an error message if no parameter is provided', async () => {
@@ -31,6 +32,7 @@ describe('Card Image command', () => {
     expect(cardImageCommand.name.length).toBeGreaterThan(0);
     const result = cardImageCommand.execute();
     await expect(result).resolves.not.toThrowError();
-    await expect(result).resolves.toMatch(translations.noCardFound);
+    const finalResult = await result;
+    expect(finalResult.response).toMatch(translations.noCardFound);
   });
 });

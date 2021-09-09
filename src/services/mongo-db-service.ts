@@ -5,6 +5,21 @@ export class MongoDBService implements DatabaseService {
   private dbName = 'brotherbot';
   private MongoClient = MongoClient;
 
+  public delete(table: string, filterField: string, filterValue: string): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      this.MongoClient.connect(this.dbAddress, async (error: Error, client: MongoClient) => {
+        if (error) {
+          reject('A database error occured');
+        }
+
+        const db = client.db(this.dbName);
+
+        await db.collection(table).deleteOne({ [filterField]: filterValue });
+        resolve();
+      });
+    });
+  }
+
   public getAllFromTable(table: string): Promise<Array<Record<string, unknown>>> {
     return new Promise<Array<Record<string, unknown>>>((resolve, reject) => {
       this.MongoClient.connect(this.dbAddress, async (error: Error, client: MongoClient) => {
@@ -41,6 +56,21 @@ export class MongoDBService implements DatabaseService {
             { $inc: { [incrementField]: increase ? 1 : -1 } },
             { upsert: true },
           );
+        resolve();
+      });
+    });
+  }
+
+  public save(table: string, object: Record<string, unknown>): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      this.MongoClient.connect(this.dbAddress, async (error: Error, client: MongoClient) => {
+        if (error) {
+          reject('A database error occured');
+        }
+
+        const db = client.db(this.dbName);
+
+        await db.collection(table).insertOne(object);
         resolve();
       });
     });

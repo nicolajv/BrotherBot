@@ -1,3 +1,5 @@
+import { CommandResponse } from '../../models/command-response';
+import { Command } from '../interfaces/command.interface';
 import { AbstractCommand } from './abstract-command';
 
 export abstract class AbstractWebServiceCommand extends AbstractCommand implements Command {
@@ -20,7 +22,7 @@ export abstract class AbstractWebServiceCommand extends AbstractCommand implemen
         } catch (err) {
           result = errorMessage;
         }
-        return result;
+        return new CommandResponse(result);
       },
       helperText,
     );
