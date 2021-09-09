@@ -1,4 +1,4 @@
-import { Client, Message, MessageReaction, TextChannel, VoiceState } from 'discord.js';
+import { Client, GuildEmoji, Message, MessageReaction, TextChannel, VoiceState } from 'discord.js';
 import { commandPrefix, emotesTable } from '../data/constants';
 
 import { CallState } from '../helpers/calls-state';
@@ -112,7 +112,7 @@ export class DiscordService implements ChatService {
         const emotes = content.match(/<:[a-zA-Z]+:[0-9]+>/g);
         if (emotes) {
           emotes.forEach(async (match: string) => {
-            if (this.client.emojis.cache.find(emoji => match.includes(emoji.identifier))) {
+            if (this.checkIfEmojiExists(match)) {
               this.databaseService.incrementFieldFindByFilter(emotesTable, 'name', match, 'amount');
             }
           });
@@ -132,9 +132,13 @@ export class DiscordService implements ChatService {
 
   private updateEmoteInDatabase(reaction: MessageReaction, added: boolean): void {
     const emote = `<:${reaction.emoji.identifier}>`;
-    if (this.client.emojis.cache.find(emoji => emote.includes(emoji.identifier))) {
+    if (this.checkIfEmojiExists(emote)) {
       this.databaseService.incrementFieldFindByFilter(emotesTable, 'name', emote, 'amount', added);
     }
+  }
+
+  private checkIfEmojiExists(emoji: string): GuildEmoji | undefined {
+    return this.client.emojis.cache.find(emote => emoji.includes(emote.identifier));
   }
 
   private handleReadyEvent(): void {

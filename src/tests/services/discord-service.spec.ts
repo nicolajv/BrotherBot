@@ -3,8 +3,10 @@ import {
   Collection,
   Guild,
   Message,
+  MessageReaction,
   Presence,
   TextChannel,
+  User,
   VoiceState,
 } from 'discord.js';
 
@@ -16,7 +18,7 @@ import {
 } from '../../dependency-injection/dependency-factory';
 import { Command } from '../../commands/interfaces/command.interface';
 import { MockCommand } from '../mocks/mock-command';
-import { translations } from '../../data/translator';
+import { MongoDBService } from '../../services/mongo-db-service';
 
 const loggingService: LoggingService = makeLoggingService();
 const databaseService: DatabaseService = makeDatabaseService();
@@ -71,7 +73,6 @@ describe('Discord Service ready event', () => {
     resolve();
   });
 
-  //TODO bad guy
   it('Writes to console if logged in successfully', async () => {
     discordService.client.guilds.cache = jestHelper.setPropertyToAnything({
       first() {
@@ -97,7 +98,6 @@ describe('Discord Service ready event', () => {
     expect(loggingService.log).toHaveBeenCalledTimes(1);
   });
 
-  //TODO bad guy
   it('Can init users', async () => {
     discordService.logout();
     discordService = new DiscordService(loggingService, databaseService);
@@ -128,7 +128,6 @@ describe('Discord Service ready event', () => {
     expect(discordService['users'].length).toEqual(2);
   });
 
-  //TODO bad guy
   it('Throws error if init users finds no servers', async () => {
     const initUsersSpy = jestHelper.mockPrivateFunction(DiscordService.prototype, 'initUsers');
     discordService.client.guilds.cache = jestHelper.setPropertyToAnything({
@@ -272,7 +271,7 @@ describe('Discord Service commands', () => {
     expect(await mockMessage.channel.send).toHaveBeenCalledTimes(1);
   });
 
-  it('Sends a generic error message if something goes wrong', async () => {
+  it('Handles emotes in messages', async () => {
     jestHelper.mockPrivateFunction(TextChannel.prototype, 'send', (message: string) => {
       return message;
     });
@@ -281,6 +280,36 @@ describe('Discord Service commands', () => {
       channel: mockChannel,
       toString: () => {
         return '!a';
+      },
+      author: {
+        bot: false,
+      },
+    } as Message;
+    jest.spyOn(mockMessage.channel, 'send').mockImplementation(() => {
+      return new Promise<Message[]>(resolve => {
+        resolve(new Array<Message>());
+      });
+    });
+    discordService.client.emit('message', mockMessage);
+    expect(await mockMessage.channel.send).toHaveBeenCalledTimes(1);
+  });
+
+  it('Sends a generic error message if something goes wrong', async () => {
+    jestHelper.mockPrivateFunction(TextChannel.prototype, 'send', (message: string) => {
+      return message;
+    });
+    const incrementFieldFindByFilterSpy = jestHelper.mockPrivateFunction(
+      MongoDBService.prototype,
+      'incrementFieldFindByFilter',
+      () => {
+        return;
+      },
+    );
+    const mockChannel = new TextChannel(new Guild(discordService.client, {}), {});
+    const mockMessage = {
+      channel: mockChannel,
+      toString: () => {
+        return '<:abc:123>';
       },
       author: {
         bot: false,
@@ -295,9 +324,82 @@ describe('Discord Service commands', () => {
         resolve(new Array<Message>());
       });
     });
+    jestHelper.mockPrivateFunction(DiscordService.prototype, 'checkIfEmojiExists', () => {
+      return true;
+    });
     discordService.client.emit('message', mockMessage);
-    expect(await mockMessage.channel.send).toHaveBeenCalledTimes(1);
-    expect(await mockMessage.channel.send).toHaveBeenLastCalledWith(translations.genericError);
+    expect(await mockMessage.channel.send).toHaveBeenCalledTimes(0);
+    expect(incrementFieldFindByFilterSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('Handles added emotes in reactions', async () => {
+    const updateEmoteInDatabaseSpy = jestHelper.mockPrivateFunction(
+      DiscordService.prototype,
+      'updateEmoteInDatabase',
+    );
+    const incrementFieldFindByFilterSpy = jestHelper.mockPrivateFunction(
+      MongoDBService.prototype,
+      'incrementFieldFindByFilter',
+      () => {
+        return;
+      },
+    );
+    const mockReaction = {
+      emoji: { identifier: '<:abc:123>' },
+    } as MessageReaction;
+    jestHelper.mockPrivateFunction(DiscordService.prototype, 'checkIfEmojiExists', () => {
+      return true;
+    });
+
+    discordService.client.emit('messageReactionAdd', mockReaction, {} as User);
+    expect(await updateEmoteInDatabaseSpy).toHaveBeenCalledWith(mockReaction, true);
+    expect(await updateEmoteInDatabaseSpy).toHaveBeenCalledTimes(1);
+    expect(await incrementFieldFindByFilterSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('Handles removed emotes in reactions', async () => {
+    const updateEmoteInDatabaseSpy = jestHelper.mockPrivateFunction(
+      DiscordService.prototype,
+      'updateEmoteInDatabase',
+    );
+    const incrementFieldFindByFilterSpy = jestHelper.mockPrivateFunction(
+      MongoDBService.prototype,
+      'incrementFieldFindByFilter',
+      () => {
+        return;
+      },
+    );
+    const mockReaction = {
+      emoji: { identifier: '<:abc:123>' },
+    } as MessageReaction;
+    jestHelper.mockPrivateFunction(DiscordService.prototype, 'checkIfEmojiExists', () => {
+      return true;
+    });
+
+    discordService.client.emit('messageReactionRemove', mockReaction, {} as User);
+    expect(await updateEmoteInDatabaseSpy).toHaveBeenCalledWith(mockReaction, false);
+    expect(await updateEmoteInDatabaseSpy).toHaveBeenCalledTimes(1);
+    expect(await incrementFieldFindByFilterSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('Handles non existant emotes', async () => {
+    const updateEmoteInDatabaseSpy = jestHelper.mockPrivateFunction(
+      DiscordService.prototype,
+      'updateEmoteInDatabase',
+    );
+    const mockReaction = {
+      emoji: { identifier: '<:abc:123>' },
+    } as MessageReaction;
+    const checkIfEmojiExistsSpy = jestHelper.mockPrivateFunction(
+      DiscordService.prototype,
+      'checkIfEmojiExists',
+    );
+
+    discordService.client.emit('messageReactionAdd', mockReaction, {} as User);
+    expect(await updateEmoteInDatabaseSpy).toHaveBeenCalledWith(mockReaction, true);
+    expect(await updateEmoteInDatabaseSpy).toHaveBeenCalledTimes(1);
+    expect(await checkIfEmojiExistsSpy).toHaveBeenCalledTimes(1);
+    expect(await checkIfEmojiExistsSpy).toHaveLastReturnedWith(undefined);
   });
 
   it('Does not react to bots', async () => {
@@ -404,7 +506,7 @@ describe('Discord Service voice event', () => {
     try {
       startCall(discordService, undefined, undefined, null);
     } catch (err) {
-      expect(err.message).toMatch('User does not have a username');
+      expect((err as Error).message).toMatch('User does not have a username');
       return;
     }
     fail('An error should have happened');

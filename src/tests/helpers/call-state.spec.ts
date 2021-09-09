@@ -40,7 +40,7 @@ describe('Call state', () => {
     try {
       callState.removeUserFromCall(call1, testUser1);
     } catch (err) {
-      expect(err.message).toEqual('No call found matching id');
+      expect((err as Error).message).toEqual('No call found matching id');
     }
   });
 
