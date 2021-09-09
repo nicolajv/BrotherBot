@@ -12,21 +12,10 @@ export class AddCustomCommand extends AbstractCommand {
       async (parameter?: string) => {
         let result: string;
         try {
-          if (parameter) {
-            const params = parameter.split(',');
-            if (params.length === 3) {
-              await this.databaseService.save(
-                'commands',
-                new CommandPrototype(
-                  params[0].trim(),
-                  params[1].trim(),
-                  params[2].trim(),
-                ).asGenericObject(),
-              );
-              result = translations.commandAdded;
-            } else {
-              throw new Error('No parameter found');
-            }
+          const params = parameter ? parameter.split(',') : [];
+          if (parameter && params.length === 3) {
+            await this.databaseService.save('commands', createCommandPrototype(params));
+            result = translations.commandAdded;
           } else {
             throw new Error('No parameter found');
           }
@@ -40,4 +29,12 @@ export class AddCustomCommand extends AbstractCommand {
     );
     this.databaseService = databaseService;
   }
+}
+
+function createCommandPrototype(params: string[]): Record<string, unknown> {
+  return new CommandPrototype(
+    params[0].trim(),
+    params[1].trim(),
+    params[2].trim(),
+  ).asGenericObject();
 }
