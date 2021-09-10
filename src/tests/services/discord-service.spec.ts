@@ -177,6 +177,8 @@ describe('Discord Service commands', () => {
     const mockChannel = new TextChannel(new Guild(discordService.client, {}), {});
     const mockMessage = {
       channel: mockChannel,
+      member: { id: 'me' },
+      guild: { ownerID: 'me' },
       toString: () => {
         return '!h';
       },

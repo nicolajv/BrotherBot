@@ -93,7 +93,10 @@ export class DiscordService implements ChatService {
             const parameter = content.substr(content.indexOf(' ') + 1);
             try {
               let permitted = true;
-              if (command.adminOnly && !(message.member!.id === message.guild!.ownerID)) {
+              if (!message.member || !message.guild) {
+                throw new Error('This message has no sender or no server');
+              }
+              if (command.adminOnly && !(message.member.id === message.guild.ownerID)) {
                 permitted = false;
               }
               if (permitted) {
