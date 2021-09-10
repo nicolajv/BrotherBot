@@ -503,10 +503,23 @@ describe('Discord Service voice event', () => {
     expect(sendMessageInMainChannelSpy).toHaveBeenCalledTimes(1);
   });
 
-  it('Throws error if user has no username', async () => {
+  it('Throws error if user has no username on voice event start', async () => {
     jestHelper.mockPrivateFunction(DiscordService.prototype, 'handleVoiceEvent');
     try {
       startCall(discordService, undefined, undefined, null);
+    } catch (err) {
+      expect((err as Error).message).toMatch('User does not have a username');
+      return;
+    }
+    fail('An error should have happened');
+  });
+
+  it('Throws error if user has no username on call start', async () => {
+    try {
+      discordService['handleUsersStartingCalls']({} as VoiceState, {} as VoiceState, {
+        userId: '',
+        userName: '',
+      });
     } catch (err) {
       expect((err as Error).message).toMatch('User does not have a username');
       return;
@@ -542,6 +555,20 @@ describe('Discord Service send message in main channel', () => {
       } as VoiceState,
     );
     expect(sendMessageInMainChannelSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('Throws an error if main channel cannot be found when trying to send a message in it', async () => {
+    try {
+      discordService['mainChannel'] = jestHelper.setPropertyToAnything(undefined);
+      jestHelper.mockPrivateFunction(DiscordService.prototype, 'setMainChannel', () => {
+        return undefined;
+      });
+      await discordService['sendMessageInMainChannel'](testString);
+    } catch (error) {
+      expect((error as Error).message).toMatch('Unable to find main channel');
+      return;
+    }
+    fail('An error should have happened');
   });
 });
 
