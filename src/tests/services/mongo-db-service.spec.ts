@@ -12,7 +12,7 @@ describe('Mongo DB Service', () => {
     const mongoDBService = new MongoDBService();
     mongoDBService['MongoClient'] = jestHelper.setPropertyToAnything(new MongoDBMock());
     const tableData = mongoDBService.getAllFromTable(testString);
-    await expect(tableData).resolves.not.toThrowError();
+    expect(tableData).resolves.not.toThrowError();
     expect(await tableData).toEqual(tableContents);
   });
 
@@ -20,9 +20,7 @@ describe('Mongo DB Service', () => {
     const mongoDBService = new MongoDBService();
     mongoDBService['MongoClient'] = jestHelper.setPropertyToAnything(new MongoDBMock());
     mongoDBService['dbAddress'] = 'error';
-    await expect(mongoDBService.getAllFromTable(testString)).rejects.toEqual(
-      'A database error occured',
-    );
+    expect(mongoDBService.getAllFromTable(testString)).rejects.toEqual('A database error occured');
   });
 
   it('Can increment data in a table', async () => {
@@ -51,7 +49,7 @@ describe('Mongo DB Service', () => {
     const mongoDBService = new MongoDBService();
     mongoDBService['MongoClient'] = jestHelper.setPropertyToAnything(new MongoDBMock());
     mongoDBService['dbAddress'] = 'error';
-    await expect(
+    expect(
       mongoDBService.incrementFieldFindByFilter(testString, testString, testString, testString),
     ).rejects.toEqual('A database error occured');
   });
@@ -60,14 +58,14 @@ describe('Mongo DB Service', () => {
     const mongoDBService = new MongoDBService();
     mongoDBService['MongoClient'] = jestHelper.setPropertyToAnything(new MongoDBMock());
     const deleteSpy = mongoDBService.delete(testString, testString, testString);
-    await expect(deleteSpy).resolves.not.toThrowError();
+    expect(deleteSpy).resolves.not.toThrowError();
   });
 
   it('Can throw error if connection is broken (delete data)', async () => {
     const mongoDBService = new MongoDBService();
     mongoDBService['MongoClient'] = jestHelper.setPropertyToAnything(new MongoDBMock());
     mongoDBService['dbAddress'] = 'error';
-    await expect(mongoDBService.delete(testString, testString, testString)).rejects.toEqual(
+    expect(mongoDBService.delete(testString, testString, testString)).rejects.toEqual(
       'A database error occured',
     );
   });
@@ -76,13 +74,13 @@ describe('Mongo DB Service', () => {
     const mongoDBService = new MongoDBService();
     mongoDBService['MongoClient'] = jestHelper.setPropertyToAnything(new MongoDBMock());
     const saveSpy = mongoDBService.save(testString, {});
-    await expect(saveSpy).resolves.not.toThrowError();
+    expect(saveSpy).resolves.not.toThrowError();
   });
 
   it('Can throw error if connection is broken (insert)', async () => {
     const mongoDBService = new MongoDBService();
     mongoDBService['MongoClient'] = jestHelper.setPropertyToAnything(new MongoDBMock());
     mongoDBService['dbAddress'] = 'error';
-    await expect(mongoDBService.save(testString, {})).rejects.toEqual('A database error occured');
+    expect(mongoDBService.save(testString, {})).rejects.toEqual('A database error occured');
   });
 });

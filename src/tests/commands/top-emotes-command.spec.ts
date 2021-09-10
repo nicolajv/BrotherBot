@@ -20,7 +20,7 @@ describe('Top emotes command', () => {
     const topEmotesCommand = new TopEmotesCommand(databaseService);
     expect(topEmotesCommand.name.length).toBeGreaterThan(0);
     const result = topEmotesCommand.execute();
-    await expect(result).resolves.not.toThrowError();
+    expect(result).resolves.not.toThrowError();
     const finalResult = await result;
     expect(finalResult.response[0]).toMatch(testString);
     expect(finalResult.response[0]).not.toMatch(translations.noEmotesFound);
@@ -35,7 +35,7 @@ describe('Top emotes command', () => {
     const topEmotesCommand = new TopEmotesCommand(databaseService);
     expect(topEmotesCommand.name.length).toBeGreaterThan(0);
     const result = topEmotesCommand.execute();
-    await expect(result).resolves.not.toThrowError();
+    expect(result).resolves.not.toThrowError();
     const finalResult = await result;
     expect(finalResult.response[0]).toMatch(translations.noEmotesFound);
   });

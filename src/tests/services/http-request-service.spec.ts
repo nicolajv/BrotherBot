@@ -13,11 +13,11 @@ jest.mock('request', () => {
 describe('Http Request Service get requests', () => {
   it('Can make successful requests', async () => {
     const requestService = new HttpRequestService();
-    await expect(requestService.getAsObject('')).resolves.not.toThrowError();
+    expect(requestService.getAsObject('')).resolves.not.toThrowError();
   });
 
   it('Can throw an error on a failed request', async () => {
     const requestService = new HttpRequestService();
-    await expect(requestService.getAsObject('test')).rejects.toThrowError();
+    expect(requestService.getAsObject('test')).rejects.toThrowError();
   });
 });

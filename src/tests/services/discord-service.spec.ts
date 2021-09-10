@@ -49,19 +49,19 @@ describe('Discord Service login', () => {
   it('Can login to discord', async () => {
     jest.spyOn(discordService.client, 'login').mockReturnValueOnce(Promise.resolve(testString));
     const promise = discordService.login();
-    await expect(promise).resolves.not.toThrowError();
+    expect(promise).resolves.not.toThrowError();
   });
 
   it('Throws error if token is unset', async () => {
     process.env.DISCORD_TOKEN = undefined;
-    await expect(discordService.login()).rejects.toThrowError();
+    expect(discordService.login()).rejects.toThrowError();
   });
 
   it('Uses token if passed', async () => {
     process.env.DISCORD_TOKEN = undefined;
     jest.spyOn(discordService.client, 'login').mockReturnValueOnce(Promise.resolve(testString));
     const promise = discordService.login(testString);
-    await expect(promise).resolves.not.toThrowError();
+    expect(promise).resolves.not.toThrowError();
   });
 });
 
@@ -354,9 +354,9 @@ describe('Discord Service commands', () => {
     });
 
     discordService.client.emit('messageReactionAdd', mockReaction, {} as User);
-    expect(await updateEmoteInDatabaseSpy).toHaveBeenCalledWith(mockReaction, true);
-    expect(await updateEmoteInDatabaseSpy).toHaveBeenCalledTimes(1);
-    expect(await incrementFieldFindByFilterSpy).toHaveBeenCalledTimes(1);
+    expect(updateEmoteInDatabaseSpy).toHaveBeenCalledWith(mockReaction, true);
+    expect(updateEmoteInDatabaseSpy).toHaveBeenCalledTimes(1);
+    expect(incrementFieldFindByFilterSpy).toHaveBeenCalledTimes(1);
   });
 
   it('Handles removed emotes in reactions', async () => {
@@ -379,9 +379,9 @@ describe('Discord Service commands', () => {
     });
 
     discordService.client.emit('messageReactionRemove', mockReaction, {} as User);
-    expect(await updateEmoteInDatabaseSpy).toHaveBeenCalledWith(mockReaction, false);
-    expect(await updateEmoteInDatabaseSpy).toHaveBeenCalledTimes(1);
-    expect(await incrementFieldFindByFilterSpy).toHaveBeenCalledTimes(1);
+    expect(updateEmoteInDatabaseSpy).toHaveBeenCalledWith(mockReaction, false);
+    expect(updateEmoteInDatabaseSpy).toHaveBeenCalledTimes(1);
+    expect(incrementFieldFindByFilterSpy).toHaveBeenCalledTimes(1);
   });
 
   it('Handles non existant emotes', async () => {
@@ -398,10 +398,10 @@ describe('Discord Service commands', () => {
     );
 
     discordService.client.emit('messageReactionAdd', mockReaction, {} as User);
-    expect(await updateEmoteInDatabaseSpy).toHaveBeenCalledWith(mockReaction, true);
-    expect(await updateEmoteInDatabaseSpy).toHaveBeenCalledTimes(1);
-    expect(await checkIfEmojiExistsSpy).toHaveBeenCalledTimes(1);
-    expect(await checkIfEmojiExistsSpy).toHaveLastReturnedWith(undefined);
+    expect(updateEmoteInDatabaseSpy).toHaveBeenCalledWith(mockReaction, true);
+    expect(updateEmoteInDatabaseSpy).toHaveBeenCalledTimes(1);
+    expect(checkIfEmojiExistsSpy).toHaveBeenCalledTimes(1);
+    expect(checkIfEmojiExistsSpy).toHaveLastReturnedWith(undefined);
   });
 
   it('Does not react to bots', async () => {

@@ -16,7 +16,7 @@ describe('Card Image command', () => {
     const cardImageCommand = new CardImageCommand(tcgService);
     expect(cardImageCommand.name.length).toBeGreaterThan(0);
     const result = cardImageCommand.execute(testString);
-    await expect(result).resolves.not.toThrowError();
+    expect(result).resolves.not.toThrowError();
     const finalResult = await result;
     expect(finalResult.response[0]).toMatch(testString);
     expect(finalResult.response[0]).not.toMatch(translations.noCardFound);
@@ -31,7 +31,7 @@ describe('Card Image command', () => {
     const cardImageCommand = new CardImageCommand(tcgService);
     expect(cardImageCommand.name.length).toBeGreaterThan(0);
     const result = cardImageCommand.execute();
-    await expect(result).resolves.not.toThrowError();
+    expect(result).resolves.not.toThrowError();
     const finalResult = await result;
     expect(finalResult.response[0]).toMatch(translations.noCardFound);
   });
