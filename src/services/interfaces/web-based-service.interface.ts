@@ -1,3 +1,3 @@
 interface WebBasedService {
-  get(search: string): Promise<string>;
+  get(search: string): Promise<string[]>;
 }

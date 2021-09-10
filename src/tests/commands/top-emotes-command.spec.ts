@@ -22,8 +22,8 @@ describe('Top emotes command', () => {
     const result = topEmotesCommand.execute();
     await expect(result).resolves.not.toThrowError();
     const finalResult = await result;
-    expect(finalResult.response).toMatch(testString);
-    expect(finalResult.response).not.toMatch(translations.noEmotesFound);
+    expect(finalResult.response[0]).toMatch(testString);
+    expect(finalResult.response[0]).not.toMatch(translations.noEmotesFound);
   });
 
   it('Returns an error message if no top emotes are returned', async () => {
@@ -37,6 +37,6 @@ describe('Top emotes command', () => {
     const result = topEmotesCommand.execute();
     await expect(result).resolves.not.toThrowError();
     const finalResult = await result;
-    expect(finalResult.response).toMatch(translations.noEmotesFound);
+    expect(finalResult.response[0]).toMatch(translations.noEmotesFound);
   });
 });

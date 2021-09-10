@@ -23,9 +23,9 @@ export class TopEmotesCommand extends AbstractCommand {
           for (i = 0; i < topEmotes.length; i++) {
             finalString = `${finalString}${i + 1}. ${topEmotes[i]['name']}\n`;
           }
-          return new CommandResponse(finalString);
+          return new CommandResponse([finalString]);
         }
-        return new CommandResponse(translations.noEmotesFound);
+        return new CommandResponse([translations.noEmotesFound]);
       },
       translations.topEmotesCommandHelp,
     );

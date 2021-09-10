@@ -22,7 +22,7 @@ export class AddCustomCommand extends AbstractCommand {
         } catch (err) {
           result = translations.notEnoughParamters;
         }
-        return new CommandResponse(result, true);
+        return new CommandResponse([result], true);
       },
       undefined,
       true,

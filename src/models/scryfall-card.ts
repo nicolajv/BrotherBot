@@ -35,6 +35,16 @@ interface ScryfallCard {
   colors?: Array<string>;
   color_identity?: Array<string>;
   keywords?: Array<string>;
+  card_faces: Array<{
+    image_uris?: {
+      small?: string;
+      normal?: string;
+      large?: string;
+      png?: string;
+      art_crop?: string;
+      border_crop?: string;
+    };
+  }>;
   legalities?: {
     standard?: string;
     future?: string;

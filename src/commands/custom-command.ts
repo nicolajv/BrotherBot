@@ -6,7 +6,7 @@ export class CustomCommand extends AbstractCommand {
     super(
       command,
       async () => {
-        return new CommandResponse(output);
+        return new CommandResponse([output]);
       },
       helperText,
     );

@@ -15,9 +15,10 @@ describe('Youtube video search', () => {
       }),
     );
     const video = youtubeVideoService.get(testVideo);
-    await expect(video).resolves.not.toThrowError();
+    expect(video).resolves.not.toThrowError();
     expect(requestService.getAsObject).toHaveBeenCalledTimes(1);
-    expect(await video).toContain(testString);
+    const finalVideo = await video;
+    expect(finalVideo[0]).toContain(testString);
   });
 
   it('Throws error if retrieving a video fails', async () => {
@@ -27,7 +28,7 @@ describe('Youtube video search', () => {
       }),
     );
     const video = youtubeVideoService.get(testVideo);
-    await expect(video).rejects.toThrowError();
+    expect(video).rejects.toThrowError();
     expect(requestService.getAsObject).toHaveBeenCalledTimes(1);
   });
 

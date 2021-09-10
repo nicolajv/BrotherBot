@@ -11,7 +11,7 @@ describe('Help command', () => {
     const result = helpCommand.execute();
     expect(result).resolves.not.toThrowError();
     const finalResult = await result;
-    expect(finalResult.response).toContain(mockCommand.helperText);
+    expect(finalResult.response[0]).toContain(mockCommand.helperText);
   });
 
   it('Does not return commands without helper text', async () => {
@@ -24,6 +24,6 @@ describe('Help command', () => {
     const result = helpCommand.execute();
     expect(result).resolves.not.toThrowError();
     const finalResult = await result;
-    expect(finalResult.response).not.toContain(noHelpCommand.name);
+    expect(finalResult.response[0]).not.toContain(noHelpCommand.name);
   });
 });

@@ -12,7 +12,7 @@ export abstract class AbstractWebServiceCommand extends AbstractCommand implemen
     super(
       name,
       async (parameter?: string) => {
-        let result: string;
+        let result: string[];
         try {
           if (parameter) {
             result = await webService.get(parameter);
@@ -20,7 +20,7 @@ export abstract class AbstractWebServiceCommand extends AbstractCommand implemen
             throw new Error('A database error occured');
           }
         } catch (err) {
-          result = errorMessage;
+          result = [errorMessage];
         }
         return new CommandResponse(result);
       },

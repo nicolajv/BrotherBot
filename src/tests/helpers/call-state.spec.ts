@@ -72,4 +72,11 @@ describe('Call state', () => {
     expect(endCallSpy).toHaveBeenCalledTimes(1);
     expect(endCallSpy.mock.results[0].value).toMatch('0:0:0');
   });
+
+  it('Returns default duration when ending call that could not be found', () => {
+    const callState = new CallState();
+    const endCallSpy = jestHelper.mockPrivateFunction(CallState.prototype, 'endCall');
+    callState['endCall']('test');
+    expect(endCallSpy.mock.results[0].value).toMatch('0:0:0');
+  });
 });

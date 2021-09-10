@@ -7,7 +7,7 @@ export class MockCommand extends AbstractCommand {
       name ? name : 'test',
       () => {
         return new Promise<CommandResponse>(resolve => {
-          resolve(new CommandResponse('description', adminOnly));
+          resolve(new CommandResponse(['description', 'description2'], adminOnly));
         });
       },
       includeHelperText ? 'helpertext' : undefined,

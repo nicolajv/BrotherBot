@@ -17,7 +17,7 @@ describe('Help command', () => {
     const result = addCustomCommand.execute();
     expect(result).resolves.not.toThrowError();
     const finalResult = await result;
-    expect(finalResult.response).toEqual(translations.notEnoughParamters);
+    expect(finalResult.response).toEqual([translations.notEnoughParamters]);
     expect(finalResult.refreshCommands).toEqual(true);
   });
 
@@ -26,7 +26,7 @@ describe('Help command', () => {
     const result = addCustomCommand.execute(`${testString}`);
     expect(result).resolves.not.toThrowError();
     const finalResult = await result;
-    expect(finalResult.response).toEqual(translations.notEnoughParamters);
+    expect(finalResult.response).toEqual([translations.notEnoughParamters]);
     expect(finalResult.refreshCommands).toEqual(true);
   });
 
@@ -35,7 +35,7 @@ describe('Help command', () => {
     const result = addCustomCommand.execute(`${testString}, ${testString}`);
     expect(result).resolves.not.toThrowError();
     const finalResult = await result;
-    expect(finalResult.response).toEqual(translations.notEnoughParamters);
+    expect(finalResult.response).toEqual([translations.notEnoughParamters]);
     expect(finalResult.refreshCommands).toEqual(true);
   });
 
@@ -44,7 +44,7 @@ describe('Help command', () => {
     const result = addCustomCommand.execute(`${testString}, ${testString}, ${testString}`);
     expect(result).resolves.not.toThrowError();
     const finalResult = await result;
-    expect(finalResult.response).toEqual(translations.commandAdded);
+    expect(finalResult.response).toEqual([translations.commandAdded]);
     expect(finalResult.refreshCommands).toEqual(true);
   });
 });

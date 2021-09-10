@@ -16,7 +16,7 @@ export class YoutubeVideoService implements VideoService {
     this.requestService = requestService;
   }
 
-  public async get(search: string): Promise<string> {
+  public async get(search: string): Promise<string[]> {
     const searchResult = {} as YoutubeVideo;
     Object.assign(
       searchResult,
@@ -30,6 +30,6 @@ export class YoutubeVideoService implements VideoService {
     ) {
       throw new Error('Video not found');
     }
-    return `${this.youtubeVideoUrl}${searchResult.items[0].id.videoId}`;
+    return [`${this.youtubeVideoUrl}${searchResult.items[0].id.videoId}`];
   }
 }

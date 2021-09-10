@@ -19,9 +19,36 @@ describe('Scryfall Service card images', () => {
       }),
     );
     const cardImage = scryfallService.get(testCard);
-    await expect(cardImage).resolves.not.toThrowError();
+    expect(cardImage).resolves.not.toThrowError();
     expect(requestService.getAsObject).toHaveBeenCalledTimes(1);
-    expect(await cardImage).toEqual(testString);
+    const finalCardImage = await cardImage;
+    expect(finalCardImage[0]).toEqual(testString);
+  });
+
+  it('Can return a double faced card from the api', async () => {
+    jest.spyOn(requestService, 'getAsObject').mockReturnValueOnce(
+      new Promise<Record<string, unknown>>(resolve => {
+        resolve({
+          object: 'list',
+          total_cards: 1,
+          data: [
+            {
+              object: 'card',
+              card_faces: [
+                { image_uris: { normal: testString } },
+                { image_uris: { normal: `${testString}${testString}` } },
+              ],
+            },
+          ],
+        });
+      }),
+    );
+    const cardImage = scryfallService.get(testCard);
+    expect(cardImage).resolves.not.toThrowError();
+    expect(requestService.getAsObject).toHaveBeenCalledTimes(1);
+    const finalCardImage = await cardImage;
+    expect(finalCardImage[0]).toEqual(testString);
+    expect(finalCardImage[1]).toEqual(`${testString}${testString}`);
   });
 
   it('Throws error when finding non-card object', async () => {
@@ -30,7 +57,7 @@ describe('Scryfall Service card images', () => {
         resolve({ object: 'error' });
       }),
     );
-    await expect(scryfallService.get(testCard)).rejects.toThrowError();
+    expect(scryfallService.get(testCard)).rejects.toThrowError();
     expect(requestService.getAsObject).toHaveBeenCalledTimes(1);
   });
 
@@ -44,7 +71,26 @@ describe('Scryfall Service card images', () => {
         });
       }),
     );
-    await expect(scryfallService.get(testCard)).rejects.toThrowError();
+    expect(scryfallService.get(testCard)).rejects.toThrowError();
+    expect(requestService.getAsObject).toHaveBeenCalledTimes(1);
+  });
+
+  it('Throws error when finding no double faced image uris', async () => {
+    jest.spyOn(requestService, 'getAsObject').mockReturnValueOnce(
+      new Promise<Record<string, unknown>>(resolve => {
+        resolve({
+          object: 'list',
+          total_cards: 1,
+          data: [
+            {
+              object: 'card',
+              card_faces: [{ image_uris: {} }],
+            },
+          ],
+        });
+      }),
+    );
+    expect(scryfallService.get(testCard)).rejects.toThrowError();
     expect(requestService.getAsObject).toHaveBeenCalledTimes(1);
   });
 
@@ -58,7 +104,7 @@ describe('Scryfall Service card images', () => {
         });
       }),
     );
-    await expect(scryfallService.get(testCard)).rejects.toThrowError();
+    expect(scryfallService.get(testCard)).rejects.toThrowError();
     expect(requestService.getAsObject).toHaveBeenCalledTimes(1);
   });
 });

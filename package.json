@@ -6,7 +6,7 @@
   "scripts": {
     "start": "docker-compose up --build",
     "serve": "tsc-watch --onSuccess 'node dist/infrastructure/server.js'",
-    "test": "npm run lint && npm run compile && jest --forceExit",
+    "test": "npm run lint && npm run compile && jest --forceExit --silent",
     "compile": "rm dist -rf && tsc",
     "lint": "eslint ./src"
   },

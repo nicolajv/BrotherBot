@@ -9,8 +9,8 @@ const testString = 'test';
 describe('Card Image command', () => {
   it('Can return a card from the api', async () => {
     jest.spyOn(tcgService, 'get').mockImplementationOnce(() => {
-      return new Promise<string>(resolve => {
-        resolve(testString);
+      return new Promise<string[]>(resolve => {
+        resolve([testString]);
       });
     });
     const cardImageCommand = new CardImageCommand(tcgService);
@@ -18,14 +18,14 @@ describe('Card Image command', () => {
     const result = cardImageCommand.execute(testString);
     await expect(result).resolves.not.toThrowError();
     const finalResult = await result;
-    expect(finalResult.response).toMatch(testString);
-    expect(finalResult.response).not.toMatch(translations.noCardFound);
+    expect(finalResult.response[0]).toMatch(testString);
+    expect(finalResult.response[0]).not.toMatch(translations.noCardFound);
   });
 
   it('Returns an error message if no parameter is provided', async () => {
     jest.spyOn(tcgService, 'get').mockImplementationOnce(() => {
-      return new Promise<string>(resolve => {
-        resolve(testString);
+      return new Promise<string[]>(resolve => {
+        resolve([testString]);
       });
     });
     const cardImageCommand = new CardImageCommand(tcgService);
@@ -33,6 +33,6 @@ describe('Card Image command', () => {
     const result = cardImageCommand.execute();
     await expect(result).resolves.not.toThrowError();
     const finalResult = await result;
-    expect(finalResult.response).toMatch(translations.noCardFound);
+    expect(finalResult.response[0]).toMatch(translations.noCardFound);
   });
 });

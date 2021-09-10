@@ -26,10 +26,13 @@ export class CallState {
 
   private endCall(callId: string): string {
     const call = this.findCallById(callId);
-    const duration = call!.getDuration();
-    this.activeCalls = this.activeCalls.filter(call => {
-      return call.id !== callId;
-    });
+    let duration = '0:0:0';
+    if (call) {
+      duration = call.getDuration();
+      this.activeCalls = this.activeCalls.filter(call => {
+        return call.id !== callId;
+      });
+    }
     return duration;
   }
 

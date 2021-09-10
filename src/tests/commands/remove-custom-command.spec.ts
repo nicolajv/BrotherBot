@@ -17,7 +17,7 @@ describe('Remove custom command', () => {
     const result = removeCustomCommand.execute();
     expect(result).resolves.not.toThrowError();
     const finalResult = await result;
-    expect(finalResult.response).toEqual(translations.notEnoughParamters);
+    expect(finalResult.response[0]).toEqual(translations.notEnoughParamters);
     expect(finalResult.refreshCommands).toEqual(true);
   });
 
@@ -26,7 +26,7 @@ describe('Remove custom command', () => {
     const result = removeCustomCommand.execute(testString);
     expect(result).resolves.not.toThrowError();
     const finalResult = await result;
-    expect(finalResult.response).toEqual(translations.commandRemoved);
+    expect(finalResult.response[0]).toEqual(translations.commandRemoved);
     expect(finalResult.refreshCommands).toEqual(true);
   });
 });

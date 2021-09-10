@@ -18,7 +18,7 @@ export class HelpCommand extends AbstractCommand {
               result = result + `${commandPrefix}${command.name} - ${command.helperText}\n`;
             }
           });
-        resolve(new CommandResponse(`${translations.helpCommandText}\n${result}`));
+        resolve(new CommandResponse([`${translations.helpCommandText}\n${result}`]));
       });
     });
     this.commandList = commandList;

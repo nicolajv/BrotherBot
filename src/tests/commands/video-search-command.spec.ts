@@ -9,29 +9,30 @@ const testString = 'test';
 describe('Video Search command', () => {
   it('Can return a card from the api', async () => {
     jest.spyOn(videoService, 'get').mockImplementationOnce(() => {
-      return new Promise<string>(resolve => {
-        resolve(testString);
+      return new Promise<string[]>(resolve => {
+        resolve([testString]);
       });
     });
     const videoSearchCommand = new VideoSearchCommand(videoService);
     expect(videoSearchCommand.name.length).toBeGreaterThan(0);
     const result = videoSearchCommand.execute(testString);
-    await expect(result).resolves.not.toThrowError();
-
-    await expect((await result).response).toMatch(testString);
-    await expect((await result).response).not.toMatch(translations.noVideoFound);
+    expect(result).resolves.not.toThrowError();
+    const finalResult = await result;
+    expect(finalResult.response[0]).toMatch(testString);
+    expect(finalResult.response[0]).not.toMatch(translations.noVideoFound);
   });
 
   it('Returns an error message if no parameter is provided', async () => {
     jest.spyOn(videoService, 'get').mockImplementationOnce(() => {
-      return new Promise<string>(resolve => {
-        resolve(testString);
+      return new Promise<string[]>(resolve => {
+        resolve([testString]);
       });
     });
     const videoSearchCommand = new VideoSearchCommand(videoService);
     expect(videoSearchCommand.name.length).toBeGreaterThan(0);
     const result = videoSearchCommand.execute();
-    await expect(result).resolves.not.toThrowError();
-    await expect((await result).response).toMatch(translations.noVideoFound);
+    expect(result).resolves.not.toThrowError();
+    const finalResult = await result;
+    expect(finalResult.response[0]).toMatch(translations.noVideoFound);
   });
 });

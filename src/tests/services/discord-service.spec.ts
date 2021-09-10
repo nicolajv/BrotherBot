@@ -190,7 +190,7 @@ describe('Discord Service commands', () => {
       });
     });
     discordService.client.emit('message', mockMessage);
-    expect(await mockMessage.channel.send).toHaveBeenCalledTimes(1);
+    expect(await mockMessage.channel.send).toHaveBeenCalledTimes(2);
   });
 
   it('Handles non-existent commands', async () => {
@@ -268,7 +268,7 @@ describe('Discord Service commands', () => {
       });
     });
     discordService.client.emit('message', mockMessage);
-    expect(await mockMessage.channel.send).toHaveBeenCalledTimes(1);
+    expect(await mockMessage.channel.send).toHaveBeenCalledTimes(2);
   });
 
   it('Handles emotes in messages', async () => {
