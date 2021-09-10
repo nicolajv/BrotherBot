@@ -5,6 +5,15 @@ export interface ScryfallCardList {
   data: [ScryfallCard];
 }
 
+type imageUrls = {
+  small?: string;
+  normal?: string;
+  large?: string;
+  png?: string;
+  art_crop?: string;
+  border_crop?: string;
+};
+
 interface ScryfallCard {
   object: string;
   id?: string;
@@ -20,14 +29,7 @@ interface ScryfallCard {
   scryfall_uri?: string;
   layout?: string;
   highres_image?: boolean;
-  image_uris?: {
-    small?: string;
-    normal?: string;
-    large?: string;
-    png?: string;
-    art_crop?: string;
-    border_crop?: string;
-  };
+  image_uris?: imageUrls;
   mana_cost?: string;
   cmc?: number;
   type_line?: string;
@@ -36,14 +38,7 @@ interface ScryfallCard {
   color_identity?: Array<string>;
   keywords?: Array<string>;
   card_faces: Array<{
-    image_uris?: {
-      small?: string;
-      normal?: string;
-      large?: string;
-      png?: string;
-      art_crop?: string;
-      border_crop?: string;
-    };
+    image_uris?: imageUrls;
   }>;
   legalities?: {
     standard?: string;
