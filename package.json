@@ -57,7 +57,7 @@
     "discord.js": "^12.3.1",
     "eslint": "^7.32.0",
     "express": "^4.17.1",
-    "husky": "^4.3.0",
+    "husky": "^7.0.2",
     "moment": "^2.29.1",
     "mongodb": "^3.6.4",
     "prettier": "^2.4.1",
