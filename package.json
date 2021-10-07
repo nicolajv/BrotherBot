@@ -64,7 +64,7 @@
     "pretty-quick": "^3.0.2",
     "request": "^2.88.2",
     "tsc-watch": "^4.2.9",
-    "typescript": "^4.0.3"
+    "typescript": "^4.4.3"
   },
   "devDependencies": {
     "@types/request": "^2.48.5",
