@@ -23,7 +23,3 @@ describe('App', () => {
     }
   });
 });
-
-afterAll(async done => {
-  done();
-});
