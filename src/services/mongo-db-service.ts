@@ -10,14 +10,14 @@ export class MongoDBService implements DatabaseService {
       this.MongoClient.connect(
         this.dbAddress,
         async (error: AnyError | undefined, client: MongoClient | undefined) => {
-          if (error) {
+          if (error || !client) {
             reject('A database error occured');
+          } else {
+            const db = client.db(this.dbName);
+
+            await db.collection(table).deleteOne({ [filterField]: filterValue });
+            resolve();
           }
-
-          const db = client!.db(this.dbName);
-
-          await db.collection(table).deleteOne({ [filterField]: filterValue });
-          resolve();
         },
       );
     });
@@ -28,13 +28,13 @@ export class MongoDBService implements DatabaseService {
       this.MongoClient.connect(
         this.dbAddress,
         async (error: AnyError | undefined, client: MongoClient | undefined) => {
-          if (error) {
+          if (error || !client) {
             reject('A database error occured');
+          } else {
+            const db = client.db(this.dbName);
+
+            resolve(await db.collection(table).find().toArray());
           }
-
-          const db = client!.db(this.dbName);
-
-          resolve(await db.collection(table).find().toArray());
         },
       );
     });
@@ -51,20 +51,20 @@ export class MongoDBService implements DatabaseService {
       this.MongoClient.connect(
         this.dbAddress,
         async (error: AnyError | undefined, client: MongoClient | undefined) => {
-          if (error) {
+          if (error || !client) {
             reject('A database error occured');
+          } else {
+            const db = client.db(this.dbName);
+
+            await db
+              .collection(table)
+              .updateOne(
+                { [filterField]: filterValue },
+                { $inc: { [incrementField]: increase ? 1 : -1 } },
+                { upsert: true },
+              );
+            resolve();
           }
-
-          const db = client!.db(this.dbName);
-
-          await db
-            .collection(table)
-            .updateOne(
-              { [filterField]: filterValue },
-              { $inc: { [incrementField]: increase ? 1 : -1 } },
-              { upsert: true },
-            );
-          resolve();
         },
       );
     });
@@ -75,14 +75,14 @@ export class MongoDBService implements DatabaseService {
       this.MongoClient.connect(
         this.dbAddress,
         async (error: AnyError | undefined, client: MongoClient | undefined) => {
-          if (error) {
+          if (error || !client) {
             reject('A database error occured');
+          } else {
+            const db = client.db(this.dbName);
+
+            await db.collection(table).insertOne(object);
+            resolve();
           }
-
-          const db = client!.db(this.dbName);
-
-          await db.collection(table).insertOne(object);
-          resolve();
         },
       );
     });
