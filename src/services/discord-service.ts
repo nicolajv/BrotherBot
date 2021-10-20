@@ -1,4 +1,13 @@
-import { Client, GuildEmoji, Message, MessageReaction, TextChannel, VoiceState } from 'discord.js';
+import {
+  Client,
+  GuildEmoji,
+  Intents,
+  Message,
+  MessageReaction,
+  PartialMessageReaction,
+  TextChannel,
+  VoiceState,
+} from 'discord.js';
 import { commandPrefix, emotesTable } from '../data/constants';
 
 import { CallState } from '../helpers/calls-state';
@@ -18,8 +27,19 @@ export class DiscordService implements ChatService {
 
   private callState = new CallState();
 
-  constructor(loggingService: LoggingService, databaseService: DatabaseService) {
-    this.client = new Client();
+  constructor(loggingService: LoggingService, databaseService: DatabaseService, client?: Client) {
+    this.client = client
+      ? client
+      : new Client({
+          intents: [
+            Intents.FLAGS.GUILDS,
+            Intents.FLAGS.GUILD_MESSAGES,
+            Intents.FLAGS.GUILD_MEMBERS,
+            Intents.FLAGS.GUILD_MESSAGES,
+            Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+            Intents.FLAGS.GUILD_VOICE_STATES,
+          ],
+        });
     this.loggingService = loggingService;
     this.databaseService = databaseService;
     this.initCommands();
@@ -96,7 +116,7 @@ export class DiscordService implements ChatService {
               if (!message.member || !message.guild) {
                 throw new Error('This message has no sender or no server');
               }
-              if (command.adminOnly && !(message.member.id === message.guild.ownerID)) {
+              if (command.adminOnly && !(message.member.id === message.guild.ownerId)) {
                 permitted = false;
               }
               if (permitted) {
@@ -135,7 +155,10 @@ export class DiscordService implements ChatService {
     });
   }
 
-  private updateEmoteInDatabase(reaction: MessageReaction, added: boolean): void {
+  private updateEmoteInDatabase(
+    reaction: MessageReaction | PartialMessageReaction,
+    added: boolean,
+  ): void {
     const emote = `<:${reaction.emoji.identifier}>`;
     if (this.checkIfEmojiExists(emote)) {
       this.databaseService.incrementFieldFindByFilter(emotesTable, 'name', emote, 'amount', added);
@@ -173,18 +196,18 @@ export class DiscordService implements ChatService {
       throw new Error('User does not have a username');
     }
     if (
-      newstate.channelID &&
+      newstate.channelId &&
       newstate.channel &&
       newstate.channel.joinable &&
-      oldstate.channelID !== newstate.channelID
+      oldstate.channelId !== newstate.channelId
     ) {
-      const userCountAfterAddition = this.callState.addUserToCall(newstate.channelID, user);
+      const userCountAfterAddition = this.callState.addUserToCall(newstate.channelId, user);
       if (userCountAfterAddition === 1) {
         const starterUserName = newstate.member.nickname
           ? newstate.member.nickname
           : newstate.member.displayName;
         this.sendMessageInMainChannel(
-          `${starterUserName} ${translations.callStarted} ${newstate.channel?.name}!`,
+          `${starterUserName} ${translations.callStarted} ${newstate.channel.name}!`,
         );
       }
     }
@@ -192,15 +215,15 @@ export class DiscordService implements ChatService {
 
   private handleUsersEndingCalls(oldstate: VoiceState, newstate: VoiceState, user: User): void {
     if (
-      oldstate.channelID &&
+      oldstate.channelId &&
       oldstate.channel &&
       oldstate.channel.joinable &&
-      oldstate.channelID !== newstate.channelID
+      oldstate.channelId !== newstate.channelId
     ) {
-      const removalResult = this.callState.removeUserFromCall(oldstate.channelID, user);
+      const removalResult = this.callState.removeUserFromCall(oldstate.channelId, user);
       if (removalResult.userCount === 0) {
         this.sendMessageInMainChannel(
-          `${translations.callEnded} ${oldstate.channel?.name}. ${translations.callEndedDuration} ${removalResult.duration}`,
+          `${translations.callEnded} ${oldstate.channel.name}. ${translations.callEndedDuration} ${removalResult.duration}`,
         );
       }
     }
@@ -225,7 +248,7 @@ export class DiscordService implements ChatService {
         throw new Error('Unable to find main channel');
       }
       const channel = guild.channels.cache.find(channel => {
-        return channel.type === 'text';
+        return channel.type === 'GUILD_TEXT';
       }) as TextChannel;
       this.mainChannel = channel ? channel : null;
       resolve();
