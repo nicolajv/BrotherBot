@@ -5,7 +5,7 @@
   "scripts": {
     "start": "docker-compose --file docker-compose.yml --file docker-compose.local.yml up --build ",
     "serve": "tsc-watch --onSuccess 'node dist/infrastructure/server.js'",
-    "test": "npm run lint && tsc -noEmit && jest --forceExit --silent",
+    "test": "npm run lint && tsc -noEmit && jest --forceExit --silent --maxWorkers=1",
     "lint": "eslint ./src",
     "build": "rm dist -rf && tsc"
   },
