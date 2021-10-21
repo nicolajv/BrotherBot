@@ -17,10 +17,10 @@ jobs:
         run: docker-compose build --build-arg VERSION=$(git rev-parse --short HEAD)
       - name: Collect coverage
         if: github.ref == 'refs/heads/master'
-        run: docker cp $(docker run -d brotherbotv2:latest tail -f /dev/null):/bot/coverage .
+        run: docker cp $(docker run -d nicolajv/brotherbotv2:latest tail -f /dev/null):/bot/coverage .
       - name: Push image
         if: github.ref == 'refs/heads/master'
-        run: docker push brotherbotv2:latest
+        run: docker push nicolajv/brotherbotv2:latest
       - name: Publish code coverage
         if: github.ref == 'refs/heads/master'
         uses: paambaati/codeclimate-action@v3.0.0
