@@ -1,11 +1,13 @@
-version: '2'
+version: '3.7'
 services:
   app:
+    build:
+      context: .
+      target: release
+      dockerfile: Dockerfile
     container_name: bot
+    image: nicolajv/brotherbotv2
     restart: always
-    build: .
-    volumes:
-      - ./src:/bot/src
     ports:
       - '3000:3000'
     links:

@@ -1,31 +1,29 @@
-name: Deploy
+name: Build
 on:
-  workflow_dispatch:
   push:
-    branches: [master]
+  workflow_dispatch:
 
 jobs:
-  run-tests:
-    name: Run tests
+  run-build:
+    name: Build
     runs-on: ubuntu-latest
     steps:
-      - name: Setup Node
-        uses: actions/setup-node@v2
-        with:
-          node-version: '16'
-      - name: Extract branch name
-        shell: bash
-        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-        id: extract_branch
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Install dependencies
-        run: npm ci
-      - name: Run tests
-        run: npm test
+      - name: Sign in to Docker
+        if: github.ref == 'refs/heads/master'
+        run: docker login -u '${{ secrets.DOCKER_USERNAME }}' -p '${{ secrets.DOCKER_PASSWORD }}'
+      - name: Build
+        run: docker-compose build --build-arg VERSION=$(git rev-parse --short HEAD)
+      - name: Collect coverage
+        if: github.ref == 'refs/heads/master'
+        run: docker cp $(docker run -d brotherbotv2:latest tail -f /dev/null):/bot/coverage .
+      - name: Push image
+        if: github.ref == 'refs/heads/master'
+        run: docker push brotherbotv2:latest
       - name: Publish code coverage
-        if: ${{ steps.extract_branch.outputs.branch == 'master' }}
-        uses: paambaati/codeclimate-action@v2.7.4
+        if: github.ref == 'refs/heads/master'
+        uses: paambaati/codeclimate-action@v3.0.0
         env:
           CC_TEST_REPORTER_ID: '${{ secrets.CC_TEST_REPORTER_ID }}'
         with:
@@ -33,7 +31,8 @@ jobs:
             ${{github.workspace}}/coverage.lcov:lcov
   deploy:
     name: Deploy
-    needs: run-tests
+    needs: run-build
+    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
       - name: AWS SSM Send-Command
@@ -46,4 +45,4 @@ jobs:
           instance-ids: ${{ secrets.INSTANCE_ID }}
 
           working-directory: /home/ubuntu/BrotherBotV2
-          command: git pull; npm start
+          command: docker-compose pull; docker-compose up -d --no-build

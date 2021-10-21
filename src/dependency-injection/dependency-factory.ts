@@ -16,6 +16,7 @@ import { CustomCommandHandler } from '../helpers/custom-command-handler';
 import { AddCustomCommand } from '../commands/add-custom-command';
 import { RemoveCustomCommand } from '../commands/remove-custom-command';
 import { Command } from '../commands/interfaces/command.interface';
+import { VersionCommand } from '../commands/version-command';
 
 export const makeAddCustomCommand = (): AddCustomCommand => {
   return new AddCustomCommand(makeDatabaseService());
@@ -63,6 +64,10 @@ export const makeRequestService = (): RequestService => {
 
 export const makeTopEmotesCommand = (): TopEmotesCommand => {
   return new TopEmotesCommand(makeDatabaseService());
+};
+
+export const makeVersionCommand = (): VersionCommand => {
+  return new VersionCommand();
 };
 
 export const makeVideoSearchCommand = (): VideoSearchCommand => {

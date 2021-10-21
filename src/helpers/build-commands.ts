@@ -7,6 +7,7 @@ import {
   makeTopEmotesCommand,
   makeVideoSearchCommand,
   makeCustomCommandHandler,
+  makeVersionCommand,
 } from '../dependency-injection/dependency-factory';
 
 export async function buildCommands(): Promise<Array<Command>> {
@@ -14,6 +15,7 @@ export async function buildCommands(): Promise<Array<Command>> {
   commands.push(makeCardImageCommand());
   commands.push(makeVideoSearchCommand());
   commands.push(makeTopEmotesCommand());
+  commands.push(makeVersionCommand());
   commands.push(makeAddCustomCommand());
   commands.push(makeRemoveCustomCommand());
   const customCommands = await makeCustomCommandHandler().getCustomCommands();
