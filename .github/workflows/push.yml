@@ -45,4 +45,4 @@ jobs:
           instance-ids: ${{ secrets.INSTANCE_ID }}
 
           working-directory: /home/ubuntu/BrotherBotV2
-          command: docker-compose pull; docker-compose up -d --no-build
+          command: docker login -u '${{ secrets.DOCKER_USERNAME }}' -p '${{ secrets.DOCKER_PASSWORD }}'; docker pull nicolajv/brotherbotv2; docker-compose up -d --no-build; docker logout
