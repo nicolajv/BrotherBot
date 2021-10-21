@@ -1,8 +1,9 @@
 {
   "name": "brotherbotv2",
   "description": "Discord bot for Big Brother",
+  "version": "",
   "scripts": {
-    "start": "docker-compose --file docker-compose.yml --file docker-compose.local.yml up --build",
+    "start": "docker-compose --file docker-compose.yml --file docker-compose.local.yml up --build ",
     "serve": "tsc-watch --onSuccess 'node dist/infrastructure/server.js'",
     "test": "npm run lint && tsc -noEmit && jest --forceExit --silent",
     "lint": "eslint ./src",
@@ -25,7 +26,8 @@
       "^.+\\.(ts|tsx)$": "ts-jest"
     },
     "testPathIgnorePatterns": [
-      "/node_modules/"
+      "/node_modules/",
+      "/prod_node_modules/"
     ],
     "testEnvironment": "node",
     "collectCoverage": true,
@@ -49,6 +51,13 @@
   },
   "homepage": "https://github.com/nicolajv/BrotherBotV2#readme",
   "dependencies": {
+    "discord.js": "^13.2.0",
+    "express": "^4.17.1",
+    "moment": "^2.29.1",
+    "mongodb": "^4.1.3",
+    "request": "^2.88.2"
+  },
+  "devDependencies": {
     "@types/express": "^4.17.13",
     "@types/jest": "^27.0.2",
     "@types/mongodb": "^4.0.7",
@@ -57,20 +66,13 @@
     "@types/ws": "^8.2.0",
     "@typescript-eslint/eslint-plugin": "^5.1.0",
     "@typescript-eslint/parser": "^5.1.0",
-    "discord.js": "^13.2.0",
     "eslint": "^8.0.1",
-    "express": "^4.17.1",
-    "jest": "^27.3.1",
-    "moment": "^2.29.1",
-    "mongodb": "^4.1.3",
-    "request": "^2.88.2",
-    "ts-jest": "^27.0.7",
-    "typescript": "^4.4.4"
-  },
-  "devDependencies": {
     "husky": "^7.0.2",
+    "jest": "^27.3.1",
     "prettier": "^2.4.1",
     "pretty-quick": "^3.1.1",
-    "tsc-watch": "^4.5.0"
+    "tsc-watch": "^4.5.0",
+    "typescript": "^4.4.4",
+    "ts-jest": "^27.0.7"
   }
 }

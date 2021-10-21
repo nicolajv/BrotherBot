@@ -5,7 +5,7 @@ on:
 
 jobs:
   run-build:
-    name: Run build
+    name: Build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -14,13 +14,24 @@ jobs:
         if: github.ref == 'refs/heads/master'
         run: docker login -u '${{ secrets.DOCKER_USERNAME }}' -p '${{ secrets.DOCKER_PASSWORD }}'
       - name: Build
-        run: docker-compose build
+        run: docker-compose build --build-arg VERSION=$(git rev-parse --short HEAD)
       - name: Tag image
         if: github.ref == 'refs/heads/master'
         run: docker tag brotherbotv2_app nicolajv/brotherbotv2:latest
-      - name: Push
+      - name: Collect coverage
+        if: github.ref == 'refs/heads/master'
+        run: docker cp $(docker run -d nicolajv/brotherbotv2:latest tail -f /dev/null):/bot/coverage .
+      - name: Push image
         if: github.ref == 'refs/heads/master'
         run: docker push nicolajv/brotherbotv2:latest
+      - name: Publish code coverage
+        if: github.ref == 'refs/heads/master'
+        uses: paambaati/codeclimate-action@v3.0.0
+        env:
+          CC_TEST_REPORTER_ID: '${{ secrets.CC_TEST_REPORTER_ID }}'
+        with:
+          coverageLocations: |
+            ${{github.workspace}}/coverage.lcov:lcov
   deploy:
     name: Deploy
     needs: run-build
@@ -37,4 +48,4 @@ jobs:
           instance-ids: ${{ secrets.INSTANCE_ID }}
 
           working-directory: /home/ubuntu/BrotherBotV2
-          command: docker-compose pull; docker-compose up -d
+          command: docker-compose pull; docker-compose up -d --no-build

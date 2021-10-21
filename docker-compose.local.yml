@@ -2,8 +2,7 @@ version: '3.7'
 services:
   app:
     build:
-      context: .
       target: local
-      dockerfile: Dockerfile
     volumes:
+      - ./dist:/bot/dist
       - ./src:/bot/src

@@ -6,6 +6,7 @@ services:
       target: release
       dockerfile: Dockerfile
     container_name: bot
+    image: nicolajv/brotherbotv2
     restart: always
     ports:
       - '3000:3000'
