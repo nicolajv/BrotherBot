@@ -2,10 +2,11 @@
   "name": "brotherbotv2",
   "description": "Discord bot for Big Brother",
   "scripts": {
-    "start": "docker-compose up --build",
+    "start": "docker-compose --file docker-compose.yml --file docker-compose.local.yml up --build",
     "serve": "tsc-watch --onSuccess 'node dist/infrastructure/server.js'",
     "test": "npm run lint && tsc -noEmit && jest --forceExit --silent",
-    "lint": "eslint ./src"
+    "lint": "eslint ./src",
+    "build": "rm dist -rf && tsc"
   },
   "husky": {
     "hooks": {
@@ -64,12 +65,12 @@
     "mongodb": "^4.1.3",
     "request": "^2.88.2",
     "ts-jest": "^27.0.7",
-    "tsc-watch": "^4.5.0",
     "typescript": "^4.4.4"
   },
   "devDependencies": {
     "husky": "^7.0.2",
     "prettier": "^2.4.1",
-    "pretty-quick": "^3.1.1"
+    "pretty-quick": "^3.1.1",
+    "tsc-watch": "^4.5.0"
   }
 }

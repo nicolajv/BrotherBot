@@ -1,39 +1,30 @@
-name: Deploy
+name: Build
 on:
-  workflow_dispatch:
   push:
-    branches: [master]
+  workflow_dispatch:
 
 jobs:
-  run-tests:
-    name: Run tests
+  run-build:
+    name: Run build
     runs-on: ubuntu-latest
     steps:
-      - name: Setup Node
-        uses: actions/setup-node@v2
-        with:
-          node-version: '16'
-      - name: Extract branch name
-        shell: bash
-        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-        id: extract_branch
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Install dependencies
-        run: npm ci
-      - name: Run tests
-        run: npm test
-      - name: Publish code coverage
-        if: ${{ steps.extract_branch.outputs.branch == 'master' }}
-        uses: paambaati/codeclimate-action@v2.7.4
-        env:
-          CC_TEST_REPORTER_ID: '${{ secrets.CC_TEST_REPORTER_ID }}'
-        with:
-          coverageLocations: |
-            ${{github.workspace}}/coverage.lcov:lcov
+      - name: Sign in to Docker
+        if: github.ref == 'refs/heads/master'
+        run: docker login -u '${{ secrets.DOCKER_USERNAME }}' -p '${{ secrets.DOCKER_PASSWORD }}'
+      - name: Build
+        run: docker-compose build
+      - name: Tag image
+        if: github.ref == 'refs/heads/master'
+        run: docker tag brotherbotv2_app nicolajv/brotherbotv2:latest
+      - name: Push
+        if: github.ref == 'refs/heads/master'
+        run: docker push nicolajv/brotherbotv2:latest
   deploy:
     name: Deploy
-    needs: run-tests
+    needs: run-build
+    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
       - name: AWS SSM Send-Command
@@ -46,4 +37,4 @@ jobs:
           instance-ids: ${{ secrets.INSTANCE_ID }}
 
           working-directory: /home/ubuntu/BrotherBotV2
-          command: git pull; npm start
+          command: docker-compose pull; docker-compose up -d
