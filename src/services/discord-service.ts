@@ -1,13 +1,4 @@
-import {
-  Client,
-  GuildEmoji,
-  Intents,
-  Message,
-  MessageReaction,
-  PartialMessageReaction,
-  TextChannel,
-  VoiceState,
-} from 'discord.js';
+import { Client, GuildEmoji, Intents, Message, TextChannel, VoiceState } from 'discord.js';
 import { commandPrefix, emotesTable } from '../data/constants';
 
 import { CallState } from '../helpers/calls-state';
@@ -61,7 +52,10 @@ export class DiscordService implements ChatService {
     if (!this.client.user) {
       throw new Error('No Discord user found');
     }
-    this.client.user.setActivity({ name: translations.defaultActivity });
+    this.client.user.setActivity({
+      name: translations.defaultActivity,
+      type: 'LISTENING',
+    });
   }
 
   private findOrAddUser(userId: string, userName: string): User {
