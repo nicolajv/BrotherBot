@@ -323,7 +323,10 @@ describe('Discord Service reactions', () => {
     });
 
     discordClientMock.emit('messageReactionRemove', mockReaction, {} as User);
-    expect(updateEmoteInDatabaseSpy).toHaveBeenCalledWith(mockReaction, false);
+    expect(updateEmoteInDatabaseSpy).toHaveBeenCalledWith(
+      `<:${mockReaction.emoji.identifier}>`,
+      false,
+    );
     expect(updateEmoteInDatabaseSpy).toHaveBeenCalledTimes(1);
     expect(incrementFieldFindByFilterSpy).toHaveBeenCalledTimes(1);
   });
