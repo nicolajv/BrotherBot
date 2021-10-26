@@ -9,9 +9,9 @@ export class TopEmotesCommand extends AbstractCommand {
     super(
       'top10',
       async () => {
-        let topEmotes = ((await databaseService.getAllFromTable(emotesTable)) as unknown) as Array<
-          Emote
-        >;
+        let topEmotes = (await databaseService.getAllFromTable(
+          emotesTable,
+        )) as unknown as Array<Emote>;
         if (topEmotes.length > 0) {
           topEmotes = topEmotes
             .sort((a: Emote, b: Emote) => {
