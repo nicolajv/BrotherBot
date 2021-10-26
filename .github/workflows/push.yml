@@ -35,14 +35,10 @@ jobs:
     if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
-      - name: AWS SSM Send-Command
-        uses: peterkimzz/aws-ssm-send-command@master
-        id: ssm
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
         with:
-          aws-region: ${{ secrets.AWS_REGION }}
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          instance-ids: ${{ secrets.INSTANCE_ID }}
-
-          working-directory: /home/ubuntu/BrotherBotV2
-          command: docker login -u '${{ secrets.DOCKER_USERNAME }}' -p '${{ secrets.DOCKER_PASSWORD }}'; docker pull nicolajv/brotherbotv2; docker-compose up -d --no-build; docker logout
+          key: ${{ secrets.AWS_KEY }}
+          known_hosts: ${{ secrets.AWS_KNOWN_HOSTS }}
+      - name: Deploy
+        run: ssh ${{ secrets.AWS_USERNAME }}@${{ secrets.AWS_HOST }} mkdir -p "BrotherBotV2" && cd "$_" && docker login -u '${{ secrets.DOCKER_USERNAME }}' -p '${{ secrets.DOCKER_PASSWORD }}' && docker pull nicolajv/brotherbotv2 && docker-compose up -d --no-build && docker logout
