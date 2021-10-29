@@ -7,8 +7,7 @@
     "serve": "tsc-watch --onSuccess 'node dist/infrastructure/server.js'",
     "test": "npm run lint && tsc -noEmit && jest --forceExit --silent --maxWorkers=1",
     "lint": "eslint ./src",
-    "build": "rm dist -rf && tsc",
-    "lol": "docker build --build-arg VERSION=$(git rev-parse --short HEAD) --target production-build . && docker build --build-arg VERSION=$(git rev-parse --short HEAD) --target test-export . --output . && docker build -t nicolajv/brotherbotv2 --build-arg VERSION=$(git rev-parse --short HEAD) --target release ."
+    "build": "rm dist -rf && tsc"
   },
   "husky": {
     "hooks": {
