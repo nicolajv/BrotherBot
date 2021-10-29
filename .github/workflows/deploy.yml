@@ -13,12 +13,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Build
-        run: docker-compose build --build-arg VERSION=$(git rev-parse --short HEAD)
-      - name: Collect coverage
         run: |
-          container=$(docker run -d nicolajv/brotherbotv2:latest tail -f /dev/null)
-          docker cp $container:/bot/coverage .
-          docker cp $container:/bot/docker-compose.yml .
+          docker build --build-arg VERSION=$(git rev-parse --short HEAD) --target production-build .
+          docker build --build-arg VERSION=$(git rev-parse --short HEAD) --target test-export . --output .
+          docker build -t nicolajv/brotherbotv2 --build-arg VERSION=$(git rev-parse --short HEAD) --target release .
       - name: Push image
         run: |
           docker login -u '${{ secrets.DOCKER_USERNAME }}' -p '${{ secrets.DOCKER_PASSWORD }}'
