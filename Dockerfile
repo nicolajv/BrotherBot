@@ -1,5 +1,5 @@
 # Base
-FROM node:latest AS base
+FROM node:lts-alpine AS base
 WORKDIR /bot
 COPY package.json .
 ARG VERSION=${VERSION:-local}
