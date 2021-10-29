@@ -12,4 +12,4 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Build
-        run: docker-compose build --build-arg VERSION=$(git rev-parse --short HEAD)
+        run: docker build --build-arg VERSION=$(git rev-parse --short HEAD) --target production-build .
