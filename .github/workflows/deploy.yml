@@ -32,6 +32,7 @@ jobs:
             ${{github.workspace}}/coverage.lcov:lcov
   run-deploy:
     name: Deploy
+    needs: run-build
     runs-on: ubuntu-latest
     steps:
       - name: Install SSH key
@@ -49,6 +50,7 @@ jobs:
           YOUTUBE_TOKEN: ${{ secrets.YOUTUBE_TOKEN }}
           LANGUAGE: ${{ secrets.LANGUAGE }}
         run: |
+          docker login -u '${{ secrets.DOCKER_USERNAME }}' -p '${{ secrets.DOCKER_PASSWORD }}'
           docker context create remote --docker "host=ssh://${{ secrets.AWS_USERNAME }}@${{ secrets.AWS_HOST }}" 
           docker context use remote
           docker pull nicolajv/brotherbotv2 
