@@ -2,6 +2,7 @@
 FROM node:latest AS base
 WORKDIR /bot
 COPY package.json .
+COPY docker-compose.yml .
 ARG VERSION=${VERSION:-local}
 RUN sed -i 's/"version": ".*"/"version": \"'$VERSION'\"/' package.json
 

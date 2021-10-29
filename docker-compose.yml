@@ -13,6 +13,7 @@ services:
     links:
       - database
     environment:
+      DISCORD_TOKEN: ${BASE_PATH}
       DISCORD_TOKEN: ${DISCORD_TOKEN}
       YOUTUBE_TOKEN: ${YOUTUBE_TOKEN}
       LANGUAGE: ${LANGUAGE}
@@ -20,7 +21,7 @@ services:
     container_name: database
     image: mongo
     volumes:
-      - ./data:/data/db
+      - ${BASE_PATH}:/data/db
     ports:
       - '27017:27017'
     logging:
