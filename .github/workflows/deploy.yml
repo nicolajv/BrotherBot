@@ -7,7 +7,7 @@ on:
 
 jobs:
   run-build:
-    name: Build
+    name: Deploy
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -30,11 +30,6 @@ jobs:
         with:
           coverageLocations: |
             ${{github.workspace}}/coverage.lcov:lcov
-  run-deploy:
-    name: Deploy
-    needs: run-build
-    runs-on: ubuntu-latest
-    steps:
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
         with:
