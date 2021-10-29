@@ -17,6 +17,8 @@ import { AddCustomCommand } from '../commands/add-custom-command';
 import { RemoveCustomCommand } from '../commands/remove-custom-command';
 import { Command } from '../commands/interfaces/command.interface';
 import { VersionCommand } from '../commands/version-command';
+import { DictionarySearchCommand } from '../commands/dictionary-search-command';
+import { UrbanDictionaryService } from '../services/urban-dictionary-service';
 
 export const makeAddCustomCommand = (): AddCustomCommand => {
   return new AddCustomCommand(makeDatabaseService());
@@ -40,6 +42,14 @@ export const makeChatService = (): DiscordService => {
 
 export const makeDatabaseService = (): DatabaseService => {
   return new MongoDBService();
+};
+
+export const makeDictionarySearchCommand = (): DictionarySearchCommand => {
+  return new DictionarySearchCommand(makeDictionaryService());
+};
+
+export const makeDictionaryService = (): DictionaryService => {
+  return new UrbanDictionaryService(makeRequestService());
 };
 
 export const makeHelpCommand = (commandList: Array<Command>): HelpCommand => {
