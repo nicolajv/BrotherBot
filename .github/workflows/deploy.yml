@@ -1,7 +1,8 @@
-name: Build
+name: Deploy
 on:
   push:
-  workflow_dispatch:
+    branches:
+      - main
 
 jobs:
   run-build:
@@ -10,39 +11,37 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Sign in to Docker
-        if: github.ref == 'refs/heads/master'
-        run: docker login -u '${{ secrets.DOCKER_USERNAME }}' -p '${{ secrets.DOCKER_PASSWORD }}'
       - name: Build
         run: docker-compose build --build-arg VERSION=$(git rev-parse --short HEAD)
       - name: Collect coverage
-        if: github.ref == 'refs/heads/master'
         run: |
           container=$(docker run -d nicolajv/brotherbotv2:latest tail -f /dev/null)
           docker cp $container:/bot/coverage .
           docker cp $container:/bot/docker-compose.yml .
       - name: Push image
-        if: github.ref == 'refs/heads/master'
-        run: docker push nicolajv/brotherbotv2:latest
+        run: |
+          docker login -u '${{ secrets.DOCKER_USERNAME }}' -p '${{ secrets.DOCKER_PASSWORD }}'
+          docker push nicolajv/brotherbotv2:latest
       - name: Publish code coverage
-        if: github.ref == 'refs/heads/master'
         uses: paambaati/codeclimate-action@v3.0.0
         env:
           CC_TEST_REPORTER_ID: '${{ secrets.CC_TEST_REPORTER_ID }}'
         with:
           coverageLocations: |
             ${{github.workspace}}/coverage.lcov:lcov
+  run-deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
         with:
           key: ${{ secrets.AWS_KEY }}
           known_hosts: ${{ secrets.AWS_HOST }}
       - name: Adding known hosts
-        if: github.ref == 'refs/heads/master'
         run: |
           ssh-keyscan -H ${{ secrets.AWS_HOST }} >> ~/.ssh/known_hosts
       - name: Deploy image
-        if: github.ref == 'refs/heads/master'
         env:
           BASE_PATH: ${{ secrets.BASE_PATH }}
           DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}

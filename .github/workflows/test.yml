@@ -1,0 +1,15 @@
+name: Test
+on:
+  push:
+    branches-ignore:
+      - main
+
+jobs:
+  run-build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Build
+        run: docker-compose build --build-arg VERSION=$(git rev-parse --short HEAD)
