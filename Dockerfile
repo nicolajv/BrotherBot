@@ -5,23 +5,19 @@ COPY package.json .
 ARG VERSION=${VERSION:-local}
 RUN sed -i 's/"version": ".*"/"version": \"'$VERSION'\"/' package.json
 
-
 # Install dependencies
-FROM base AS copy-configs
+FROM base AS install-dependencies
 COPY tsconfig.json .
-
-# Install dependencies
-FROM copy-configs AS install-dependencies
-RUN npm install --production --silent
-RUN cp -R node_modules prod_node_modules
-RUN npm install --silent
+RUN npm install --production --silent && \
+    cp -R node_modules prod_node_modules && \
+    npm install --silent
 
 # Build production
 FROM install-dependencies AS production-build
 COPY src ./src
 COPY .eslintrc.json .
-RUN npm run test
-RUN npm run build
+RUN npm run test && \
+    npm run build
 
 # Export test results
 FROM scratch AS test-export
