@@ -21,7 +21,7 @@ RUN npm run test && \
 
 # Export test results
 FROM scratch AS test-export
-COPY --from=production-build /bot/coverage ./coverage
+COPY --from=production-build /bot/coverage .
 
 # Release
 FROM base AS release
