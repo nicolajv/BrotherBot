@@ -1,15 +1,13 @@
-import { Moment } from 'moment';
 import { User } from './user';
-import moment = require('moment');
 
 export class Call {
   public readonly id: string;
   private users = Array<User>();
-  private readonly startTime: Moment;
+  private readonly startDate: Date;
 
   constructor(id: string) {
     this.id = id;
-    this.startTime = moment();
+    this.startDate = new Date();
   }
 
   public addUser(user: User): number {
@@ -31,8 +29,11 @@ export class Call {
   }
 
   public getDuration(): string {
-    const now = moment();
-    const diff = now.diff(this.startTime);
-    return moment.utc(diff).format('H:m:s');
+    const endDate = new Date();
+    const timeDiff = new Date(endDate.valueOf() - this.startDate.valueOf());
+    const hours = timeDiff.getUTCHours();
+    const minutes = timeDiff.getUTCMinutes();
+    const seconds = timeDiff.getUTCSeconds();
+    return `${hours}:${minutes}:${seconds}`;
   }
 }
