@@ -2,5 +2,5 @@
 # BrotherBotV2
 Second iteration of the Discord bot for the Big Brother server.
 
-## Usage
-The repo is designed to be used with Docker. Copy `.env.example` and rename it `.env`. In it you need to put your Discord and Youtube token. Afterwards simple `npm start` and you will be all set.
+## Getting started
+The repo is designed to be used with Docker. Copy `.env.example` and rename it `.env`. In it you need to put your Discord and Youtube token. Afterwards simply run `npm start` and you will be all set. `npm test` can be used to run linting and unit tests.
