@@ -14,13 +14,13 @@ export const translations = {
   helpCommandText: getTranslation('helpCommandText'),
   topEmotesCommandHelp: getTranslation('topEmotesCommandHelp'),
   videoSearchCommandHelp: getTranslation('videoSearchCommandHelp'),
-  //Errors
+  // Errors
   noCardFound: getTranslation('noCardFound'),
   noDictionaryEntryFound: getTranslation('noDictionaryEntryFound'),
   noEmotesFound: getTranslation('noEmotesFound'),
   notEnoughParamters: getTranslation('notEnoughParamters'),
   noVideoFound: getTranslation('noVideoFound'),
-  //For unit tests
+  // For unit tests
   testString: getTranslation('testString'),
 };
 

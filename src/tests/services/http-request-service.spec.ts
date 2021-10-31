@@ -1,6 +1,6 @@
 import { HttpRequestService } from '../../services/http-request-service';
 
-//Passing '' url will make the request succeed, anything else and it will fail
+// Passing '' url will make the request succeed, anything else and it will fail
 jest.mock('request', () => {
   return function (
     uri: string,

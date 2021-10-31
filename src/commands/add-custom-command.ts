@@ -31,7 +31,7 @@ export class AddCustomCommand extends AbstractCommand {
   }
 }
 
-function createCommandPrototype(params: string[]): Record<string, unknown> {
+function createCommandPrototype(params: Array<string>): Record<string, unknown> {
   return new CommandPrototype(
     params[0].trim(),
     params[1].trim(),

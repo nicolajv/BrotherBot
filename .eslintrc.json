@@ -11,13 +11,27 @@
   },
   "plugins": ["@typescript-eslint"],
   "rules": {
-    "@typescript-eslint/ban-types": 2,
-    "@typescript-eslint/explicit-function-return-type": 2,
-    "@typescript-eslint/no-duplicate-imports": 2,
-    "@typescript-eslint/no-empty-interface": 0,
-    "@typescript-eslint/no-explicit-any": 2,
-    "@typescript-eslint/no-unused-vars": 0,
-    "@typescript-eslint/typedef": 2,
-    "no-console": 1
+    "@typescript-eslint/array-type": ["error", { "default": "generic" }],
+    "@typescript-eslint/ban-types": ["error"],
+    "@typescript-eslint/consistent-indexed-object-style": ["error", "record"],
+    "@typescript-eslint/consistent-type-definitions": ["error", "interface"],
+    "@typescript-eslint/explicit-function-return-type": ["error"],
+    "@typescript-eslint/explicit-member-accessibility": [
+      "error",
+      { "overrides": { "constructors": "no-public" } }
+    ],
+    "@typescript-eslint/method-signature-style": ["error", "method"],
+    "@typescript-eslint/naming-convention": [
+      "error",
+      { "selector": "variableLike", "format": ["camelCase"], "leadingUnderscore": "allow" }
+    ],
+    "@typescript-eslint/no-duplicate-imports": ["error"],
+    "@typescript-eslint/no-empty-interface": ["off"],
+    "@typescript-eslint/no-explicit-any": ["error"],
+    "@typescript-eslint/no-type-alias": ["error", { "allowGenerics": "always" }],
+    "@typescript-eslint/no-unused-vars": ["off"],
+    "@typescript-eslint/typedef": ["error"],
+    "no-console": ["warn"],
+    "spaced-comment": ["error", "always", { "line": { "markers": ["/"] } }]
   }
 }

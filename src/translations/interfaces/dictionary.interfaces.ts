@@ -1,3 +1,1 @@
-interface Dictionary {
-  [key: string]: string;
-}
+type Dictionary = Record<string, string>;

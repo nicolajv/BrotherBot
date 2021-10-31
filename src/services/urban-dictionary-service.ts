@@ -10,7 +10,7 @@ export class UrbanDictionaryService implements DictionaryService {
     this.requestService = requestService;
   }
 
-  public async get(search: string): Promise<string[]> {
+  public async get(search: string): Promise<Array<string>> {
     const searchResult = {} as UrbanDictionaryResults;
     Object.assign(
       searchResult,

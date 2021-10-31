@@ -5,14 +5,14 @@ export interface ScryfallCardList {
   data: [ScryfallCard];
 }
 
-type imageUrls = {
+interface imageUrls {
   small?: string;
   normal?: string;
   large?: string;
   png?: string;
   art_crop?: string;
   border_crop?: string;
-};
+}
 
 interface ScryfallCard {
   object: string;

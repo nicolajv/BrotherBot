@@ -9,7 +9,7 @@ const testString = 'test';
 describe('Card Image command', () => {
   it('Can return a card from the api', async () => {
     jest.spyOn(tcgService, 'get').mockImplementationOnce(() => {
-      return new Promise<string[]>(resolve => {
+      return new Promise<Array<string>>(resolve => {
         resolve([testString]);
       });
     });
@@ -24,7 +24,7 @@ describe('Card Image command', () => {
 
   it('Returns an error message if no parameter is provided', async () => {
     jest.spyOn(tcgService, 'get').mockImplementationOnce(() => {
-      return new Promise<string[]>(resolve => {
+      return new Promise<Array<string>>(resolve => {
         resolve([testString]);
       });
     });

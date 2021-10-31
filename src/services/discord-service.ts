@@ -37,18 +37,18 @@ export class DiscordService implements ChatService {
     this.initEvents();
   }
 
-  async login(token = process.env.DISCORD_TOKEN): Promise<void> {
+  public async login(token = process.env.DISCORD_TOKEN): Promise<void> {
     if (token === 'undefined') {
       throw new Error('No Discord token set');
     }
     await this.client.login();
   }
 
-  logout(): void {
+  public logout(): void {
     this.client.destroy();
   }
 
-  async setActivity(): Promise<void> {
+  public async setActivity(): Promise<void> {
     if (!this.client.user) {
       throw new Error('No Discord user found');
     }

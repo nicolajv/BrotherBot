@@ -4,13 +4,13 @@ import { User } from '../models/user';
 export class CallState {
   private activeCalls = Array<Call>();
 
-  addUserToCall(callId: string, user: User): number {
+  public addUserToCall(callId: string, user: User): number {
     const call = this.startCall(callId);
     const usersInCall = call.addUser(user);
     return usersInCall;
   }
 
-  removeUserFromCall(callId: string, user: User): { userCount: number; duration?: string } {
+  public removeUserFromCall(callId: string, user: User): { userCount: number; duration?: string } {
     const call = this.findCallById(callId);
     if (call) {
       const usersInCall = call.removeUser(user);

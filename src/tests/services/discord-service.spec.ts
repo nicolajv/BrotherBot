@@ -433,7 +433,7 @@ describe('Logout', () => {
   });
 });
 
-//Helper functions
+// Helper functions
 function startCall(
   discordService: DiscordService,
   userId = 'userId',

@@ -16,7 +16,7 @@ export class YoutubeVideoService implements VideoService {
     this.requestService = requestService;
   }
 
-  public async get(search: string): Promise<string[]> {
+  public async get(search: string): Promise<Array<string>> {
     const searchResult = {} as YoutubeVideo;
     Object.assign(
       searchResult,

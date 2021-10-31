@@ -10,7 +10,7 @@ const resultString = 'test';
 describe('Dictionary Search command', () => {
   it('Can return a definition from the api', async () => {
     jest.spyOn(dictionaryService, 'get').mockImplementationOnce(() => {
-      return new Promise<string[]>(resolve => {
+      return new Promise<Array<string>>(resolve => {
         resolve([testString]);
       });
     });
@@ -25,7 +25,7 @@ describe('Dictionary Search command', () => {
 
   it('Returns an error message if no parameter is provided', async () => {
     jest.spyOn(dictionaryService, 'get').mockImplementationOnce(() => {
-      return new Promise<string[]>(resolve => {
+      return new Promise<Array<string>>(resolve => {
         resolve([testString]);
       });
     });

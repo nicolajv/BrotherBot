@@ -4,7 +4,7 @@ export interface UrbanDictionaryResults {
       definition: string;
       permalink: string;
       thumbs_up: number;
-      sound_urls: string[];
+      sound_urls: Array<string>;
       author: string;
       word: string;
       defid: number;

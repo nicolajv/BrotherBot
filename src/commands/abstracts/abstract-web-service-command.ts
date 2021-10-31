@@ -12,7 +12,7 @@ export abstract class AbstractWebServiceCommand extends AbstractCommand implemen
     super(
       name,
       async (parameter?: string) => {
-        let result: string[];
+        let result: Array<string>;
         try {
           if (parameter) {
             result = await webService.get(parameter);

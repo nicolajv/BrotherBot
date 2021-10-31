@@ -7,7 +7,7 @@ export class ScryfallService implements TcgService {
     this.requestService = requestService;
   }
 
-  public async get(search: string): Promise<string[]> {
+  public async get(search: string): Promise<Array<string>> {
     const searchResult = {} as ScryfallCardList;
     Object.assign(searchResult, await this.requestService.getAsObject(`${this.imageApi}${search}`));
     const result = new Array<string>();

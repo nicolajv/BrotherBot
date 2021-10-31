@@ -1,7 +1,7 @@
 export class CommandPrototype {
-  readonly command: string;
-  readonly output: string;
-  readonly helperText?: string;
+  public readonly command: string;
+  public readonly output: string;
+  public readonly helperText?: string;
 
   constructor(command: string, output: string, helperText: string) {
     this.command = command;
@@ -9,7 +9,7 @@ export class CommandPrototype {
     this.helperText = helperText;
   }
 
-  asGenericObject(): Record<string, unknown> {
+  public asGenericObject(): Record<string, unknown> {
     return this as Record<string, unknown>;
   }
 }

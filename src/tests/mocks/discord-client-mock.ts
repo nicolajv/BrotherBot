@@ -26,14 +26,14 @@ export class DiscordClientMock {
       string,
       {
         members: { cache: Collection<string, Member> };
-        channels: { cache: Collection<string, { type: string; send: () => void }> };
+        channels: { cache: Collection<string, { type: string; send(): void }> };
       }
     >().set('TestGuild', {
       members: {
         cache: new Collection<string, Member>(),
       },
       channels: {
-        cache: new Collection<string, { type: string; send: () => void }>().set('MainChannel', {
+        cache: new Collection<string, { type: string; send(): void }>().set('MainChannel', {
           type: 'GUILD_TEXT',
           send: function (): void {
             return;
@@ -50,11 +50,11 @@ export class DiscordClientMock {
     });
   }
 
-  public emit(event: string, ...args: unknown[]): void {
+  public emit(event: string, ...args: Array<unknown>): void {
     this.eventEmitter.emit(event, ...args);
   }
 
-  public on(event: string, callback: (...args: unknown[]) => void): void {
+  public on(event: string, callback: (...args: Array<unknown>) => void): void {
     this.eventEmitter.on(event, callback);
   }
 
@@ -62,7 +62,7 @@ export class DiscordClientMock {
     return;
   }
 
-  //Helper functions
+  // Helper functions
   public addGuildMember(member: Member): void {
     this.guilds.cache.first()?.members.cache.set(`${member.user.username}`, member);
   }
@@ -73,7 +73,7 @@ export class DiscordClientMock {
         cache: new Collection<string, Member>(),
       },
       channels: {
-        cache: new Collection<string, { type: string; send: () => void }>().set('MainChannel', {
+        cache: new Collection<string, { type: string; send(): void }>().set('MainChannel', {
           type: type,
           send: function (): void {
             return;
