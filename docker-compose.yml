@@ -13,7 +13,7 @@ services:
     links:
       - database
     environment:
-      DISCORD_TOKEN: ${BASE_PATH}
+      BASE_PATH: ${BASE_PATH}
       DISCORD_TOKEN: ${DISCORD_TOKEN}
       YOUTUBE_TOKEN: ${YOUTUBE_TOKEN}
       LANGUAGE: ${LANGUAGE}
