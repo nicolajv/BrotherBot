@@ -8,8 +8,9 @@
     "target": "es5",
     "baseUrl": ".",
     "paths": {
-        "src/*": ["./src/*"]
-    }
+      "src/*": ["./src/*"]
+    },
+    "skipLibCheck": true
   },
   "exclude": ["node_modules", "prod_node_modules", "src/tests"]
 }
