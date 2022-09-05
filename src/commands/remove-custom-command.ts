@@ -1,6 +1,7 @@
-import { translations } from '../data/translator';
-import { CommandResponse } from '../models/command-response';
 import { AbstractCommand } from './abstracts/abstract-command';
+import { CommandOption } from './abstracts/command-option';
+import { CommandResponse } from '../models/command-response';
+import { translations } from '../data/translator';
 
 export class RemoveCustomCommand extends AbstractCommand {
   private databaseService: DatabaseService;
@@ -8,11 +9,11 @@ export class RemoveCustomCommand extends AbstractCommand {
   constructor(databaseService: DatabaseService) {
     super(
       'rc',
-      async (parameter?: string) => {
+      async (parameters?: Array<string>) => {
         let result: string;
         try {
-          if (parameter) {
-            await this.databaseService.delete('commands', 'command', parameter);
+          if (parameters) {
+            await this.databaseService.delete('commands', 'command', parameters[0]);
             result = translations.commandRemoved;
           } else {
             throw new Error('No parameter found');
@@ -24,6 +25,7 @@ export class RemoveCustomCommand extends AbstractCommand {
       },
       undefined,
       true,
+      new Array<CommandOption>(new CommandOption('navn', 'navm', true)),
     );
     this.databaseService = databaseService;
   }

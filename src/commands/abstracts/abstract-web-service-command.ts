@@ -1,6 +1,7 @@
-import { CommandResponse } from '../../models/command-response';
-import { Command } from '../interfaces/command.interface';
 import { AbstractCommand } from './abstract-command';
+import { Command } from '../interfaces/command.interface';
+import { CommandOption } from './command-option';
+import { CommandResponse } from '../../models/command-response';
 
 export abstract class AbstractWebServiceCommand extends AbstractCommand implements Command {
   constructor(
@@ -8,14 +9,15 @@ export abstract class AbstractWebServiceCommand extends AbstractCommand implemen
     webService: WebBasedService,
     errorMessage: string,
     helperText?: string,
+    options?: Array<CommandOption>,
   ) {
     super(
       name,
-      async (parameter?: string) => {
+      async (parameters?: Array<string>) => {
         let result: Array<string>;
         try {
-          if (parameter) {
-            result = await webService.get(parameter);
+          if (parameters) {
+            result = await webService.get(parameters[0]);
           } else {
             throw new Error('A database error occured');
           }
@@ -25,6 +27,8 @@ export abstract class AbstractWebServiceCommand extends AbstractCommand implemen
         return new CommandResponse(result);
       },
       helperText,
+      false,
+      options,
     );
   }
 }

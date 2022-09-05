@@ -1,7 +1,8 @@
-import { translations } from '../data/translator';
+import { AbstractCommand } from './abstracts/abstract-command';
+import { CommandOption } from './abstracts/command-option';
 import { CommandPrototype } from '../models/command-prototype';
 import { CommandResponse } from '../models/command-response';
-import { AbstractCommand } from './abstracts/abstract-command';
+import { translations } from '../data/translator';
 
 export class AddCustomCommand extends AbstractCommand {
   private databaseService: DatabaseService;
@@ -9,11 +10,11 @@ export class AddCustomCommand extends AbstractCommand {
   constructor(databaseService: DatabaseService) {
     super(
       'ac',
-      async (parameter?: string) => {
+      async (parameters?: Array<string>) => {
         let result: string;
         try {
-          const params = parameter ? parameter.split(',') : [];
-          if (parameter && params.length === 3) {
+          const params = parameters;
+          if (params && params.length === 3) {
             await this.databaseService.save('commands', createCommandPrototype(params));
             result = translations.commandAdded;
           } else {
@@ -26,6 +27,11 @@ export class AddCustomCommand extends AbstractCommand {
       },
       undefined,
       true,
+      new Array<CommandOption>(
+        new CommandOption('navn', 'navm', true),
+        new CommandOption('svar', 'svar', true),
+        new CommandOption('hjælp', 'hjælp', true),
+      ),
     );
     this.databaseService = databaseService;
   }

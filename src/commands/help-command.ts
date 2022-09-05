@@ -1,8 +1,8 @@
 import { AbstractCommand } from './abstracts/abstract-command';
+import { Command } from './interfaces/command.interface';
+import { CommandResponse } from '../models/command-response';
 import { commandPrefix } from '../data/constants';
 import { translations } from '../data/translator';
-import { CommandResponse } from '../models/command-response';
-import { Command } from './interfaces/command.interface';
 
 export class HelpCommand extends AbstractCommand {
   private commandList: Array<Command>;
