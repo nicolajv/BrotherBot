@@ -9,7 +9,7 @@ export class AddCustomCommand extends AbstractCommand {
 
   constructor(databaseService: DatabaseService) {
     super(
-      'ac',
+      'addcommand',
       async (parameters?: Array<string>) => {
         let result: string;
         try {

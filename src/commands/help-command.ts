@@ -8,7 +8,7 @@ export class HelpCommand extends AbstractCommand {
   private commandList: Array<Command>;
 
   constructor(commandList: Array<Command>) {
-    super('h', async () => {
+    super(translations.helpCommand, async () => {
       return new Promise<CommandResponse>(resolve => {
         let result = '';
         this.commandList

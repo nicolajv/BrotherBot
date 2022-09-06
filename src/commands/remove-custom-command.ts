@@ -8,7 +8,7 @@ export class RemoveCustomCommand extends AbstractCommand {
 
   constructor(databaseService: DatabaseService) {
     super(
-      'rc',
+      'removecommand',
       async (parameters?: Array<string>) => {
         let result: string;
         try {

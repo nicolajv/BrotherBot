@@ -6,7 +6,7 @@ export class VideoSearchCommand extends AbstractWebServiceCommand {
   constructor(videoService: VideoService) {
     /* istanbul ignore next */
     super(
-      'y',
+      translations.videoCommand,
       videoService,
       translations.noVideoFound,
       translations.videoSearchCommandHelp,

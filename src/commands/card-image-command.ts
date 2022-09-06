@@ -6,7 +6,7 @@ export class CardImageCommand extends AbstractWebServiceCommand {
   constructor(tcgService: TcgService) {
     /* istanbul ignore next */
     super(
-      'k',
+      translations.cardCommand,
       tcgService,
       translations.noCardFound,
       translations.cardImageCommandHelp,

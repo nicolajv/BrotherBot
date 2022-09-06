@@ -6,7 +6,7 @@ export class DictionarySearchCommand extends AbstractWebServiceCommand {
   constructor(dictionaryService: DictionaryService) {
     /* istanbul ignore next */
     super(
-      'd',
+      translations.definitionCommand,
       dictionaryService,
       translations.noDictionaryEntryFound,
       translations.dictionarySearchCommandHelp,

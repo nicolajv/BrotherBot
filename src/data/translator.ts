@@ -14,6 +14,12 @@ export const translations = {
   helpCommandText: getTranslation('helpCommandText'),
   topEmotesCommandHelp: getTranslation('topEmotesCommandHelp'),
   videoSearchCommandHelp: getTranslation('videoSearchCommandHelp'),
+  // Commands
+  helpCommand: getTranslation('helpCommand'),
+  cardCommand: getTranslation('cardCommand'),
+  definitionCommand: getTranslation('definitionCommand'),
+  topEmotesCommand: getTranslation('topEmotesCommand'),
+  videoCommand: getTranslation('videoCommand'),
   // Params
   customCommandParam1N: getTranslation('customCommandParam1N'),
   customCommandParam1D: getTranslation('customCommandParam1D'),

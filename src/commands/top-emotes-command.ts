@@ -7,7 +7,7 @@ import { translations } from '../data/translator';
 export class TopEmotesCommand extends AbstractCommand {
   constructor(databaseService: DatabaseService) {
     super(
-      'top10',
+      translations.topEmotesCommand,
       async () => {
         let topEmotes = (await databaseService.getAllFromTable(
           emotesTable,
