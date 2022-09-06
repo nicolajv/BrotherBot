@@ -1,8 +1,8 @@
-import { emotesTable } from '../data/constants';
-import { translations } from '../data/translator';
+import { AbstractCommand } from './abstracts/abstract-command';
 import { CommandResponse } from '../models/command-response';
 import { Emote } from '../models/emote';
-import { AbstractCommand } from './abstracts/abstract-command';
+import { emotesTable } from '../data/constants';
+import { translations } from '../data/translator';
 
 export class TopEmotesCommand extends AbstractCommand {
   constructor(databaseService: DatabaseService) {

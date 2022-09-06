@@ -1,6 +1,6 @@
 import { VideoSearchCommand } from '../../commands/video-search-command';
-import { translations } from '../../data/translator';
 import { makeVideoService } from '../../dependency-injection/dependency-factory';
+import { translations } from '../../data/translator';
 
 const videoService: VideoService = makeVideoService();
 
@@ -15,7 +15,7 @@ describe('Video Search command', () => {
     });
     const videoSearchCommand = new VideoSearchCommand(videoService);
     expect(videoSearchCommand.name.length).toBeGreaterThan(0);
-    const result = videoSearchCommand.execute(testString);
+    const result = videoSearchCommand.execute([testString]);
     expect(result).resolves.not.toThrowError();
     const finalResult = await result;
     expect(finalResult.response[0]).toMatch(testString);

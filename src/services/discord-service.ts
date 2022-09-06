@@ -86,7 +86,7 @@ export class DiscordService implements ChatService {
     this.commands.forEach(command => {
       const data = new SlashCommandBuilder()
         .setName(command.name)
-        .setDescription(command.helperText ? command.helperText : 'lol');
+        .setDescription(command.helperText ? command.helperText : 'admin_only');
 
       if (command.adminOnly) {
         data.setDefaultMemberPermissions(0);
@@ -103,11 +103,12 @@ export class DiscordService implements ChatService {
       restCommands.push(data);
     });
 
-    const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN!);
     const guild = this.client.guilds.cache.first();
-    if (guild != undefined) {
+    const clientId = this.client.application?.id.toString();
+    if (guild != undefined && clientId != undefined && process.env.DISCORD_TOKEN != undefined) {
+      const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
       rest
-        .put(Routes.applicationGuildCommands(process.env.DISCORD_CLIENT_ID!, guild.id), {
+        .put(Routes.applicationGuildCommands(clientId, guild.id), {
           body: restCommands,
         })
         .then(() => this.loggingService.log(`Successfully registered application commands.`))
@@ -176,6 +177,12 @@ export class DiscordService implements ChatService {
           }
         }
       });
+    });
+  }
+
+  private handleReactions(): void {
+    this.client.on('message', message => {
+      const content = message.toString();
       const emotes = content.match(/<:[a-zA-Z]+:[0-9]+>/g);
       if (emotes) {
         emotes.forEach(async (match: string) => {
@@ -183,9 +190,6 @@ export class DiscordService implements ChatService {
         });
       }
     });
-  }
-
-  private handleReactions(): void {
     this.client.on('messageReactionAdd', reaction => {
       this.updateEmoteInDatabase(`<:${reaction.emoji.identifier}>`, true);
     });

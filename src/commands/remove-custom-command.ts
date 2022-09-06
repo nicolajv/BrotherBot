@@ -1,5 +1,5 @@
 import { AbstractCommand } from './abstracts/abstract-command';
-import { CommandOption } from './abstracts/command-option';
+import { CommandOption } from './command-option';
 import { CommandResponse } from '../models/command-response';
 import { translations } from '../data/translator';
 

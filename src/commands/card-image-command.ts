@@ -1,5 +1,5 @@
 import { AbstractWebServiceCommand } from './abstracts/abstract-web-service-command';
-import { CommandOption } from './abstracts/command-option';
+import { CommandOption } from './command-option';
 import { translations } from '../data/translator';
 
 export class CardImageCommand extends AbstractWebServiceCommand {

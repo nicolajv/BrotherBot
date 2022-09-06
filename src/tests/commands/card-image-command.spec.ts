@@ -1,6 +1,6 @@
 import { CardImageCommand } from '../../commands/card-image-command';
-import { translations } from '../../data/translator';
 import { makeTcgService } from '../../dependency-injection/dependency-factory';
+import { translations } from '../../data/translator';
 
 const tcgService = makeTcgService();
 
@@ -15,7 +15,7 @@ describe('Card Image command', () => {
     });
     const cardImageCommand = new CardImageCommand(tcgService);
     expect(cardImageCommand.name.length).toBeGreaterThan(0);
-    const result = cardImageCommand.execute(testString);
+    const result = cardImageCommand.execute([testString]);
     expect(result).resolves.not.toThrowError();
     const finalResult = await result;
     expect(finalResult.response[0]).toMatch(testString);

@@ -1,4 +1,4 @@
-import { CommandOption } from '../abstracts/command-option';
+import { CommandOption } from '../command-option';
 import { CommandResponse } from '../../models/command-response';
 
 export interface Command {

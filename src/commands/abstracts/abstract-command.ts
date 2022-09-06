@@ -1,5 +1,5 @@
 import { Command } from '../interfaces/command.interface';
-import { CommandOption } from './command-option';
+import { CommandOption } from '../command-option';
 import { CommandResponse } from '../../models/command-response';
 
 export abstract class AbstractCommand implements Command {

@@ -1,6 +1,6 @@
 import { AddCustomCommand } from '../../commands/add-custom-command';
-import { translations } from '../../data/translator';
 import { makeDatabaseService } from '../../dependency-injection/dependency-factory';
+import { translations } from '../../data/translator';
 
 const databaseService = makeDatabaseService();
 jest.spyOn(databaseService, 'save').mockImplementation(() => {
@@ -23,7 +23,7 @@ describe('Help command', () => {
 
   it('Fails to create a command with 1 parameter', async () => {
     const addCustomCommand = new AddCustomCommand(databaseService);
-    const result = addCustomCommand.execute(`${testString}`);
+    const result = addCustomCommand.execute([`${testString}`]);
     expect(result).resolves.not.toThrowError();
     const finalResult = await result;
     expect(finalResult.response).toEqual([translations.notEnoughParamters]);
@@ -32,7 +32,7 @@ describe('Help command', () => {
 
   it('Fails to create a command with 2 parameters', async () => {
     const addCustomCommand = new AddCustomCommand(databaseService);
-    const result = addCustomCommand.execute(`${testString}, ${testString}`);
+    const result = addCustomCommand.execute([`${testString}`, `${testString}`]);
     expect(result).resolves.not.toThrowError();
     const finalResult = await result;
     expect(finalResult.response).toEqual([translations.notEnoughParamters]);
@@ -41,7 +41,7 @@ describe('Help command', () => {
 
   it('Creates a command with 3 parameters', async () => {
     const addCustomCommand = new AddCustomCommand(databaseService);
-    const result = addCustomCommand.execute(`${testString}, ${testString}, ${testString}`);
+    const result = addCustomCommand.execute([`${testString}`, `${testString}`, `${testString}`]);
     expect(result).resolves.not.toThrowError();
     const finalResult = await result;
     expect(finalResult.response).toEqual([translations.commandAdded]);

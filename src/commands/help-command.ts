@@ -14,7 +14,7 @@ export class HelpCommand extends AbstractCommand {
         this.commandList
           .sort((a, b) => a.name.localeCompare(b.name))
           .forEach(command => {
-            if (command.helperText) {
+            if (command.helperText && !command.adminOnly && command.name != 'h') {
               result = result + `${commandPrefix}${command.name} - ${command.helperText}\n`;
             }
           });

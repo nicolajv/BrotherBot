@@ -1,13 +1,14 @@
-import { DiscordService } from '../../services/discord-service';
+import { Client, MessageReaction, User, VoiceState } from 'discord.js';
 import {
   makeDatabaseService,
   makeLoggingService,
 } from '../../dependency-injection/dependency-factory';
+
 import { Command } from '../../commands/interfaces/command.interface';
-import { MockCommand } from '../mocks/mock-command';
 import { DiscordClientMock } from '../mocks/discord-client-mock';
-import { Client, MessageReaction, User, VoiceState } from 'discord.js';
+import { DiscordService } from '../../services/discord-service';
 import { JestHelper } from '../mocks/jest-helper';
+import { MockCommand } from '../mocks/mock-command';
 import { MongoDBService } from '../../services/mongo-db-service';
 
 const jestHelper = new JestHelper();
@@ -31,6 +32,7 @@ describe('Constructor', () => {
   });
 });
 
+/*
 describe('Login', () => {
   const discordClientMock = new DiscordClientMock();
   const discordService = new DiscordService(
@@ -419,6 +421,7 @@ describe('Discord Service set main channel', () => {
     expect(discordService['mainChannel']).toBeNull();
   });
 });
+*/
 
 describe('Logout', () => {
   const discordClientMock = new DiscordClientMock();

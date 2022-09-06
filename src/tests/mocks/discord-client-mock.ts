@@ -1,4 +1,5 @@
 import { Collection, Message, Presence, TextChannel } from 'discord.js';
+
 import EventEmitter = require('events');
 
 interface Member {
