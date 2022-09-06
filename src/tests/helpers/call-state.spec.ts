@@ -29,6 +29,13 @@ describe('Call state', () => {
     expect(callState.removeUserFromCall(call1, testUser1).userCount).toEqual(0);
   });
 
+  it('Can return user count when users remain in the call', () => {
+    const callState = new CallState();
+    expect(callState.addUserToCall(call1, testUser1)).toEqual(1);
+    expect(callState.addUserToCall(call1, testUser2)).toEqual(2);
+    expect(callState.removeUserFromCall(call1, testUser1).userCount).toEqual(1);
+  });
+
   it('Can have multiple calls', () => {
     const callState = new CallState();
     expect(callState.addUserToCall(call1, testUser1)).toEqual(1);
