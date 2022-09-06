@@ -11,7 +11,11 @@ export class DictionarySearchCommand extends AbstractWebServiceCommand {
       translations.noDictionaryEntryFound,
       translations.dictionarySearchCommandHelp,
       new Array<CommandOption>(
-        new CommandOption('definition', 'Definitionen du gerne vil søge efter', true),
+        new CommandOption(
+          translations.definitionCommandParam1N,
+          translations.definitionCommandParam1D,
+          true,
+        ),
       ),
     );
   }

@@ -28,9 +28,21 @@ export class AddCustomCommand extends AbstractCommand {
       undefined,
       true,
       new Array<CommandOption>(
-        new CommandOption('navn', 'navm', true),
-        new CommandOption('svar', 'svar', true),
-        new CommandOption('hjælp', 'hjælp', true),
+        new CommandOption(
+          translations.customCommandParam1N,
+          translations.customCommandParam1D,
+          true,
+        ),
+        new CommandOption(
+          translations.customCommandParam2N,
+          translations.customCommandParam2D,
+          true,
+        ),
+        new CommandOption(
+          translations.customCommandParam3N,
+          translations.customCommandParam3D,
+          true,
+        ),
       ),
     );
     this.databaseService = databaseService;

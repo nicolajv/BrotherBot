@@ -25,7 +25,13 @@ export class RemoveCustomCommand extends AbstractCommand {
       },
       undefined,
       true,
-      new Array<CommandOption>(new CommandOption('navn', 'navm', true)),
+      new Array<CommandOption>(
+        new CommandOption(
+          translations.customCommandParam1N,
+          translations.customCommandParam1D,
+          true,
+        ),
+      ),
     );
     this.databaseService = databaseService;
   }

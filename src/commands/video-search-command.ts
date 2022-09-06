@@ -10,7 +10,9 @@ export class VideoSearchCommand extends AbstractWebServiceCommand {
       videoService,
       translations.noVideoFound,
       translations.videoSearchCommandHelp,
-      new Array<CommandOption>(new CommandOption('video', 'Videoen du gerne vil søge efter', true)),
+      new Array<CommandOption>(
+        new CommandOption(translations.videoCommandParam1N, translations.videoCommandParam1D, true),
+      ),
     );
   }
 }

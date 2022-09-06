@@ -10,7 +10,13 @@ export class CardImageCommand extends AbstractWebServiceCommand {
       tcgService,
       translations.noCardFound,
       translations.cardImageCommandHelp,
-      new Array<CommandOption>(new CommandOption('kort', 'Kortet du gerne vil søge efter', true)),
+      new Array<CommandOption>(
+        new CommandOption(
+          translations.cardImagineCommandParam1N,
+          translations.cardImagineCommandParam1D,
+          true,
+        ),
+      ),
     );
   }
 }
