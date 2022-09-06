@@ -40,6 +40,7 @@ export class DiscordService implements ChatService {
             GatewayIntentBits.GuildMembers,
             GatewayIntentBits.GuildMessageReactions,
             GatewayIntentBits.GuildVoiceStates,
+            GatewayIntentBits.MessageContent,
           ],
         });
     this.loggingService = loggingService;
@@ -181,13 +182,15 @@ export class DiscordService implements ChatService {
   }
 
   private handleReactions(): void {
-    this.client.on('message', message => {
-      const content = message.toString();
-      const emotes = content.match(/<:[a-zA-Z]+:[0-9]+>/g);
-      if (emotes) {
-        emotes.forEach(async (match: string) => {
-          this.updateEmoteInDatabase(match, true);
-        });
+    this.client.on('messageCreate', message => {
+      if (!message.author.bot) {
+        const content = message.content;
+        const emotes = content.match(/<:[a-zA-Z]+:[0-9]+>/g);
+        if (emotes) {
+          emotes.forEach(async (match: string) => {
+            this.updateEmoteInDatabase(match, true);
+          });
+        }
       }
     });
     this.client.on('messageReactionAdd', reaction => {

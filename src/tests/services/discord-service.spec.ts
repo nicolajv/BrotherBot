@@ -1,4 +1,4 @@
-import { Client, MessageReaction, User, VoiceState } from 'discord.js';
+import { ChannelType, Client, MessageReaction, User, VoiceState } from 'discord.js';
 import {
   makeDatabaseService,
   makeLoggingService,
@@ -32,7 +32,6 @@ describe('Constructor', () => {
   });
 });
 
-/*
 describe('Login', () => {
   const discordClientMock = new DiscordClientMock();
   const discordService = new DiscordService(
@@ -143,7 +142,7 @@ describe('Discord Service voice event', () => {
     );
   });
 
-  it('Sends messages when starting and ending calls', async () => {
+  it.only('Sends messages when starting and ending calls', async () => {
     let sendMessageInMainChannelSpy = jestHelper.mockPrivateFunction(
       DiscordService.prototype,
       'sendMessageInMainChannel',
@@ -230,54 +229,28 @@ describe('Discord Service commands', () => {
   );
 
   it('Handles successful commands', async () => {
-    const messageSpy = discordClientMock.sendMessage('!h');
+    const messageSpy = discordClientMock.triggerCommand('h');
     expect(await messageSpy).toHaveBeenCalledTimes(2);
   });
 
   it('Does not accept commands from bots', async () => {
-    const messageSpy = discordClientMock.sendMessage('!h', { bot: true });
+    const messageSpy = discordClientMock.triggerCommand('h', { bot: true });
     expect(await messageSpy).toHaveBeenCalledTimes(0);
   });
 
   it('Handles successful admin-only commands', async () => {
-    const messageSpy = discordClientMock.sendMessage('!a');
+    const messageSpy = discordClientMock.triggerCommand('a');
     expect(await messageSpy).toHaveBeenCalledTimes(2);
   });
 
   it('Handles failed admin-only commands', async () => {
-    const messageSpy = discordClientMock.sendMessage('!a', { member: { id: 'notAdmin' } });
+    const messageSpy = discordClientMock.triggerCommand('a', { member: { id: 'notAdmin' } });
     expect(await messageSpy).toHaveBeenCalledTimes(0);
   });
 
   it('Handles commands with no member', async () => {
-    const messageSpy = discordClientMock.sendMessage('!h', { member: null });
+    const messageSpy = discordClientMock.triggerCommand('h', { member: null });
     expect(await messageSpy).toHaveBeenCalledTimes(1);
-  });
-
-  it('Handles emotes in messages', async () => {
-    const incrementFieldFindByFilterSpy = jestHelper.mockPrivateFunction(
-      MongoDBService.prototype,
-      'incrementFieldFindByFilter',
-      () => {
-        return;
-      },
-    );
-    const messageSpy = discordClientMock.sendMessage('<:abc:123>');
-    expect(await messageSpy).toHaveBeenCalledTimes(0);
-    expect(incrementFieldFindByFilterSpy).toHaveBeenCalledTimes(1);
-  });
-
-  it('Does not add emotes from messages if they do not exist', async () => {
-    const incrementFieldFindByFilterSpy = jestHelper.mockPrivateFunction(
-      MongoDBService.prototype,
-      'incrementFieldFindByFilter',
-      () => {
-        return;
-      },
-    );
-    const messageSpy = discordClientMock.sendMessage('<:cba:321>');
-    expect(await messageSpy).toHaveBeenCalledTimes(0);
-    expect(incrementFieldFindByFilterSpy).toHaveBeenCalledTimes(0);
   });
 });
 
@@ -348,6 +321,32 @@ describe('Discord Service reactions', () => {
     discordClientMock.emit('messageReactionAdd', mockReaction, {} as User);
     expect(incrementFieldFindByFilterSpy).toHaveBeenCalledTimes(0);
   });
+
+  it('Handles emotes in messages', async () => {
+    const incrementFieldFindByFilterSpy = jestHelper.mockPrivateFunction(
+      MongoDBService.prototype,
+      'incrementFieldFindByFilter',
+      () => {
+        return;
+      },
+    );
+    const messageSpy = discordClientMock.sendMessage('<:abc:123>');
+    expect(await messageSpy).toHaveBeenCalledTimes(0);
+    expect(incrementFieldFindByFilterSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('Does not add emotes from messages if they do not exist', async () => {
+    const incrementFieldFindByFilterSpy = jestHelper.mockPrivateFunction(
+      MongoDBService.prototype,
+      'incrementFieldFindByFilter',
+      () => {
+        return;
+      },
+    );
+    const messageSpy = discordClientMock.sendMessage('<:cba:321>');
+    expect(await messageSpy).toHaveBeenCalledTimes(0);
+    expect(incrementFieldFindByFilterSpy).toHaveBeenCalledTimes(0);
+  });
 });
 
 describe('Discord Service send message in main channel', () => {
@@ -416,12 +415,11 @@ describe('Discord Service set main channel', () => {
   });
 
   it('Throws an error if guild cannot be found when trying to set the main channel', async () => {
-    discordClientMock.addGuildChannel('TEST_TYPE');
+    discordClientMock.addGuildChannel(ChannelType.GuildAnnouncement);
     await discordService['setMainChannel']();
     expect(discordService['mainChannel']).toBeNull();
   });
 });
-*/
 
 describe('Logout', () => {
   const discordClientMock = new DiscordClientMock();

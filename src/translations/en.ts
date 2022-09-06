@@ -11,6 +11,7 @@ export const englishDictionary: Dictionary = {
   helpCommandText: 'The following commands are available:',
   topEmotesCommandHelp: 'Gets the top emotes for the channel',
   videoSearchCommandHelp: 'Searches for videos',
+  helpCommandHelp: 'Get help for the commands',
   helpCommand: 'help',
   cardCommand: 'card',
   definitionCommand: 'definition',

@@ -1,6 +1,6 @@
-import { Collection, Message, Presence, TextChannel } from 'discord.js';
+import * as EventEmitter from 'events';
 
-import EventEmitter = require('events');
+import { ChannelType, Collection, Message, Presence, TextChannel } from 'discord.js';
 
 interface Member {
   user: { id: number; username: string };
@@ -27,15 +27,15 @@ export class DiscordClientMock {
       string,
       {
         members: { cache: Collection<string, Member> };
-        channels: { cache: Collection<string, { type: string; send(): void }> };
+        channels: { cache: Collection<string, { type: number; send(): void }> };
       }
     >().set('TestGuild', {
       members: {
         cache: new Collection<string, Member>(),
       },
       channels: {
-        cache: new Collection<string, { type: string; send(): void }>().set('MainChannel', {
-          type: 'GUILD_TEXT',
+        cache: new Collection<string, { type: number; send(): void }>().set('MainChannel', {
+          type: ChannelType.GuildText,
           send: function (): void {
             return;
           },
@@ -68,13 +68,13 @@ export class DiscordClientMock {
     this.guilds.cache.first()?.members.cache.set(`${member.user.username}`, member);
   }
 
-  public addGuildChannel(type: string): void {
+  public addGuildChannel(type: number): void {
     this.guilds.cache = this.guilds.cache.set('TestGuild', {
       members: {
         cache: new Collection<string, Member>(),
       },
       channels: {
-        cache: new Collection<string, { type: string; send(): void }>().set('MainChannel', {
+        cache: new Collection<string, { type: number; send(): void }>().set('MainChannel', {
           type: type,
           send: function (): void {
             return;
@@ -108,11 +108,39 @@ export class DiscordClientMock {
       },
     } as Message;
     const spy = jest.spyOn(mockMessage.channel, 'send').mockImplementation(() => {
-      return new Promise<Message>(resolve => {
-        resolve({} as Message);
+      return new Promise<Message<false>>(resolve => {
+        resolve({} as Message<false>);
       });
     });
-    this.emit('message', mockMessage);
+    this.emit('messageCreate', mockMessage);
+    return spy;
+  }
+
+  public triggerCommand(
+    message: string,
+    options?: { bot?: boolean; member?: { id: string } | null },
+  ): jest.SpyInstance<Promise<Message>> {
+    const mockMessage = {
+      channel: {
+        send: function (): void {
+          return;
+        },
+      } as unknown as TextChannel,
+      member: options?.member !== undefined ? options.member : { id: 'me' },
+      guild: { ownerId: 'me' },
+      toString: () => {
+        return message;
+      },
+      author: {
+        bot: options?.bot ? options.bot : false,
+      },
+    } as Message;
+    const spy = jest.spyOn(mockMessage.channel, 'send').mockImplementation(() => {
+      return new Promise<Message<false>>(resolve => {
+        resolve({} as Message<false>);
+      });
+    });
+    this.emit('interactionCreate', mockMessage);
     return spy;
   }
 }
