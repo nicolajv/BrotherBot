@@ -1,6 +1,16 @@
 import * as EventEmitter from 'events';
 
-import { ChannelType, Collection, Message, Presence, TextChannel } from 'discord.js';
+import {
+  CacheType,
+  ChannelType,
+  ChatInputCommandInteraction,
+  Collection,
+  Interaction,
+  InteractionResponse,
+  Message,
+  Presence,
+  TextChannel,
+} from 'discord.js';
 
 interface Member {
   user: { id: number; username: string };
@@ -100,9 +110,7 @@ export class DiscordClientMock {
       } as unknown as TextChannel,
       member: options?.member !== undefined ? options.member : { id: 'me' },
       guild: { ownerId: 'me' },
-      toString: () => {
-        return message;
-      },
+      content: message,
       author: {
         bot: options?.bot ? options.bot : false,
       },
@@ -117,30 +125,29 @@ export class DiscordClientMock {
   }
 
   public triggerCommand(
-    message: string,
+    command: string,
     options?: { bot?: boolean; member?: { id: string } | null },
-  ): jest.SpyInstance<Promise<Message>> {
-    const mockMessage = {
-      channel: {
-        send: function (): void {
-          return;
-        },
-      } as unknown as TextChannel,
+  ): jest.SpyInstance<Promise<InteractionResponse>> {
+    const mockInteraction = {
+      isChatInputCommand: (): this is ChatInputCommandInteraction<CacheType> => {
+        return true;
+      },
+      reply: function (_message: string): void {
+        return;
+      },
       member: options?.member !== undefined ? options.member : { id: 'me' },
       guild: { ownerId: 'me' },
-      toString: () => {
-        return message;
-      },
-      author: {
-        bot: options?.bot ? options.bot : false,
-      },
-    } as Message;
-    const spy = jest.spyOn(mockMessage.channel, 'send').mockImplementation(() => {
-      return new Promise<Message<false>>(resolve => {
-        resolve({} as Message<false>);
+      commandName: command,
+    } as Interaction<CacheType>;
+    let spy = {} as jest.SpyInstance<Promise<InteractionResponse>>;
+    if (mockInteraction.isChatInputCommand()) {
+      spy = jest.spyOn(mockInteraction, 'reply').mockImplementation(() => {
+        return new Promise<InteractionResponse>(resolve => {
+          resolve({} as InteractionResponse);
+        });
       });
-    });
-    this.emit('interactionCreate', mockMessage);
+    }
+    this.emit('interactionCreate', mockInteraction);
     return spy;
   }
 }
