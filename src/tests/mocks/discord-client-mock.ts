@@ -1,10 +1,13 @@
 import * as EventEmitter from 'events';
 
 import {
+  ApplicationCommandOptionType,
   CacheType,
   ChannelType,
   ChatInputCommandInteraction,
   Collection,
+  CommandInteractionOption,
+  CommandInteractionOptionResolver,
   Interaction,
   InteractionResponse,
   Message,
@@ -126,19 +129,27 @@ export class DiscordClientMock {
 
   public triggerCommand(
     command: string,
-    options?: { bot?: boolean; member?: { id: string } | null },
+    options?: { user?: { id: string } | null; chatInput?: string },
   ): jest.SpyInstance<Promise<InteractionResponse>> {
     const mockInteraction = {
       isChatInputCommand: (): this is ChatInputCommandInteraction<CacheType> => {
-        return true;
+        return options?.chatInput ? false : true;
       },
       reply: function (_message: string): void {
         return;
       },
-      member: options?.member !== undefined ? options.member : { id: 'me' },
+      user: options?.user !== undefined ? options.user : { id: 'me' },
       guild: { ownerId: 'me' },
       commandName: command,
-    } as Interaction<CacheType>;
+      options: {
+        data: new Array<CommandInteractionOption<CacheType>>({
+          name: 'lol',
+          type: ApplicationCommandOptionType.String,
+          value: 'lol',
+        }),
+      },
+    } as unknown as Interaction<CacheType>;
+
     let spy = {} as jest.SpyInstance<Promise<InteractionResponse>>;
     if (mockInteraction.isChatInputCommand()) {
       spy = jest.spyOn(mockInteraction, 'reply').mockImplementation(() => {

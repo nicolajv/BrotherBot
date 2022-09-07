@@ -45,6 +45,7 @@ export class DiscordService implements ChatService {
         });
     this.loggingService = loggingService;
     this.databaseService = databaseService;
+    this.initCommands();
     this.initEvents();
   }
 
@@ -82,7 +83,9 @@ export class DiscordService implements ChatService {
 
   private async initCommands(): Promise<void> {
     this.commands = await buildCommands();
+  }
 
+  private async pushCommands(): Promise<void> {
     const restCommands: Array<SlashCommandBuilder> = [];
     this.commands.forEach(command => {
       const data = new SlashCommandBuilder()
@@ -144,6 +147,7 @@ export class DiscordService implements ChatService {
   }
 
   private handleCommands(): void {
+    this.pushCommands();
     this.client.on('interactionCreate', async interaction => {
       if (!interaction.isChatInputCommand()) return;
       const content = interaction.commandName;
@@ -157,7 +161,7 @@ export class DiscordService implements ChatService {
           });
           try {
             let permitted = true;
-            if (!interaction.member || !interaction.guild) {
+            if (!interaction.user || !interaction.guild) {
               throw new Error('This message has no sender or no server');
             }
             if (command.adminOnly && !(interaction.user.id === interaction.guild.ownerId)) {
@@ -170,6 +174,7 @@ export class DiscordService implements ChatService {
               });
               if (commandResponse.refreshCommands) {
                 await this.initCommands();
+                this.pushCommands();
               }
             }
           } catch (err) {
