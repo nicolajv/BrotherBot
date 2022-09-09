@@ -12,6 +12,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Build
+        env:
+          DOCKER_BUILDKIT: 1
         run: |
           docker build --build-arg VERSION=$(git rev-parse --short HEAD) --target production-build .
           docker build --build-arg VERSION=$(git rev-parse --short HEAD) --target test-export . --output coverage
