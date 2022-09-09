@@ -130,18 +130,14 @@ describe('Set activity', () => {
   });
 });
 
-/*
 describe('Discord Service voice event', () => {
+  const loggingService = makeLoggingService();
   const discordClientMock = new DiscordClientMock();
-  let discordService: DiscordService;
-
-  beforeEach(async () => {
-    discordService = new DiscordService(
-      makeLoggingService(),
-      makeDatabaseService(),
-      discordClientMock as unknown as Client,
-    );
-  });
+  const discordService = new DiscordService(
+    loggingService,
+    makeDatabaseService(),
+    discordClientMock as unknown as Client,
+  );
 
   it.only('Sends messages when starting and ending calls', async () => {
     let sendMessageInMainChannelSpy = jestHelper.mockPrivateFunction(
@@ -220,7 +216,6 @@ describe('Discord Service voice event', () => {
     fail('An error should have happened');
   });
 });
-*/
 
 describe('Discord Service commands', () => {
   const discordClientMock = new DiscordClientMock();
