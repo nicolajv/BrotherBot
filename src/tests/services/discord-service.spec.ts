@@ -1,13 +1,15 @@
-import { DiscordService } from '../../services/discord-service';
+import { ChannelType, Client, MessageReaction, REST, User, VoiceState } from 'discord.js';
 import {
   makeDatabaseService,
   makeLoggingService,
 } from '../../dependency-injection/dependency-factory';
+
 import { Command } from '../../commands/interfaces/command.interface';
-import { MockCommand } from '../mocks/mock-command';
+import { CommandOption } from '../../commands/command-option';
 import { DiscordClientMock } from '../mocks/discord-client-mock';
-import { Client, MessageReaction, User, VoiceState } from 'discord.js';
+import { DiscordService } from '../../services/discord-service';
 import { JestHelper } from '../mocks/jest-helper';
+import { MockCommand } from '../mocks/mock-command';
 import { MongoDBService } from '../../services/mongo-db-service';
 
 const jestHelper = new JestHelper();
@@ -20,6 +22,14 @@ jest.mock('../../helpers/build-commands', () => {
       const commands = Array<Command>();
       commands.push(new MockCommand('h'));
       commands.push(new MockCommand('a', true, true));
+      commands.push(
+        new MockCommand(
+          'o',
+          false,
+          false,
+          new Array<CommandOption>(new CommandOption('name', 'description', true)),
+        ),
+      );
       return commands;
     },
   };
@@ -130,12 +140,13 @@ describe('Set activity', () => {
 });
 
 describe('Discord Service voice event', () => {
-  const discordClientMock = new DiscordClientMock();
   let discordService: DiscordService;
+  const loggingService = makeLoggingService();
+  const discordClientMock = new DiscordClientMock();
 
-  beforeEach(async () => {
+  beforeEach(() => {
     discordService = new DiscordService(
-      makeLoggingService(),
+      loggingService,
       makeDatabaseService(),
       discordClientMock as unknown as Client,
     );
@@ -228,54 +239,27 @@ describe('Discord Service commands', () => {
   );
 
   it('Handles successful commands', async () => {
-    const messageSpy = discordClientMock.sendMessage('!h');
-    expect(await messageSpy).toHaveBeenCalledTimes(2);
-  });
-
-  it('Does not accept commands from bots', async () => {
-    const messageSpy = discordClientMock.sendMessage('!h', { bot: true });
-    expect(await messageSpy).toHaveBeenCalledTimes(0);
+    const interaction = discordClientMock.triggerCommand('h');
+    expect(await interaction).toHaveBeenCalledTimes(2);
   });
 
   it('Handles successful admin-only commands', async () => {
-    const messageSpy = discordClientMock.sendMessage('!a');
-    expect(await messageSpy).toHaveBeenCalledTimes(2);
+    const interaction = discordClientMock.triggerCommand('a');
+    expect(await interaction).toHaveBeenCalledTimes(2);
   });
 
   it('Handles failed admin-only commands', async () => {
-    const messageSpy = discordClientMock.sendMessage('!a', { member: { id: 'notAdmin' } });
-    expect(await messageSpy).toHaveBeenCalledTimes(0);
+    const interaction = discordClientMock.triggerCommand('a', { user: { id: 'notAdmin' } });
+    expect(await interaction).toHaveBeenCalledTimes(0);
+  });
+
+  it('Handles commands that are not chat input commands', async () => {
+    discordClientMock.triggerCommand('a', { chatInput: 'true' });
   });
 
   it('Handles commands with no member', async () => {
-    const messageSpy = discordClientMock.sendMessage('!h', { member: null });
-    expect(await messageSpy).toHaveBeenCalledTimes(1);
-  });
-
-  it('Handles emotes in messages', async () => {
-    const incrementFieldFindByFilterSpy = jestHelper.mockPrivateFunction(
-      MongoDBService.prototype,
-      'incrementFieldFindByFilter',
-      () => {
-        return;
-      },
-    );
-    const messageSpy = discordClientMock.sendMessage('<:abc:123>');
-    expect(await messageSpy).toHaveBeenCalledTimes(0);
-    expect(incrementFieldFindByFilterSpy).toHaveBeenCalledTimes(1);
-  });
-
-  it('Does not add emotes from messages if they do not exist', async () => {
-    const incrementFieldFindByFilterSpy = jestHelper.mockPrivateFunction(
-      MongoDBService.prototype,
-      'incrementFieldFindByFilter',
-      () => {
-        return;
-      },
-    );
-    const messageSpy = discordClientMock.sendMessage('<:cba:321>');
-    expect(await messageSpy).toHaveBeenCalledTimes(0);
-    expect(incrementFieldFindByFilterSpy).toHaveBeenCalledTimes(0);
+    const interaction = discordClientMock.triggerCommand('h', { user: null });
+    expect(await interaction).toHaveBeenCalledTimes(1);
   });
 });
 
@@ -346,6 +330,69 @@ describe('Discord Service reactions', () => {
     discordClientMock.emit('messageReactionAdd', mockReaction, {} as User);
     expect(incrementFieldFindByFilterSpy).toHaveBeenCalledTimes(0);
   });
+
+  it('Handles emotes in messages', async () => {
+    const incrementFieldFindByFilterSpy = jestHelper.mockPrivateFunction(
+      MongoDBService.prototype,
+      'incrementFieldFindByFilter',
+      () => {
+        return;
+      },
+    );
+    const messageSpy = discordClientMock.sendMessage('<:abc:123>');
+    expect(await messageSpy).toHaveBeenCalledTimes(0);
+    expect(incrementFieldFindByFilterSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('Does not add emotes from messages if they do not exist', async () => {
+    const incrementFieldFindByFilterSpy = jestHelper.mockPrivateFunction(
+      MongoDBService.prototype,
+      'incrementFieldFindByFilter',
+      () => {
+        return;
+      },
+    );
+    const messageSpy = discordClientMock.sendMessage('<:cba:321>');
+    expect(await messageSpy).toHaveBeenCalledTimes(0);
+    expect(incrementFieldFindByFilterSpy).toHaveBeenCalledTimes(0);
+  });
+});
+
+describe('Discord Service push commands', () => {
+  const discordClientMock = new DiscordClientMock();
+  const loggingService = makeLoggingService();
+  const discordService = new DiscordService(
+    loggingService,
+    makeDatabaseService(),
+    discordClientMock as unknown as Client,
+  );
+
+  it('Can push commands', async () => {
+    const putSpy = jestHelper.mockPrivateFunction(
+      REST.prototype,
+      'put',
+      async (): Promise<void> => {
+        return;
+      },
+    );
+    const pushSpy = discordService['pushCommands']();
+    expect(await putSpy).toHaveBeenCalledTimes(1);
+    expect(pushSpy).resolves.not.toThrowError();
+  });
+
+  it('Catches failed command pushes', async () => {
+    const putSpy = jestHelper.mockPrivateFunction(
+      REST.prototype,
+      'put',
+      async (): Promise<void> => {
+        throw new Error();
+      },
+    );
+    const loggingSpy = jest.spyOn(loggingService, 'log');
+    discordService['pushCommands']();
+    expect(await putSpy).toHaveBeenCalledTimes(1);
+    expect(await loggingSpy).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe('Discord Service send message in main channel', () => {
@@ -414,7 +461,7 @@ describe('Discord Service set main channel', () => {
   });
 
   it('Throws an error if guild cannot be found when trying to set the main channel', async () => {
-    discordClientMock.addGuildChannel('TEST_TYPE');
+    discordClientMock.addGuildChannel(ChannelType.GuildAnnouncement);
     await discordService['setMainChannel']();
     expect(discordService['mainChannel']).toBeNull();
   });

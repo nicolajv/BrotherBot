@@ -1,5 +1,19 @@
-import { Collection, Message, Presence, TextChannel } from 'discord.js';
-import EventEmitter = require('events');
+import * as EventEmitter from 'events';
+
+import {
+  ApplicationCommandOptionType,
+  CacheType,
+  ChannelType,
+  ChatInputCommandInteraction,
+  Collection,
+  CommandInteractionOption,
+  CommandInteractionOptionResolver,
+  Interaction,
+  InteractionResponse,
+  Message,
+  Presence,
+  TextChannel,
+} from 'discord.js';
 
 interface Member {
   user: { id: number; username: string };
@@ -26,21 +40,28 @@ export class DiscordClientMock {
       string,
       {
         members: { cache: Collection<string, Member> };
-        channels: { cache: Collection<string, { type: string; send(): void }> };
+        channels: { cache: Collection<string, { type: number; send(): void }> };
       }
     >().set('TestGuild', {
       members: {
         cache: new Collection<string, Member>(),
       },
       channels: {
-        cache: new Collection<string, { type: string; send(): void }>().set('MainChannel', {
-          type: 'GUILD_TEXT',
+        cache: new Collection<string, { type: number; send(): void }>().set('MainChannel', {
+          type: ChannelType.GuildText,
           send: function (): void {
             return;
           },
         }),
       },
     }),
+  };
+  public application = {
+    id: {
+      toString: (): string => {
+        return 'application';
+      },
+    },
   };
 
   public login(_token?: string | undefined): Promise<string> {
@@ -67,13 +88,13 @@ export class DiscordClientMock {
     this.guilds.cache.first()?.members.cache.set(`${member.user.username}`, member);
   }
 
-  public addGuildChannel(type: string): void {
+  public addGuildChannel(type: number): void {
     this.guilds.cache = this.guilds.cache.set('TestGuild', {
       members: {
         cache: new Collection<string, Member>(),
       },
       channels: {
-        cache: new Collection<string, { type: string; send(): void }>().set('MainChannel', {
+        cache: new Collection<string, { type: number; send(): void }>().set('MainChannel', {
           type: type,
           send: function (): void {
             return;
@@ -99,19 +120,52 @@ export class DiscordClientMock {
       } as unknown as TextChannel,
       member: options?.member !== undefined ? options.member : { id: 'me' },
       guild: { ownerId: 'me' },
-      toString: () => {
-        return message;
-      },
+      content: message,
       author: {
         bot: options?.bot ? options.bot : false,
       },
     } as Message;
     const spy = jest.spyOn(mockMessage.channel, 'send').mockImplementation(() => {
-      return new Promise<Message>(resolve => {
-        resolve({} as Message);
+      return new Promise<Message<false>>(resolve => {
+        resolve({} as Message<false>);
       });
     });
-    this.emit('message', mockMessage);
+    this.emit('messageCreate', mockMessage);
+    return spy;
+  }
+
+  public triggerCommand(
+    command: string,
+    options?: { user?: { id: string } | null; chatInput?: string },
+  ): jest.SpyInstance<Promise<InteractionResponse>> {
+    const mockInteraction = {
+      isChatInputCommand: (): this is ChatInputCommandInteraction<CacheType> => {
+        return options?.chatInput ? false : true;
+      },
+      reply: function (_message: string): void {
+        return;
+      },
+      user: options?.user !== undefined ? options.user : { id: 'me' },
+      guild: { ownerId: 'me' },
+      commandName: command,
+      options: {
+        data: new Array<CommandInteractionOption<CacheType>>({
+          name: 'lol',
+          type: ApplicationCommandOptionType.String,
+          value: 'lol',
+        }),
+      },
+    } as unknown as Interaction<CacheType>;
+
+    let spy = {} as jest.SpyInstance<Promise<InteractionResponse>>;
+    if (mockInteraction.isChatInputCommand()) {
+      spy = jest.spyOn(mockInteraction, 'reply').mockImplementation(() => {
+        return new Promise<InteractionResponse>(resolve => {
+          resolve({} as InteractionResponse);
+        });
+      });
+    }
+    this.emit('interactionCreate', mockInteraction);
     return spy;
   }
 }

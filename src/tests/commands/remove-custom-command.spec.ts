@@ -1,6 +1,6 @@
 import { RemoveCustomCommand } from '../../commands/remove-custom-command';
-import { translations } from '../../data/translator';
 import { makeDatabaseService } from '../../dependency-injection/dependency-factory';
+import { translations } from '../../data/translator';
 
 const databaseService = makeDatabaseService();
 jest.spyOn(databaseService, 'delete').mockImplementation(() => {
@@ -23,7 +23,7 @@ describe('Remove custom command', () => {
 
   it('Removes a command with 1 parameter', async () => {
     const removeCustomCommand = new RemoveCustomCommand(databaseService);
-    const result = removeCustomCommand.execute(testString);
+    const result = removeCustomCommand.execute([testString]);
     expect(result).resolves.not.toThrowError();
     const finalResult = await result;
     expect(finalResult.response[0]).toEqual(translations.commandRemoved);

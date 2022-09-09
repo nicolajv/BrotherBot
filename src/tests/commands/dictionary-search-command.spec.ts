@@ -1,6 +1,6 @@
 import { DictionarySearchCommand } from '../../commands/dictionary-search-command';
-import { translations } from '../../data/translator';
 import { makeDictionaryService } from '../../dependency-injection/dependency-factory';
+import { translations } from '../../data/translator';
 
 const dictionaryService: DictionaryService = makeDictionaryService();
 
@@ -16,7 +16,7 @@ describe('Dictionary Search command', () => {
     });
     const dictionarySearchCommand = new DictionarySearchCommand(dictionaryService);
     expect(dictionarySearchCommand.name.length).toBeGreaterThan(0);
-    const result = dictionarySearchCommand.execute(testString);
+    const result = dictionarySearchCommand.execute([testString]);
     expect(result).resolves.not.toThrowError();
     const finalResult = await result;
     expect(finalResult.response[0]).toMatch(resultString);

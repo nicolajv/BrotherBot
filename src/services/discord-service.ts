@@ -1,11 +1,23 @@
-import { Client, GuildEmoji, Intents, Message, TextChannel, VoiceState } from 'discord.js';
-import { commandPrefix, emotesTable } from '../data/constants';
+import {
+  ActivityType,
+  ChannelType,
+  Client,
+  GatewayIntentBits,
+  GuildEmoji,
+  Message,
+  Routes,
+  SlashCommandBuilder,
+  TextChannel,
+  VoiceState,
+} from 'discord.js';
 
 import { CallState } from '../helpers/calls-state';
+import { Command } from '../commands/interfaces/command.interface';
+import { REST } from '@discordjs/rest';
 import { User } from '../models/user';
 import { buildCommands } from '../helpers/build-commands';
+import { emotesTable } from '../data/constants';
 import { translations } from '../data/translator';
-import { Command } from '../commands/interfaces/command.interface';
 
 export class DiscordService implements ChatService {
   private loggingService: LoggingService;
@@ -23,12 +35,12 @@ export class DiscordService implements ChatService {
       ? client
       : new Client({
           intents: [
-            Intents.FLAGS.GUILDS,
-            Intents.FLAGS.GUILD_MESSAGES,
-            Intents.FLAGS.GUILD_MEMBERS,
-            Intents.FLAGS.GUILD_MESSAGES,
-            Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-            Intents.FLAGS.GUILD_VOICE_STATES,
+            GatewayIntentBits.Guilds,
+            GatewayIntentBits.GuildMessages,
+            GatewayIntentBits.GuildMembers,
+            GatewayIntentBits.GuildMessageReactions,
+            GatewayIntentBits.GuildVoiceStates,
+            GatewayIntentBits.MessageContent,
           ],
         });
     this.loggingService = loggingService;
@@ -54,7 +66,7 @@ export class DiscordService implements ChatService {
     }
     this.client.user.setActivity({
       name: translations.defaultActivity,
-      type: 'LISTENING',
+      type: ActivityType.Listening,
     });
   }
 
@@ -71,6 +83,43 @@ export class DiscordService implements ChatService {
 
   private async initCommands(): Promise<void> {
     this.commands = await buildCommands();
+  }
+
+  private async pushCommands(): Promise<void> {
+    const restCommands: Array<SlashCommandBuilder> = [];
+    this.commands.forEach(command => {
+      const data = new SlashCommandBuilder()
+        .setName(command.name)
+        .setDescription(command.helperText ? command.helperText : 'admin_only');
+
+      if (command.adminOnly) {
+        data.setDefaultMemberPermissions(0);
+      }
+
+      if (command.options) {
+        command.options.forEach(option => {
+          data.addStringOption(o =>
+            o.setName(option.name).setDescription(option.description).setRequired(option.required),
+          );
+        });
+      }
+
+      restCommands.push(data);
+    });
+
+    const guild = this.client.guilds.cache.first();
+    const clientId = this.client.application?.id.toString();
+    if (guild != undefined && clientId != undefined && process.env.DISCORD_TOKEN != undefined) {
+      const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
+      rest
+        .put(Routes.applicationGuildCommands(clientId, guild.id), {
+          body: restCommands,
+        })
+        .then(() => this.loggingService.log(`Successfully registered application commands.`))
+        .catch(() => {
+          this.loggingService.log('Failed to push errors');
+        });
+    }
   }
 
   private initEvents(): void {
@@ -98,36 +147,49 @@ export class DiscordService implements ChatService {
   }
 
   private handleCommands(): void {
-    this.client.on('message', message => {
-      if (!message.author.bot) {
-        const channel = message.channel;
-        const content = message.toString();
-        this.commands.forEach(async command => {
-          if (content.toLowerCase().startsWith(`${commandPrefix}${command.name}`)) {
-            const parameter = content.substr(content.indexOf(' ') + 1);
-            try {
-              let permitted = true;
-              if (!message.member || !message.guild) {
-                throw new Error('This message has no sender or no server');
-              }
-              if (command.adminOnly && !(message.member.id === message.guild.ownerId)) {
-                permitted = false;
-              }
-              if (permitted) {
-                const commandResponse = await command.execute(parameter);
-                commandResponse.response.forEach(async response => {
-                  await channel.send(response);
-                });
-                if (commandResponse.refreshCommands) {
-                  await this.initCommands();
-                }
-              }
-            } catch (err) {
-              await channel.send(translations.genericError);
-              this.loggingService.log(err);
+    this.pushCommands();
+    this.client.on('interactionCreate', async interaction => {
+      if (!interaction.isChatInputCommand()) return;
+      const content = interaction.commandName;
+      this.commands.forEach(async command => {
+        if (content.toLowerCase().startsWith(`${command.name}`)) {
+          const parameters = new Array<string>();
+          interaction.options.data.forEach(parameter => {
+            if (parameter.value) {
+              parameters.push(parameter.value.toString());
             }
+          });
+          try {
+            let permitted = true;
+            if (!interaction.user || !interaction.guild) {
+              throw new Error('This message has no sender or no server');
+            }
+            if (command.adminOnly && !(interaction.user.id === interaction.guild.ownerId)) {
+              permitted = false;
+            }
+            if (permitted) {
+              const commandResponse = await command.execute(parameters);
+              commandResponse.response.forEach(async response => {
+                await interaction.reply(response);
+              });
+              if (commandResponse.refreshCommands) {
+                await this.initCommands();
+                this.pushCommands();
+              }
+            }
+          } catch (err) {
+            await interaction.reply(translations.genericError);
+            this.loggingService.log(err);
           }
-        });
+        }
+      });
+    });
+  }
+
+  private handleReactions(): void {
+    this.client.on('messageCreate', message => {
+      if (!message.author.bot) {
+        const content = message.content;
         const emotes = content.match(/<:[a-zA-Z]+:[0-9]+>/g);
         if (emotes) {
           emotes.forEach(async (match: string) => {
@@ -136,9 +198,6 @@ export class DiscordService implements ChatService {
         }
       }
     });
-  }
-
-  private handleReactions(): void {
     this.client.on('messageReactionAdd', reaction => {
       this.updateEmoteInDatabase(`<:${reaction.emoji.identifier}>`, true);
     });
@@ -164,6 +223,7 @@ export class DiscordService implements ChatService {
       }
       this.loggingService.log(`Logged in as ${this.client.user.tag}!`);
       this.initUsers();
+      this.initCommands();
       this.setActivity();
     });
   }
@@ -236,7 +296,7 @@ export class DiscordService implements ChatService {
         throw new Error('Unable to find main channel');
       }
       const channel = guild.channels.cache.find(channel => {
-        return channel.type === 'GUILD_TEXT';
+        return channel.type === ChannelType.GuildText;
       }) as TextChannel;
       this.mainChannel = channel ? channel : null;
       resolve();

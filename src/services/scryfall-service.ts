@@ -1,4 +1,5 @@
 import { ScryfallCardList } from '../models/scryfall-card';
+
 export class ScryfallService implements TcgService {
   private requestService: RequestService;
   private imageApi = 'https://api.scryfall.com/cards/search?q=';

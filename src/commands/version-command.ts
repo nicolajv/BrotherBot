@@ -7,7 +7,7 @@ export class VersionCommand extends AbstractCommand {
 
   constructor() {
     super(
-      'v',
+      'version',
       async () => {
         return new Promise<CommandResponse>(resolve => {
           resolve(new CommandResponse([`${this.package_json.version}`]));

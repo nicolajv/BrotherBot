@@ -1,4 +1,4 @@
-export const commandPrefix = '!';
+export const commandPrefix = '/';
 export const port = 4200;
 
 // Database

@@ -1,8 +1,14 @@
 import { AbstractCommand } from '../../commands/abstracts/abstract-command';
+import { CommandOption } from '../../commands/command-option';
 import { CommandResponse } from '../../models/command-response';
 
 export class MockCommand extends AbstractCommand {
-  constructor(name?: string, includeHelperText = true, adminOnly = false) {
+  constructor(
+    name?: string,
+    includeHelperText = true,
+    adminOnly = false,
+    commandOption?: Array<CommandOption>,
+  ) {
     super(
       name ? name : 'test',
       () => {
@@ -12,6 +18,7 @@ export class MockCommand extends AbstractCommand {
       },
       includeHelperText ? 'helpertext' : undefined,
       adminOnly,
+      commandOption,
     );
   }
 }
