@@ -84,6 +84,7 @@ export class DiscordService implements ChatService {
 
   private async initCommands(): Promise<void> {
     this.commands = await buildCommands();
+    this.pushCommands();
   }
 
   private async pushCommands(): Promise<void> {
@@ -110,9 +111,6 @@ export class DiscordService implements ChatService {
 
     const guild = this.client.guilds.cache.first();
     const clientId = this.client.application?.id.toString();
-
-    this.loggingService.log(guild);
-    this.loggingService.log(clientId);
 
     if (guild != undefined && clientId != undefined && process.env.DISCORD_TOKEN != undefined) {
       const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
@@ -152,7 +150,6 @@ export class DiscordService implements ChatService {
   }
 
   private handleCommands(): void {
-    this.pushCommands();
     this.client.on('interactionCreate', async interaction => {
       if (!interaction.isChatInputCommand()) return;
       const content = interaction.commandName;
@@ -179,7 +176,6 @@ export class DiscordService implements ChatService {
               });
               if (commandResponse.refreshCommands) {
                 await this.initCommands();
-                this.pushCommands();
               }
             }
           } catch (err) {

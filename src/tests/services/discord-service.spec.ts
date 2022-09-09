@@ -391,7 +391,7 @@ describe('Discord Service push commands', () => {
     const loggingSpy = jest.spyOn(loggingService, 'log');
     discordService['pushCommands']();
     expect(await putSpy).toHaveBeenCalledTimes(1);
-    expect(await loggingSpy).toHaveBeenCalledTimes(3);
+    expect(await loggingSpy).toHaveBeenCalledTimes(1);
   });
 });
 
