@@ -13,6 +13,7 @@ import {
 
 import { CallState } from '../helpers/calls-state';
 import { Command } from '../commands/interfaces/command.interface';
+import { Logger } from 'mongodb';
 import { REST } from '@discordjs/rest';
 import { User } from '../models/user';
 import { buildCommands } from '../helpers/build-commands';
@@ -109,6 +110,10 @@ export class DiscordService implements ChatService {
 
     const guild = this.client.guilds.cache.first();
     const clientId = this.client.application?.id.toString();
+
+    this.loggingService.log(guild);
+    this.loggingService.log(clientId);
+
     if (guild != undefined && clientId != undefined && process.env.DISCORD_TOKEN != undefined) {
       const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
       rest

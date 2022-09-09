@@ -6,7 +6,7 @@ export const englishDictionary: Dictionary = {
   commandAdded: 'The new command was added',
   commandRemoved: 'The command was removed',
   dictionarySearchCommandHelp: 'Searches for definitions',
-  defaultActivity: '!h for help',
+  defaultActivity: '/help for help',
   genericError: 'An error occured',
   helpCommandText: 'The following commands are available:',
   topEmotesCommandHelp: 'Gets the top emotes for the channel',

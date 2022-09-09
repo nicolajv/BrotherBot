@@ -6,7 +6,7 @@ export const danishDictionary: Dictionary = {
   commandAdded: 'Den nye kommando blev tilføjet',
   commandRemoved: 'Kommandoen blev fjernet',
   dictionarySearchCommandHelp: 'Søger efter definitioner',
-  defaultActivity: '!h for hjælp',
+  defaultActivity: '/hjælp for hjælp',
   genericError: 'Der er sket en fejl',
   helpCommandText: 'De følgende kommandoer er tilgængelige:',
   topEmotesCommandHelp: 'Giver de top 10 mest brugte emotes',
