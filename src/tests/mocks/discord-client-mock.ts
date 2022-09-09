@@ -56,6 +56,13 @@ export class DiscordClientMock {
       },
     }),
   };
+  public application = {
+    id: {
+      toString: (): string => {
+        return 'application';
+      },
+    },
+  };
 
   public login(_token?: string | undefined): Promise<string> {
     return new Promise(resolves => {

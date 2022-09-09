@@ -1,10 +1,11 @@
-import { ChannelType, Client, MessageReaction, User, VoiceState } from 'discord.js';
+import { ChannelType, Client, MessageReaction, REST, User, VoiceState } from 'discord.js';
 import {
   makeDatabaseService,
   makeLoggingService,
 } from '../../dependency-injection/dependency-factory';
 
 import { Command } from '../../commands/interfaces/command.interface';
+import { CommandOption } from '../../commands/command-option';
 import { DiscordClientMock } from '../mocks/discord-client-mock';
 import { DiscordService } from '../../services/discord-service';
 import { JestHelper } from '../mocks/jest-helper';
@@ -21,6 +22,14 @@ jest.mock('../../helpers/build-commands', () => {
       const commands = Array<Command>();
       commands.push(new MockCommand('h'));
       commands.push(new MockCommand('a', true, true));
+      commands.push(
+        new MockCommand(
+          'o',
+          false,
+          false,
+          new Array<CommandOption>(new CommandOption('name', 'description', true)),
+        ),
+      );
       return commands;
     },
   };
@@ -131,15 +140,19 @@ describe('Set activity', () => {
 });
 
 describe('Discord Service voice event', () => {
+  let discordService: DiscordService;
   const loggingService = makeLoggingService();
   const discordClientMock = new DiscordClientMock();
-  const discordService = new DiscordService(
-    loggingService,
-    makeDatabaseService(),
-    discordClientMock as unknown as Client,
-  );
 
-  it.only('Sends messages when starting and ending calls', async () => {
+  beforeEach(() => {
+    discordService = new DiscordService(
+      loggingService,
+      makeDatabaseService(),
+      discordClientMock as unknown as Client,
+    );
+  });
+
+  it('Sends messages when starting and ending calls', async () => {
     let sendMessageInMainChannelSpy = jestHelper.mockPrivateFunction(
       DiscordService.prototype,
       'sendMessageInMainChannel',
@@ -342,6 +355,43 @@ describe('Discord Service reactions', () => {
     const messageSpy = discordClientMock.sendMessage('<:cba:321>');
     expect(await messageSpy).toHaveBeenCalledTimes(0);
     expect(incrementFieldFindByFilterSpy).toHaveBeenCalledTimes(0);
+  });
+});
+
+describe('Discord Service push commands', () => {
+  const discordClientMock = new DiscordClientMock();
+  const loggingService = makeLoggingService();
+  const discordService = new DiscordService(
+    loggingService,
+    makeDatabaseService(),
+    discordClientMock as unknown as Client,
+  );
+
+  it('Can push commands', async () => {
+    const putSpy = jestHelper.mockPrivateFunction(
+      REST.prototype,
+      'put',
+      async (): Promise<void> => {
+        return;
+      },
+    );
+    const pushSpy = discordService['pushCommands']();
+    expect(await putSpy).toHaveBeenCalledTimes(1);
+    expect(pushSpy).resolves.not.toThrowError();
+  });
+
+  it('Catches failed command pushes', async () => {
+    const putSpy = jestHelper.mockPrivateFunction(
+      REST.prototype,
+      'put',
+      async (): Promise<void> => {
+        throw new Error();
+      },
+    );
+    const loggingSpy = jest.spyOn(loggingService, 'log');
+    discordService['pushCommands']();
+    expect(await putSpy).toHaveBeenCalledTimes(1);
+    expect(await loggingSpy).toHaveBeenCalledTimes(1);
   });
 });
 

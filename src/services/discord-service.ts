@@ -116,8 +116,8 @@ export class DiscordService implements ChatService {
           body: restCommands,
         })
         .then(() => this.loggingService.log(`Successfully registered application commands.`))
-        .catch(err => {
-          this.loggingService.log(err);
+        .catch(() => {
+          this.loggingService.log('Failed to push errors');
         });
     }
   }
