@@ -15,7 +15,6 @@ services:
     environment:
       BASE_PATH: ${BASE_PATH}
       DISCORD_TOKEN: ${DISCORD_TOKEN}
-      DISCORD_CLIENT_ID: ${DISCORD_CLIENT_ID}
       YOUTUBE_TOKEN: ${YOUTUBE_TOKEN}
       LANGUAGE: ${LANGUAGE}
   database:
