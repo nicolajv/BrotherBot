@@ -1,6 +1,7 @@
 import { AnyError, MongoClient } from 'mongodb';
 
 export class MongoDBService implements DatabaseService {
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   private dbAddress = process.env.DATABASE_ENDPOINT!;
   private dbName = 'brotherbot';
   private MongoClient = MongoClient;
