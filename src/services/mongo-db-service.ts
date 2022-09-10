@@ -1,7 +1,7 @@
 import { AnyError, MongoClient } from 'mongodb';
 
 export class MongoDBService implements DatabaseService {
-  private dbAddress = 'mongodb://database:27017/brotherbot';
+  private dbAddress = process.env.DATABASE_ENDPOINT!;
   private dbName = 'brotherbot';
   private MongoClient = MongoClient;
 
@@ -11,6 +11,8 @@ export class MongoDBService implements DatabaseService {
         this.dbAddress,
         async (error: AnyError | undefined, client: MongoClient | undefined) => {
           if (error || !client) {
+            console.log(process.env.DATABASE_ENDPOINT!);
+            console.log(error);
             reject('A database error occured');
           } else {
             const db = client.db(this.dbName);
@@ -29,6 +31,8 @@ export class MongoDBService implements DatabaseService {
         this.dbAddress,
         async (error: AnyError | undefined, client: MongoClient | undefined) => {
           if (error || !client) {
+            console.log(process.env.DATABASE_ENDPOINT!);
+            console.log(error);
             reject('A database error occured');
           } else {
             const db = client.db(this.dbName);
@@ -52,6 +56,8 @@ export class MongoDBService implements DatabaseService {
         this.dbAddress,
         async (error: AnyError | undefined, client: MongoClient | undefined) => {
           if (error || !client) {
+            console.log(process.env.DATABASE_ENDPOINT!);
+            console.log(error);
             reject('A database error occured');
           } else {
             const db = client.db(this.dbName);
@@ -76,6 +82,8 @@ export class MongoDBService implements DatabaseService {
         this.dbAddress,
         async (error: AnyError | undefined, client: MongoClient | undefined) => {
           if (error || !client) {
+            console.log(process.env.DATABASE_ENDPOINT!);
+            console.log(error);
             reject('A database error occured');
           } else {
             const db = client.db(this.dbName);
