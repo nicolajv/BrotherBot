@@ -21,7 +21,7 @@ export class RemoveCustomCommand extends AbstractCommand {
         } catch (err) {
           result = translations.notEnoughParamters;
         }
-        return new CommandResponse([result], true);
+        return new CommandResponse([result], { refreshCommands: true, ephemeral: true });
       },
       undefined,
       true,

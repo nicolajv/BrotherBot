@@ -175,10 +175,16 @@ export class DiscordService implements ChatService {
               commandResponse.response.forEach(async response => {
                 if (!replied) {
                   replied = true;
-                  await interaction.reply(response);
+                  await interaction.reply({
+                    content: response,
+                    ephemeral: commandResponse.ephemeral,
+                  });
                 } else {
                   await interaction.fetchReply();
-                  await interaction.followUp(response);
+                  await interaction.followUp({
+                    content: response,
+                    ephemeral: commandResponse.ephemeral,
+                  });
                 }
               });
               if (commandResponse.refreshCommands) {

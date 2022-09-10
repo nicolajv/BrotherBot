@@ -13,7 +13,12 @@ export class MockCommand extends AbstractCommand {
       name ? name : 'test',
       () => {
         return new Promise<CommandResponse>(resolve => {
-          resolve(new CommandResponse(['description', 'description2'], adminOnly));
+          resolve(
+            new CommandResponse(['description', 'description2'], {
+              refreshCommands: adminOnly,
+              ephemeral: adminOnly,
+            }),
+          );
         });
       },
       includeHelperText ? 'helpertext' : undefined,
