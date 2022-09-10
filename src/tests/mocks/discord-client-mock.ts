@@ -148,7 +148,9 @@ export class DiscordClientMock {
       followUp: function (_message: string): void {
         return;
       },
-      replied: false,
+      fetchReply: function (): void {
+        return;
+      },
       user: options?.user !== undefined ? options.user : { id: 'me' },
       guild: { ownerId: 'me' },
       commandName: command,
@@ -166,7 +168,6 @@ export class DiscordClientMock {
     if (mockInteraction.isChatInputCommand()) {
       spyReply = jest.spyOn(mockInteraction, 'reply').mockImplementation(() => {
         return new Promise<InteractionResponse>(resolve => {
-          mockInteraction.replied = true;
           resolve({} as InteractionResponse);
         });
       });
