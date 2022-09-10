@@ -137,7 +137,7 @@ export class DiscordClientMock {
   public triggerCommand(
     command: string,
     options?: { user?: { id: string } | null; chatInput?: string },
-  ): jest.SpyInstance<Promise<InteractionResponse>> {
+  ): [jest.SpyInstance<Promise<InteractionResponse>>, jest.SpyInstance<Promise<Message<boolean>>>] {
     const mockInteraction = {
       isChatInputCommand: (): this is ChatInputCommandInteraction<CacheType> => {
         return options?.chatInput ? false : true;
@@ -145,6 +145,10 @@ export class DiscordClientMock {
       reply: function (_message: string): void {
         return;
       },
+      followUp: function (_message: string): void {
+        return;
+      },
+      replied: false,
       user: options?.user !== undefined ? options.user : { id: 'me' },
       guild: { ownerId: 'me' },
       commandName: command,
@@ -157,15 +161,22 @@ export class DiscordClientMock {
       },
     } as unknown as Interaction<CacheType>;
 
-    let spy = {} as jest.SpyInstance<Promise<InteractionResponse>>;
+    let spyReply = {} as jest.SpyInstance<Promise<InteractionResponse>>;
+    let spyFollowUp = {} as jest.SpyInstance<Promise<Message>>;
     if (mockInteraction.isChatInputCommand()) {
-      spy = jest.spyOn(mockInteraction, 'reply').mockImplementation(() => {
+      spyReply = jest.spyOn(mockInteraction, 'reply').mockImplementation(() => {
         return new Promise<InteractionResponse>(resolve => {
+          mockInteraction.replied = true;
           resolve({} as InteractionResponse);
+        });
+      });
+      spyFollowUp = jest.spyOn(mockInteraction, 'followUp').mockImplementation(() => {
+        return new Promise<Message<boolean>>(resolve => {
+          resolve({} as Message<boolean>);
         });
       });
     }
     this.emit('interactionCreate', mockInteraction);
-    return spy;
+    return [spyReply, spyFollowUp];
   }
 }

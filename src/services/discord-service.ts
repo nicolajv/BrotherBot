@@ -172,7 +172,11 @@ export class DiscordService implements ChatService {
             if (permitted) {
               const commandResponse = await command.execute(parameters);
               commandResponse.response.forEach(async response => {
-                await interaction.reply(response);
+                if (interaction.replied) {
+                  await interaction.followUp(response);
+                } else {
+                  await interaction.reply(response);
+                }
               });
               if (commandResponse.refreshCommands) {
                 await this.initCommands();

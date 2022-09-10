@@ -1,9 +1,10 @@
 name: Deploy
 on:
-  push:
-    branches:
-      - master
-  workflow_dispatch:
+  workflow_run:
+    workflows: [Test]
+    branches: [master]
+    types:
+      - completed
 
 jobs:
   run-build:
@@ -16,37 +17,19 @@ jobs:
         env:
           DOCKER_BUILDKIT: 1
         run: |
-          docker build --build-arg VERSION=$(git rev-parse --short HEAD) --target production-build .
-          docker build --build-arg VERSION=$(git rev-parse --short HEAD) --target test-export . --output coverage
           docker build -t nicolajv/brotherbotv2 --build-arg VERSION=$(git rev-parse --short HEAD) --target release .
       - name: Push image
         run: |
           docker login -u '${{ secrets.DOCKER_USERNAME }}' -p '${{ secrets.DOCKER_PASSWORD }}'
           docker push nicolajv/brotherbotv2:latest
-      - name: Publish code coverage
-        uses: paambaati/codeclimate-action@v3.0.0
-        env:
-          CC_TEST_REPORTER_ID: '${{ secrets.CC_TEST_REPORTER_ID }}'
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
         with:
-          coverageLocations: |
-            ${{github.workspace}}/coverage/coverage.lcov:lcov
-      - name: Install SSH key
-        uses: shimataro/ssh-key-action@v2
-        with:
-          key: ${{ secrets.AWS_KEY }}
-          known_hosts: ${{ secrets.AWS_HOST }}
-      - name: Adding known hosts
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-central-1
+      - name: Terraform execute
         run: |
-          ssh-keyscan -H ${{ secrets.AWS_HOST }} >> ~/.ssh/known_hosts
-      - name: Deploy image
-        env:
-          BASE_PATH: ${{ secrets.BASE_PATH }}
-          DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
-          YOUTUBE_TOKEN: ${{ secrets.YOUTUBE_TOKEN }}
-          LANGUAGE: ${{ secrets.LANGUAGE }}
-        run: |
-          docker login -u '${{ secrets.DOCKER_USERNAME }}' -p '${{ secrets.DOCKER_PASSWORD }}'
-          docker context create remote --docker "host=ssh://${{ secrets.AWS_USERNAME }}@${{ secrets.AWS_HOST }}" 
-          docker context use remote
-          docker pull nicolajv/brotherbotv2 
-          docker-compose up -d --no-build
+          cd terraform
+          terraform init
+          terraform apply --auto-approve

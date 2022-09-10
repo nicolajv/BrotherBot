@@ -239,18 +239,21 @@ describe('Discord Service commands', () => {
   );
 
   it('Handles successful commands', async () => {
-    const interaction = discordClientMock.triggerCommand('h');
-    expect(await interaction).toHaveBeenCalledTimes(2);
+    const [reply, followUp] = discordClientMock.triggerCommand('h');
+    expect(await reply).toHaveBeenCalledTimes(1);
+    expect(await followUp).toHaveBeenCalledTimes(1);
   });
 
   it('Handles successful admin-only commands', async () => {
-    const interaction = discordClientMock.triggerCommand('a');
-    expect(await interaction).toHaveBeenCalledTimes(2);
+    const [reply, followUp] = discordClientMock.triggerCommand('a');
+    expect(await reply).toHaveBeenCalledTimes(1);
+    expect(await followUp).toHaveBeenCalledTimes(1);
   });
 
   it('Handles failed admin-only commands', async () => {
-    const interaction = discordClientMock.triggerCommand('a', { user: { id: 'notAdmin' } });
-    expect(await interaction).toHaveBeenCalledTimes(0);
+    const [reply, followUp] = discordClientMock.triggerCommand('a', { user: { id: 'notAdmin' } });
+    expect(await reply).toHaveBeenCalledTimes(0);
+    expect(await followUp).toHaveBeenCalledTimes(0);
   });
 
   it('Handles commands that are not chat input commands', async () => {
@@ -258,8 +261,9 @@ describe('Discord Service commands', () => {
   });
 
   it('Handles commands with no member', async () => {
-    const interaction = discordClientMock.triggerCommand('h', { user: null });
-    expect(await interaction).toHaveBeenCalledTimes(1);
+    const [reply, followUp] = discordClientMock.triggerCommand('h', { user: null });
+    expect(await reply).toHaveBeenCalledTimes(1);
+    expect(await followUp).toHaveBeenCalledTimes(0);
   });
 });
 
