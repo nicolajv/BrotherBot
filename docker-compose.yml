@@ -3,7 +3,7 @@ services:
   app:
     build:
       context: .
-      target: release
+      target: local
       dockerfile: Dockerfile
     container_name: bot
     image: nicolajv/brotherbotv2
@@ -12,11 +12,15 @@ services:
       - '3000:3000'
     links:
       - database
+    volumes:
+      - ./dist:/bot/dist
+      - ./src:/bot/src
     environment:
       BASE_PATH: ${BASE_PATH}
       DISCORD_TOKEN: ${DISCORD_TOKEN}
       YOUTUBE_TOKEN: ${YOUTUBE_TOKEN}
       LANGUAGE: ${LANGUAGE}
+      DATABASE_ENDPOINT: ${DATABASE_ENDPOINT}
   database:
     container_name: database
     image: mongo

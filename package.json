@@ -3,7 +3,7 @@
   "description": "Discord bot for Big Brother",
   "version": "",
   "scripts": {
-    "start": "docker-compose --file docker-compose.yml --file docker-compose.local.yml up --build ",
+    "start": "docker-compose --file docker-compose.yml up --build ",
     "serve": "tsc-watch --onSuccess 'node dist/infrastructure/server.js'",
     "test": "npm run lint && tsc -noEmit && jest --silent --maxWorkers=1",
     "lint": "eslint ./src",
