@@ -176,6 +176,7 @@ export class DiscordService implements ChatService {
                   await interaction.followUp(response);
                 } else {
                   await interaction.reply(response);
+                  interaction.replied = true;
                 }
               });
               if (commandResponse.refreshCommands) {
