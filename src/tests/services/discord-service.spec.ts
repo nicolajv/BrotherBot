@@ -5,7 +5,7 @@ import {
 } from '../../dependency-injection/dependency-factory';
 
 import { Command } from '../../commands/interfaces/command.interface';
-import { CommandOption } from '../../commands/command-option';
+import { CommandParameter } from '../../commands/command-parameter';
 import { DiscordClientMock } from '../mocks/discord-client-mock';
 import { DiscordService } from '../../services/discord-service';
 import { JestHelper } from '../mocks/jest-helper';
@@ -27,7 +27,7 @@ jest.mock('../../helpers/build-commands', () => {
           'o',
           false,
           false,
-          new Array<CommandOption>(new CommandOption('name', 'description', true)),
+          new Array<CommandParameter>(new CommandParameter('name', 'description', true)),
         ),
       );
       return commands;

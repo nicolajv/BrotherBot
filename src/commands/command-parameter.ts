@@ -1,4 +1,4 @@
-export class CommandOption {
+export class CommandParameter {
   public readonly name: string;
   public readonly description: string;
   public readonly required: boolean;

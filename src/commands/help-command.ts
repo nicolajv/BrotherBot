@@ -20,14 +20,11 @@ export class HelpCommand extends AbstractCommand {
                 result = result + `${commandPrefix}${command.name} - ${command.helperText}\n`;
               }
             });
-          resolve(
-            new CommandResponse([`${translations.helpCommandText}\n${result}`], {
-              ephemeral: true,
-            }),
-          );
+          resolve(new CommandResponse([`${translations.helpCommandText}\n${result}`]));
         });
       },
       translations.helpCommandHelp,
+      { ephemeral: true },
     );
     this.commandList = commandList;
   }

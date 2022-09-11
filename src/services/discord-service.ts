@@ -98,8 +98,8 @@ export class DiscordService implements ChatService {
         data.setDefaultMemberPermissions(0);
       }
 
-      if (command.options) {
-        command.options.forEach(option => {
+      if (command.parameters) {
+        command.parameters.forEach(option => {
           data.addStringOption(o =>
             o.setName(option.name).setDescription(option.description).setRequired(option.required),
           );
@@ -177,13 +177,13 @@ export class DiscordService implements ChatService {
                   replied = true;
                   await interaction.reply({
                     content: response,
-                    ephemeral: commandResponse.ephemeral,
+                    ephemeral: command.ephemeral,
                   });
                 } else {
                   await interaction.fetchReply();
                   await interaction.followUp({
                     content: response,
-                    ephemeral: commandResponse.ephemeral,
+                    ephemeral: command.ephemeral,
                   });
                 }
               });
@@ -192,7 +192,10 @@ export class DiscordService implements ChatService {
               }
             }
           } catch (err) {
-            await interaction.reply(translations.genericError);
+            await interaction.reply({
+              content: translations.genericError,
+              ephemeral: command.ephemeral,
+            });
             this.loggingService.log(err);
           }
         }

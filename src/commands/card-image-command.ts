@@ -1,5 +1,5 @@
 import { AbstractWebServiceCommand } from './abstracts/abstract-web-service-command';
-import { CommandOption } from './command-option';
+import { CommandParameter } from './command-parameter';
 import { translations } from '../data/translator';
 
 export class CardImageCommand extends AbstractWebServiceCommand {
@@ -10,8 +10,8 @@ export class CardImageCommand extends AbstractWebServiceCommand {
       tcgService,
       translations.noCardFound,
       translations.cardImageCommandHelp,
-      new Array<CommandOption>(
-        new CommandOption(
+      new Array<CommandParameter>(
+        new CommandParameter(
           translations.cardImagineCommandParam1N,
           translations.cardImagineCommandParam1D,
           true,

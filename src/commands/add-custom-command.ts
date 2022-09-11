@@ -1,5 +1,5 @@
 import { AbstractCommand } from './abstracts/abstract-command';
-import { CommandOption } from './command-option';
+import { CommandParameter } from './command-parameter';
 import { CommandPrototype } from '../models/command-prototype';
 import { CommandResponse } from '../models/command-response';
 import { translations } from '../data/translator';
@@ -23,27 +23,30 @@ export class AddCustomCommand extends AbstractCommand {
         } catch (err) {
           result = translations.notEnoughParamters;
         }
-        return new CommandResponse([result], { refreshCommands: true, ephemeral: true });
+        return new CommandResponse([result], { refreshCommands: true });
       },
       undefined,
-      true,
-      new Array<CommandOption>(
-        new CommandOption(
-          translations.customCommandParam1N,
-          translations.customCommandParam1D,
-          true,
+      {
+        adminOnly: true,
+        ephemeral: true,
+        parameters: new Array<CommandParameter>(
+          new CommandParameter(
+            translations.customCommandParam1N,
+            translations.customCommandParam1D,
+            true,
+          ),
+          new CommandParameter(
+            translations.customCommandParam2N,
+            translations.customCommandParam2D,
+            true,
+          ),
+          new CommandParameter(
+            translations.customCommandParam3N,
+            translations.customCommandParam3D,
+            true,
+          ),
         ),
-        new CommandOption(
-          translations.customCommandParam2N,
-          translations.customCommandParam2D,
-          true,
-        ),
-        new CommandOption(
-          translations.customCommandParam3N,
-          translations.customCommandParam3D,
-          true,
-        ),
-      ),
+      },
     );
     this.databaseService = databaseService;
   }

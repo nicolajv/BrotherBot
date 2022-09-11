@@ -1,5 +1,5 @@
 import { AbstractWebServiceCommand } from './abstracts/abstract-web-service-command';
-import { CommandOption } from './command-option';
+import { CommandParameter } from './command-parameter';
 import { translations } from '../data/translator';
 
 export class VideoSearchCommand extends AbstractWebServiceCommand {
@@ -10,8 +10,12 @@ export class VideoSearchCommand extends AbstractWebServiceCommand {
       videoService,
       translations.noVideoFound,
       translations.videoSearchCommandHelp,
-      new Array<CommandOption>(
-        new CommandOption(translations.videoCommandParam1N, translations.videoCommandParam1D, true),
+      new Array<CommandParameter>(
+        new CommandParameter(
+          translations.videoCommandParam1N,
+          translations.videoCommandParam1D,
+          true,
+        ),
       ),
     );
   }

@@ -12,8 +12,8 @@ RUN npm install --production --silent && \
     cp -R node_modules prod_node_modules && \
     npm install --silent
 
-# Build production
-FROM install-dependencies AS production-build
+# Build test
+FROM install-dependencies AS test-build
 COPY src ./src
 COPY .eslintrc.json .
 RUN npm run test && \
@@ -21,12 +21,17 @@ RUN npm run test && \
 
 # Export test results
 FROM scratch AS test-export
-COPY --from=production-build /bot/coverage .
+COPY --from=test-build /bot/coverage .
+
+# Build release
+FROM install-dependencies AS release-build
+COPY src ./src
+RUN npm run build
 
 # Release
 FROM base AS release
-COPY --from=production-build /bot/prod_node_modules ./node_modules
-COPY --from=production-build /bot/dist ./dist
+COPY --from=release-build /bot/prod_node_modules ./node_modules
+COPY --from=release-build /bot/dist ./dist
 EXPOSE 3000
 CMD node dist/infrastructure/server.js
 

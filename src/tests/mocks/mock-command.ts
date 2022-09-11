@@ -1,5 +1,5 @@
 import { AbstractCommand } from '../../commands/abstracts/abstract-command';
-import { CommandOption } from '../../commands/command-option';
+import { CommandParameter } from '../../commands/command-parameter';
 import { CommandResponse } from '../../models/command-response';
 
 export class MockCommand extends AbstractCommand {
@@ -7,7 +7,7 @@ export class MockCommand extends AbstractCommand {
     name?: string,
     includeHelperText = true,
     adminOnly = false,
-    commandOption?: Array<CommandOption>,
+    commandParameter?: Array<CommandParameter>,
   ) {
     super(
       name ? name : 'test',
@@ -16,14 +16,12 @@ export class MockCommand extends AbstractCommand {
           resolve(
             new CommandResponse(['description', 'description2'], {
               refreshCommands: adminOnly,
-              ephemeral: adminOnly,
             }),
           );
         });
       },
       includeHelperText ? 'helpertext' : undefined,
-      adminOnly,
-      commandOption,
+      { adminOnly: adminOnly, ephemeral: adminOnly, parameters: commandParameter },
     );
   }
 }
