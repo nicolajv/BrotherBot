@@ -10,11 +10,11 @@ export class VersionCommand extends AbstractCommand {
       'version',
       async () => {
         return new Promise<CommandResponse>(resolve => {
-          resolve(new CommandResponse([`${this.package_json.version}`], { ephemeral: true }));
+          resolve(new CommandResponse([`${this.package_json.version}`]));
         });
       },
       undefined,
-      true,
+      { adminOnly: true, ephemeral: true },
     );
   }
 }

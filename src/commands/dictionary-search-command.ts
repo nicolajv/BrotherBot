@@ -1,5 +1,5 @@
 import { AbstractWebServiceCommand } from '../commands/abstracts/abstract-web-service-command';
-import { CommandOption } from './command-option';
+import { CommandParameter } from './command-parameter';
 import { translations } from '../data/translator';
 
 export class DictionarySearchCommand extends AbstractWebServiceCommand {
@@ -10,8 +10,8 @@ export class DictionarySearchCommand extends AbstractWebServiceCommand {
       dictionaryService,
       translations.noDictionaryEntryFound,
       translations.dictionarySearchCommandHelp,
-      new Array<CommandOption>(
-        new CommandOption(
+      new Array<CommandParameter>(
+        new CommandParameter(
           translations.definitionCommandParam1N,
           translations.definitionCommandParam1D,
           true,

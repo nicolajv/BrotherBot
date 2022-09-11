@@ -12,7 +12,7 @@ jobs:
         env:
           DOCKER_BUILDKIT: 1
         run: |
-          docker build --build-arg VERSION=$(git rev-parse --short HEAD) --target production-build .
+          docker build --build-arg VERSION=$(git rev-parse --short HEAD) --target test-build .
           docker build --build-arg VERSION=$(git rev-parse --short HEAD) --target test-export . --output coverage
       - name: Publish code coverage
         uses: paambaati/codeclimate-action@v3.0.0

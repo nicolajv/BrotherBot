@@ -1,6 +1,6 @@
 import { AbstractCommand } from './abstract-command';
 import { Command } from '../interfaces/command.interface';
-import { CommandOption } from '../command-option';
+import { CommandParameter } from '../command-parameter';
 import { CommandResponse } from '../../models/command-response';
 
 export abstract class AbstractWebServiceCommand extends AbstractCommand implements Command {
@@ -9,7 +9,7 @@ export abstract class AbstractWebServiceCommand extends AbstractCommand implemen
     webService: WebBasedService,
     errorMessage: string,
     helperText?: string,
-    options?: Array<CommandOption>,
+    parameters?: Array<CommandParameter>,
   ) {
     super(
       name,
@@ -27,8 +27,7 @@ export abstract class AbstractWebServiceCommand extends AbstractCommand implemen
         return new CommandResponse(result);
       },
       helperText,
-      false,
-      options,
+      { parameters: parameters },
     );
   }
 }
