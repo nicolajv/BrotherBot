@@ -68,8 +68,11 @@ resource "aws_lb_target_group" "lb" {
   vpc_id      = module.vpc.vpc_id
 
   health_check {
-    enabled = true
-    path    = "/health"
+    matcher  = "200,301,302"
+    path     = "/health"
+    interval = 120
+    timeout  = 30
+    enabled  = true
   }
 
   depends_on = [aws_alb.alb]
@@ -88,7 +91,7 @@ resource "aws_alb" "alb" {
 
 resource "aws_alb_listener" "listener" {
   load_balancer_arn = aws_alb.alb.arn
-  port              = "80"
+  port              = "3000"
   protocol          = "HTTP"
 
   default_action {
@@ -168,8 +171,8 @@ resource "aws_ecs_service" "service" {
   desired_count   = 1
   network_configuration {
     assign_public_ip = false
-
-    subnets = module.vpc.private_subnets
+    security_groups  = [aws_security_group.service.id]
+    subnets          = module.vpc.private_subnets
   }
   load_balancer {
     target_group_arn = aws_lb_target_group.lb.arn

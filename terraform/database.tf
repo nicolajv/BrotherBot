@@ -13,7 +13,7 @@ resource "aws_docdb_cluster_parameter_group" "tls" {
 }
 
 resource "aws_docdb_cluster_instance" "cluster_instances" {
-  identifier         = "${var.name}"
+  identifier         = var.name
   cluster_identifier = aws_docdb_cluster.docdb_cluster.id
   instance_class     = "db.r5.large"
 }
@@ -23,7 +23,7 @@ data "aws_ssm_parameter" "db_password" {
 }
 
 resource "aws_docdb_cluster" "docdb_cluster" {
-  cluster_identifier              = "${var.name}"
+  cluster_identifier              = var.name
   master_username                 = var.name
   master_password                 = data.aws_ssm_parameter.db_password.value
   db_subnet_group_name            = aws_docdb_subnet_group.db_subnet.name
