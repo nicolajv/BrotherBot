@@ -9,3 +9,8 @@ variable "name" {
   type        = string
   default     = "brotherbot"
 }
+
+variable "tag" {
+  type    = string
+  default = "latest"
+}

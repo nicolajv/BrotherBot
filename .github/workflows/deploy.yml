@@ -10,14 +10,25 @@ jobs:
   run-build:
     name: Deploy
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: 'Update release draft'
+        id: 'tag'
+        uses: release-drafter/release-drafter@v5
+        with:
+          publish: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Build
         env:
           DOCKER_BUILDKIT: 1
+          TAG: ${{ steps.tag.outputs.tag_name }}
         run: |
-          docker build -t nicolajv/brotherbotv2 --build-arg VERSION=$(git rev-parse --short HEAD) --target release .
+          docker build -t nicolajv/brotherbotv2:latest -t nicolajv/brotherbotv2:${{ env.TAG }} --build-arg VERSION=${{ env.TAG }} --target release .
       - name: Push image
         run: |
           docker login -u '${{ secrets.DOCKER_USERNAME }}' -p '${{ secrets.DOCKER_PASSWORD }}'
@@ -29,7 +40,9 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-central-1
       - name: Terraform execute
+        env:
+          TAG: ${{ steps.tag.outputs.tag_name }}
         run: |
           cd terraform
           terraform init
-          terraform apply --auto-approve
+          terraform apply -var="tag=${{ env.TAG }}" --auto-approve

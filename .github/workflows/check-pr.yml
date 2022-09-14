@@ -1,0 +1,28 @@
+name: Check PR
+
+on:
+  pull_request:
+    branches: [master]
+    types:
+      - opened
+      - labeled
+      - unlabeled
+
+jobs:
+  check-labels-semver:
+    name: Check SemVer labels
+    uses: ./.github/workflows/check-labels.yml
+    with:
+      labels: 'patch, minor, major'
+      comment: |
+        ## SemVer labels
+        Please add either the `major`, `minor` or `patch` label to this pr!
+
+  check-labels-categories:
+    name: Check category labels
+    uses: ./.github/workflows/check-labels.yml
+    with:
+      labels: 'feature, enhancement, bug, chore'
+      comment: |
+        ## Category labels
+        Please add either the `feature`, `enhancement`, `bug` or `chore` label to this pr!
