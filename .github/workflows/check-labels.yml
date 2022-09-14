@@ -1,0 +1,61 @@
+name: Reusable label check workflow
+
+on:
+  workflow_call:
+    inputs:
+      labels:
+        required: true
+        type: string
+      comment:
+        required: true
+        type: string
+jobs:
+  labels:
+    name: 'Check labels'
+    runs-on: ubuntu-latest
+    steps:
+      - id: find-labels
+        uses: mheap/github-action-required-labels@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          mode: minimum
+          count: 1
+          labels: ${{ inputs.labels }}
+          exit_type: success
+      - id: categories-labels
+        uses: mheap/github-action-required-labels@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          mode: minimum
+          count: 1
+          labels: ${{ inputs.labels }}
+          exit_type: success
+
+      - name: Find Comment
+        uses: peter-evans/find-comment@v2
+        id: semver-comment
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: ${{ inputs.comment }}
+      - name: Delete resolved comment
+        if: steps.find-labels.outputs.status == 'success' && steps.semver-comment.outputs.comment-id != ''
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.deleteComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: ${{ steps.semver-comment.outputs.comment-id }}
+            })
+      - name: Create or update comment
+        if: steps.find-labels.outputs.status == 'failure'
+        uses: peter-evans/create-or-update-comment@v2
+        with:
+          comment-id: ${{ steps.semver-comment.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            ${{ inputs.comment }}
+          edit-mode: replace
