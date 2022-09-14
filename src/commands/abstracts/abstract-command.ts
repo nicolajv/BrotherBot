@@ -9,6 +9,7 @@ export abstract class AbstractCommand implements Command {
   public readonly parameters?: Array<CommandParameter>;
   public readonly adminOnly: boolean;
   public readonly ephemeral: boolean;
+  public readonly useConfirmation: boolean;
 
   constructor(
     name: string,
@@ -17,6 +18,7 @@ export abstract class AbstractCommand implements Command {
     options?: {
       adminOnly?: boolean;
       ephemeral?: boolean;
+      useConfirmation?: boolean;
       parameters?: Array<CommandParameter>;
     },
   ) {
@@ -25,6 +27,7 @@ export abstract class AbstractCommand implements Command {
     this.helperText = helperText;
     this.adminOnly = options?.adminOnly ? options?.adminOnly : false;
     this.ephemeral = options?.ephemeral ? options?.ephemeral : false;
+    this.useConfirmation = options?.useConfirmation ? options?.useConfirmation : false;
     this.parameters = options?.parameters ? options?.parameters : undefined;
   }
 }

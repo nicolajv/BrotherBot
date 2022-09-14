@@ -1,5 +1,7 @@
 import { makeApp, makeChatService } from '../dependency-injection/dependency-factory';
 
+import { request } from 'express';
+
 jest.mock('../services/discord-service');
 
 describe('App', () => {

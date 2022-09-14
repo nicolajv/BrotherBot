@@ -9,7 +9,10 @@ export abstract class AbstractWebServiceCommand extends AbstractCommand implemen
     webService: WebBasedService,
     errorMessage: string,
     helperText?: string,
-    parameters?: Array<CommandParameter>,
+    options?: {
+      useConfirmation?: boolean;
+      parameters?: Array<CommandParameter>;
+    },
   ) {
     super(
       name,
@@ -27,7 +30,7 @@ export abstract class AbstractWebServiceCommand extends AbstractCommand implemen
         return new CommandResponse(result);
       },
       helperText,
-      { parameters: parameters },
+      { useConfirmation: options?.useConfirmation, parameters: options?.parameters },
     );
   }
 }

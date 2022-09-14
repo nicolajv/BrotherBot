@@ -21,6 +21,10 @@ export const translations = {
   definitionCommand: getTranslation('definitionCommand'),
   topEmotesCommand: getTranslation('topEmotesCommand'),
   videoCommand: getTranslation('videoCommand'),
+  // Command confirmations
+  confirmationQuery: getTranslation('confirmationQuery'),
+  confirmationButton: getTranslation('confirmationButton'),
+  confirmationConfirmed: getTranslation('confirmationConfirmed'),
   // Params
   customCommandParam1N: getTranslation('customCommandParam1N'),
   customCommandParam1D: getTranslation('customCommandParam1D'),

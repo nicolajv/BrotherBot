@@ -7,5 +7,6 @@ export interface Command {
   helperText?: string;
   readonly adminOnly: boolean;
   readonly ephemeral: boolean;
+  readonly useConfirmation: boolean;
   readonly parameters?: Array<CommandParameter>;
 }

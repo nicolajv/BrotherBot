@@ -21,7 +21,11 @@ export class MockCommand extends AbstractCommand {
         });
       },
       includeHelperText ? 'helpertext' : undefined,
-      { adminOnly: adminOnly, ephemeral: adminOnly, parameters: commandParameter },
+      {
+        adminOnly: adminOnly,
+        ephemeral: adminOnly,
+        parameters: commandParameter,
+      },
     );
   }
 }

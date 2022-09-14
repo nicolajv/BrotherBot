@@ -10,13 +10,15 @@ export class DictionarySearchCommand extends AbstractWebServiceCommand {
       dictionaryService,
       translations.noDictionaryEntryFound,
       translations.dictionarySearchCommandHelp,
-      new Array<CommandParameter>(
-        new CommandParameter(
-          translations.definitionCommandParam1N,
-          translations.definitionCommandParam1D,
-          true,
+      {
+        parameters: new Array<CommandParameter>(
+          new CommandParameter(
+            translations.definitionCommandParam1N,
+            translations.definitionCommandParam1D,
+            true,
+          ),
         ),
-      ),
+      },
     );
   }
 }

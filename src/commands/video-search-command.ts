@@ -10,13 +10,16 @@ export class VideoSearchCommand extends AbstractWebServiceCommand {
       videoService,
       translations.noVideoFound,
       translations.videoSearchCommandHelp,
-      new Array<CommandParameter>(
-        new CommandParameter(
-          translations.videoCommandParam1N,
-          translations.videoCommandParam1D,
-          true,
+      {
+        useConfirmation: true,
+        parameters: new Array<CommandParameter>(
+          new CommandParameter(
+            translations.videoCommandParam1N,
+            translations.videoCommandParam1D,
+            true,
+          ),
         ),
-      ),
+      },
     );
   }
 }

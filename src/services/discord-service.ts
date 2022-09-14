@@ -1,10 +1,18 @@
 import {
+  ActionRowBuilder,
   ActivityType,
+  ButtonBuilder,
+  ButtonInteraction,
+  ButtonStyle,
+  CacheType,
   ChannelType,
+  ChatInputCommandInteraction,
   Client,
   GatewayIntentBits,
   GuildEmoji,
+  Interaction,
   Message,
+  MessageComponentInteraction,
   Routes,
   SlashCommandBuilder,
   TextChannel,
@@ -13,10 +21,12 @@ import {
 
 import { CallState } from '../helpers/calls-state';
 import { Command } from '../commands/interfaces/command.interface';
+import { CommandResponse } from 'src/models/command-response';
 import { Logger } from 'mongodb';
 import { REST } from '@discordjs/rest';
 import { User } from '../models/user';
 import { buildCommands } from '../helpers/build-commands';
+import { channel } from 'diagnostics_channel';
 import { emotesTable } from '../data/constants';
 import { translations } from '../data/translator';
 
@@ -171,22 +181,12 @@ export class DiscordService implements ChatService {
             }
             if (permitted) {
               const commandResponse = await command.execute(parameters);
-              let replied = false;
-              commandResponse.response.forEach(async response => {
-                if (!replied) {
-                  replied = true;
-                  await interaction.reply({
-                    content: response,
-                    ephemeral: command.ephemeral,
-                  });
-                } else {
-                  await interaction.fetchReply();
-                  await interaction.followUp({
-                    content: response,
-                    ephemeral: command.ephemeral,
-                  });
-                }
-              });
+
+              if (command.useConfirmation) {
+                this.confirmCommandReply(commandResponse, interaction, command);
+              } else {
+                this.replyToCommand(commandResponse, false, interaction, command);
+              }
               if (commandResponse.refreshCommands) {
                 await this.initCommands();
               }
@@ -201,6 +201,72 @@ export class DiscordService implements ChatService {
         }
       });
     });
+  }
+
+  private async confirmCommandReply(
+    commandResponse: CommandResponse,
+    interaction: ChatInputCommandInteraction<CacheType>,
+    command: Command,
+  ): Promise<void> {
+    const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
+      new ButtonBuilder()
+        .setCustomId(interaction.id)
+        .setLabel(translations.confirmationButton)
+        .setStyle(ButtonStyle.Primary),
+    );
+
+    await interaction.reply({
+      content: `${translations.confirmationQuery}\n${commandResponse.response[0]}`,
+      ephemeral: true,
+      components: [row],
+    });
+
+    const filter = (i: MessageComponentInteraction): boolean => i.customId === interaction.id;
+
+    if (!interaction || !interaction.channel) {
+      throw new Error('This message has no interaction or no channel');
+    }
+
+    const collector = interaction.channel.createMessageComponentCollector({
+      filter,
+      time: 15000,
+    });
+
+    if (!collector) {
+      throw new Error('The event collector was not initialized correctly!');
+    }
+
+    collector.on('collect', async i => {
+      await i.update({ content: translations.confirmationConfirmed, components: [] });
+      collector.stop();
+      this.replyToCommand(commandResponse, true, interaction, command);
+    });
+  }
+
+  private async replyToCommand(
+    commandResponse: CommandResponse,
+    replied: boolean,
+    interaction: ChatInputCommandInteraction<CacheType>,
+    command: Command,
+  ): Promise<void> {
+    commandResponse.response.forEach(async response => {
+      if (!replied) {
+        replied = true;
+        await interaction.reply({
+          content: response,
+          ephemeral: command.ephemeral,
+        });
+      } else {
+        await interaction.fetchReply();
+        await interaction.followUp({
+          content: response,
+          ephemeral: command.ephemeral,
+        });
+      }
+    });
+    if (commandResponse.refreshCommands) {
+      await this.initCommands();
+    }
   }
 
   private handleReactions(): void {

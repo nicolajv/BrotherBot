@@ -10,13 +10,16 @@ export class CardImageCommand extends AbstractWebServiceCommand {
       tcgService,
       translations.noCardFound,
       translations.cardImageCommandHelp,
-      new Array<CommandParameter>(
-        new CommandParameter(
-          translations.cardImagineCommandParam1N,
-          translations.cardImagineCommandParam1D,
-          true,
+      {
+        useConfirmation: true,
+        parameters: new Array<CommandParameter>(
+          new CommandParameter(
+            translations.cardImagineCommandParam1N,
+            translations.cardImagineCommandParam1D,
+            true,
+          ),
         ),
-      ),
+      },
     );
   }
 }
