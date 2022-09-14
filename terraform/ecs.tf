@@ -117,7 +117,7 @@ resource "aws_ecs_task_definition" "task" {
   [
     {
       "name": "${var.name}",
-      "image": "registry.hub.docker.com/nicolajv/brotherbotv2:latest",
+      "image": "registry.hub.docker.com/nicolajv/brotherbotv2:${var.tag}",
       "repositoryCredentials": {
         "credentialsParameter": "${data.aws_ssm_parameter.dockerhub.value}"
       },
