@@ -34,16 +34,13 @@ jobs:
         run: |
           docker login -u '${{ secrets.DOCKER_USERNAME }}' -p '${{ secrets.DOCKER_PASSWORD }}'
           docker push nicolajv/brotherbotv2 --all-tags
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+      - name: Update EC2 instance
+        uses: appleboy/ssh-action@master
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: eu-central-1
-      - name: Terraform execute
-        env:
-          TAG: ${{ steps.tag.outputs.tag_name }}
-        run: |
-          cd terraform
-          terraform init
-          terraform apply --auto-approve
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          script: |
+            sudo docker login -u '${{ secrets.DOCKER_USERNAME }}' -p '${{ secrets.DOCKER_PASSWORD }}'
+            sudo docker pull nicolajv/brotherbotv2
+            docker-compose up -d --no-build
