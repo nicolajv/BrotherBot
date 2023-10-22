@@ -1,14 +1,12 @@
-import request = require('request');
+import axios from 'axios';
 
 export class HttpRequestService implements RequestService {
-  public getAsObject(requestUri: string): Promise<Record<string, unknown>> {
-    return new Promise(resolve => {
-      request(encodeURI(requestUri), (error, _response, body) => {
-        if (error) {
-          throw new Error('Failed to fulfill request');
-        }
-        resolve(JSON.parse(body));
-      });
-    });
+  public async getAsObject(requestUri: string): Promise<Record<string, unknown>> {
+    try {
+      const response = await axios.get(encodeURI(requestUri));
+      return response.data;
+    } catch (error) {
+      throw new Error('Failed to fulfill request');
+    }
   }
 }

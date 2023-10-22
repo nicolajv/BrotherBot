@@ -1,23 +1,30 @@
 import { HttpRequestService } from '../../services/http-request-service';
-
-// Passing '' url will make the request succeed, anything else and it will fail
-jest.mock('request', () => {
-  return function (
-    uri: string,
-    callback: (error: string | undefined, response: string, body: string) => void,
-  ): void {
-    callback(uri, 'test', '{}');
-  };
-});
+import axios from 'axios';
+import MockAdapter from 'axios-mock-adapter';
 
 describe('Http Request Service get requests', () => {
+  let requestService: HttpRequestService;
+  let mockAxios: InstanceType<typeof MockAdapter>;
+
+  beforeEach(() => {
+    requestService = new HttpRequestService();
+    mockAxios = new MockAdapter(axios);
+  });
+
+  afterEach(() => {
+    mockAxios.restore();
+  });
+
   it('Can make successful requests', async () => {
-    const requestService = new HttpRequestService();
-    expect(requestService.getAsObject('')).resolves.not.toThrowError();
+    const responseData = {};
+    mockAxios.onGet('').reply(200, responseData);
+
+    await expect(requestService.getAsObject('')).resolves.toEqual(responseData);
   });
 
   it('Can throw an error on a failed request', async () => {
-    const requestService = new HttpRequestService();
-    expect(requestService.getAsObject('test')).rejects.toThrowError();
+    mockAxios.onGet('test').reply(500);
+
+    await expect(requestService.getAsObject('test')).rejects.toThrowError();
   });
 });
